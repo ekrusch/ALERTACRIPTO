@@ -30,8 +30,6 @@ class StatusStore:
 
     def record_alert(self, alert: Alert) -> bool:
         paper_changed = self.paper.handle_alert(alert)
-        if _is_exit(alert) and not paper_changed:
-            return False
 
         payload = {
             "ts": time.time(),
@@ -45,7 +43,7 @@ class StatusStore:
         }
         self.alerts.insert(0, payload)
         self.alerts = self.alerts[:100]
-        return True
+        return paper_changed
 
     def write(self, state: MarketState) -> None:
         symbols = []
