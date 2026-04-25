@@ -14,6 +14,7 @@ class PaperPortfolio:
         self.initial_cash = initial_cash
         self.cash = initial_cash
         self.position_fraction = position_fraction
+        self.strategy_version = os.getenv("PAPER_STRATEGY_VERSION") or _detect_strategy_version()
         self.audit_path = Path(audit_path or os.getenv("PAPER_AUDIT_FILE", "storage/trade_audit.jsonl"))
         self.audit_path.parent.mkdir(parents=True, exist_ok=True)
         self.positions: dict[str, dict[str, Any]] = {}
@@ -60,6 +61,7 @@ class PaperPortfolio:
             "pnl_pct": 0.0,
             "entry_reason": reason,
             "entry_metrics": metrics,
+            "strategy_version": self.strategy_version,
         }
         for key in ("peak_price", "trailing_stop_pct", "trailing_stop_price"):
             if key in metrics:
@@ -102,6 +104,8 @@ class PaperPortfolio:
                 "closed_at": closed_at,
                 "duration_seconds": round(closed_at - opened_at, 2) if opened_at is not None else None,
                 "entry_reason": position.get("entry_reason"),
+                "entry_strategy_version": position.get("strategy_version", "legacy"),
+                "strategy_version": position.get("strategy_version", "legacy"),
                 "entry_metrics": position.get("entry_metrics", {}),
                 "exit_metrics": metrics or {},
                 "peak_price": round(peak_price, 8),
@@ -145,6 +149,7 @@ class PaperPortfolio:
             "total_pnl_usd": round(total_pnl, 2),
             "total_pnl_pct": round(100.0 * total_pnl / self.initial_cash, 2) if self.initial_cash > 0 else 0.0,
             "open_pnl_usd": round(open_pnl, 2),
+            "strategy_version": self.strategy_version,
             "positions": list(self.positions.values()),
             "trades": self.trades[:2000],
         }
@@ -165,6 +170,7 @@ class PaperPortfolio:
             "ts": time.time(),
             "side": side,
             "symbol": symbol,
+            "strategy_version": self.strategy_version,
             "price": round(price, 8),
             "qty": round(qty, 8),
             "notional_usd": round(notional_usd, 2),
@@ -193,3 +199,15 @@ def _as_float(value: Any) -> float | None:
         return float(value)
     except (TypeError, ValueError):
         return None
+
+
+def _detect_strategy_version() -> str:
+    head_path = Path(".git/HEAD")
+    try:
+        head = head_path.read_text(encoding="utf-8").strip()
+        if head.startswith("ref: "):
+            ref_path = Path(".git") / head.split(" ", 1)[1]
+            return ref_path.read_text(encoding="utf-8").strip()[:7]
+        return head[:7]
+    except OSError:
+        return "unknown"

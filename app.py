@@ -271,6 +271,12 @@ def _position_rows(positions: list[dict], symbol_lookup: dict[str, dict]) -> lis
     return sorted(rows, key=lambda row: row["moeda"] or "")
 
 
+def _current_version_trades(trades: list[dict], strategy_version: str | None) -> list[dict]:
+    if not strategy_version:
+        return trades
+    return [item for item in trades if item.get("strategy_version") == strategy_version]
+
+
 def _closed_trade_rows(trades: list[dict]) -> list[dict]:
     rows = []
     for item in trades:
@@ -437,9 +443,12 @@ def _render_dashboard() -> None:
 
     st.subheader("Negociações Encerradas")
     trades = paper.get("trades", [])
-    closed_trades = _closed_trade_rows(trades)
+    current_strategy_version = paper.get("strategy_version")
+    current_version_trades = _current_version_trades(trades, current_strategy_version if isinstance(current_strategy_version, str) else None)
+    closed_trades = _closed_trade_rows(current_version_trades)
     if closed_trades:
-        loss_summary = _loss_summary([item for item in trades if item.get("side") == "SELL"])
+        st.caption(f"Mostrando somente negociações encerradas da versão atual: {current_strategy_version or 'desconhecida'}")
+        loss_summary = _loss_summary([item for item in current_version_trades if item.get("side") == "SELL"])
         if loss_summary:
             loss_cols = st.columns(4)
             for column, (label, value) in zip(loss_cols, loss_summary.items()):
