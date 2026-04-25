@@ -92,10 +92,18 @@ class BybitClusterWorker:
         return topics
 
     def _preload_history(self) -> None:
+        ticker_stats = _fetch_bybit_tickers()
         for symbol in self.cluster.symbols:
             state = self.market_state.get(symbol)
             if state is None:
                 continue
+            if symbol in ticker_stats:
+                state.update_price(ticker_stats[symbol]["last_price"])
+                state.update_market_stats(
+                    change_24h_pct=ticker_stats[symbol]["change_24h_pct"],
+                    range_24h_pct=ticker_stats[symbol]["range_24h_pct"],
+                    turnover_24h=ticker_stats[symbol]["turnover_24h"],
+                )
             for timeframe in self.cluster.timeframes:
                 for candle in _fetch_bybit_klines(symbol, timeframe):
                     state.upsert_candle(timeframe, candle)
@@ -238,6 +246,36 @@ def _range_24h_pct(data: dict) -> float | None:
     if last_price is None or high is None or low is None or last_price <= 0 or high <= 0 or low <= 0:
         return None
     return 100.0 * (high - low) / last_price
+
+
+def _fetch_bybit_tickers() -> dict[str, dict[str, float | None]]:
+    params = urllib.parse.urlencode({"category": "linear"})
+    url = f"https://api.bybit.com/v5/market/tickers?{params}"
+    request = urllib.request.Request(url, headers={"User-Agent": "radar-cripto/1.0"})
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        print(f"[bybit:ticker] falha ao carregar tickers: {exc}", flush=True)
+        return {}
+
+    if payload.get("retCode") != 0:
+        print(f"[bybit:ticker] {payload.get('retMsg')}", flush=True)
+        return {}
+
+    tickers: dict[str, dict[str, float | None]] = {}
+    for item in payload.get("result", {}).get("list", []):
+        symbol = item.get("symbol")
+        last_price = _safe_float(item.get("lastPrice"))
+        if not symbol or last_price is None:
+            continue
+        tickers[symbol] = {
+            "last_price": last_price,
+            "change_24h_pct": _safe_float(item.get("price24hPcnt"), multiplier=100.0),
+            "range_24h_pct": _range_24h_pct(item),
+            "turnover_24h": _safe_float(item.get("turnover24h")),
+        }
+    return tickers
 
 
 def _fetch_bybit_klines(symbol: str, interval: str, limit: int = 200) -> list[Candle]:
