@@ -1,0 +1,120 @@
+from __future__ import annotations
+
+import time
+from typing import Any
+
+from radar.engine.rules import Alert
+
+
+class PaperPortfolio:
+    def __init__(self, initial_cash: float = 1000.0, position_fraction: float = 0.10) -> None:
+        self.initial_cash = initial_cash
+        self.cash = initial_cash
+        self.position_fraction = position_fraction
+        self.positions: dict[str, dict[str, Any]] = {}
+        self.trades: list[dict[str, Any]] = []
+
+    def handle_alert(self, alert: Alert) -> None:
+        if _is_exit(alert):
+            self.sell(alert.symbol, alert.price, f"saida: {alert.rule}")
+            return
+        if _is_preparing(alert):
+            return
+        self.buy(alert.symbol, alert.price, f"entrada: {alert.rule}")
+
+    def buy(self, symbol: str, price: float, reason: str) -> None:
+        if price <= 0 or symbol in self.positions or self.cash <= 0:
+            return
+
+        amount_usd = min(self.cash, self.initial_cash * self.position_fraction)
+        qty = amount_usd / price
+        self.cash -= amount_usd
+        self.positions[symbol] = {
+            "symbol": symbol,
+            "qty": qty,
+            "avg_price": price,
+            "invested_usd": amount_usd,
+            "opened_at": time.time(),
+            "last_price": price,
+            "pnl_usd": 0.0,
+            "pnl_pct": 0.0,
+        }
+        self._record_trade("BUY", symbol, price, qty, amount_usd, 0.0, reason)
+
+    def sell(self, symbol: str, price: float, reason: str) -> None:
+        if price <= 0:
+            return
+        position = self.positions.pop(symbol, None)
+        if position is None:
+            return
+
+        qty = float(position["qty"])
+        proceeds = qty * price
+        pnl_usd = proceeds - float(position["invested_usd"])
+        self.cash += proceeds
+        self._record_trade("SELL", symbol, price, qty, proceeds, pnl_usd, reason)
+
+    def mark_to_market(self, prices: dict[str, float | None]) -> dict[str, Any]:
+        open_value = 0.0
+        open_pnl = 0.0
+        for symbol, position in self.positions.items():
+            price = prices.get(symbol) or float(position["last_price"])
+            qty = float(position["qty"])
+            invested = float(position["invested_usd"])
+            value = qty * price
+            pnl_usd = value - invested
+            pnl_pct = 100.0 * pnl_usd / invested if invested > 0 else 0.0
+            position["last_price"] = price
+            position["value_usd"] = value
+            position["pnl_usd"] = pnl_usd
+            position["pnl_pct"] = pnl_pct
+            open_value += value
+            open_pnl += pnl_usd
+
+        equity = self.cash + open_value
+        total_pnl = equity - self.initial_cash
+        return {
+            "mode": "paper",
+            "initial_cash": round(self.initial_cash, 2),
+            "cash": round(self.cash, 2),
+            "open_value": round(open_value, 2),
+            "equity": round(equity, 2),
+            "total_pnl_usd": round(total_pnl, 2),
+            "total_pnl_pct": round(100.0 * total_pnl / self.initial_cash, 2) if self.initial_cash > 0 else 0.0,
+            "open_pnl_usd": round(open_pnl, 2),
+            "positions": list(self.positions.values()),
+            "trades": self.trades[:50],
+        }
+
+    def _record_trade(
+        self,
+        side: str,
+        symbol: str,
+        price: float,
+        qty: float,
+        notional_usd: float,
+        pnl_usd: float,
+        reason: str,
+    ) -> None:
+        self.trades.insert(
+            0,
+            {
+                "ts": time.time(),
+                "side": side,
+                "symbol": symbol,
+                "price": round(price, 8),
+                "qty": round(qty, 8),
+                "notional_usd": round(notional_usd, 2),
+                "pnl_usd": round(pnl_usd, 2),
+                "reason": reason,
+            },
+        )
+        self.trades = self.trades[:100]
+
+
+def _is_preparing(alert: Alert) -> bool:
+    return alert.rule.endswith("_preparing") or alert.metrics.get("alert_level") == "PREPARANDO"
+
+
+def _is_exit(alert: Alert) -> bool:
+    return alert.rule.endswith("_exit") or alert.metrics.get("alert_level") == "SAIDA"

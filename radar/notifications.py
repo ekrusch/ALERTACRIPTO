@@ -56,7 +56,7 @@ def _format_alert(alert: Alert) -> str:
             metrics,
             "",
             f"Gráfico para conferir: {tradingview_url}",
-            f"Operar na corretora: {trade_url}",
+            f"Operar no Spot: {trade_url}",
             "",
             "Importante: isso é um alerta de oportunidade, não ordem automática. Olhe o gráfico antes de entrar.",
         ]
@@ -286,7 +286,7 @@ def _exchange_trade_url(alert: Alert) -> str:
         return f"https://www.mexc.com/exchange/{_symbol_with_separator(alert.symbol, '_')}"
     if alert.cluster_id.startswith("kucoin_"):
         return f"https://www.kucoin.com/trade/{_symbol_with_separator(alert.symbol, '-')}"
-    return f"https://www.bybit.com/trade/usdt/{alert.symbol}"
+    return f"https://www.bybit.com/trade/spot/{_symbol_with_separator(alert.symbol, '/')}"
 
 
 def _symbol_with_separator(symbol: str, separator: str) -> str:
