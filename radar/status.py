@@ -20,6 +20,7 @@ class StatusStore:
         self.workers: dict[str, dict[str, Any]] = {}
         self.initial_prices: dict[str, float] = {}
         self.previous_prices: dict[str, float] = {}
+        self.paper_history: list[dict[str, float]] = self._load_paper_history()
         self.paper = PaperPortfolio(
             initial_cash=float(os.getenv("PAPER_INITIAL_CASH", "1000")),
             position_fraction=float(os.getenv("PAPER_POSITION_FRACTION", "0.10")),
@@ -83,19 +84,55 @@ class StatusStore:
         ]
         opportunities = sorted(opportunities, key=lambda row: row.get("opportunity_score") or 0, reverse=True)[:30]
 
+        paper = self.paper.mark_to_market(prices)
+        self._record_paper_snapshot(paper)
+
         payload = {
             "updated_at": time.time(),
             "workers": self.workers,
             "symbols": sorted(symbols, key=lambda row: row["symbol"]),
             "opportunities": opportunities,
             "alerts": self.alerts,
-            "paper": self.paper.mark_to_market(prices),
+            "paper": paper,
+            "paper_history": self.paper_history,
         }
 
         fd, temp_name = tempfile.mkstemp(prefix="status-", suffix=".json", dir=str(self.path.parent))
         with os.fdopen(fd, "w", encoding="utf-8") as file:
             json.dump(payload, file, ensure_ascii=False, indent=2)
         os.replace(temp_name, self.path)
+
+    def _load_paper_history(self) -> list[dict[str, float]]:
+        if not self.path.exists():
+            return []
+        try:
+            with self.path.open("r", encoding="utf-8") as file:
+                payload = json.load(file)
+        except (OSError, json.JSONDecodeError):
+            return []
+        history = payload.get("paper_history", [])
+        if not isinstance(history, list):
+            return []
+        return [
+            item
+            for item in history
+            if isinstance(item, dict) and isinstance(item.get("ts"), (int, float)) and isinstance(item.get("equity"), (int, float))
+        ][-6000:]
+
+    def _record_paper_snapshot(self, paper: dict[str, Any]) -> None:
+        now = time.time()
+        equity = paper.get("equity")
+        if not isinstance(equity, (int, float)):
+            return
+        self.paper_history.append(
+            {
+                "ts": now,
+                "equity": round(float(equity), 2),
+                "total_pnl_pct": float(paper.get("total_pnl_pct", 0.0) or 0.0),
+            }
+        )
+        cutoff = now - (25 * 60 * 60)
+        self.paper_history = [item for item in self.paper_history if item["ts"] >= cutoff][-6000:]
 
 
 def _pct_change(start: float | None, current: float | None) -> float | None:

@@ -232,6 +232,77 @@ def _closed_trade_rows(trades: list[dict]) -> list[dict]:
     return rows
 
 
+def _paper_window_return(history: list[dict], current_equity: float | None, hours: int, now: float | None) -> tuple[float | None, float | None]:
+    if not history or current_equity is None or current_equity <= 0 or not now:
+        return None, None
+    target = now - (hours * 60 * 60)
+    baseline = None
+    for item in history:
+        ts = item.get("ts")
+        equity = item.get("equity")
+        if not isinstance(ts, (int, float)) or not isinstance(equity, (int, float)) or equity <= 0:
+            continue
+        if ts <= target:
+            baseline = float(equity)
+        else:
+            break
+    if baseline is None:
+        return None, None
+    gain_pct = 100.0 * (current_equity - baseline) / baseline
+    return gain_pct, gain_pct / hours
+
+
+def _render_performance_box(paper: dict, history: list[dict], now: float | None) -> None:
+    current_equity = paper.get("equity")
+    if not isinstance(current_equity, (int, float)):
+        current_equity = None
+
+    rows = []
+    for hours, label in ((1, "1h"), (4, "4h"), (24, "24h")):
+        gain_pct, hourly_pct = _paper_window_return(history, current_equity, hours, now)
+        rows.append(
+            "<tr>"
+            f"<td>{label}</td>"
+            f"<td>{html.escape(_fmt_pct(gain_pct))}</td>"
+            f"<td>{html.escape(_fmt_pct(hourly_pct))}/h</td>"
+            "</tr>"
+        )
+
+    components.html(
+        """
+        <!doctype html>
+        <html>
+        <head>
+            <style>
+                body { margin: 0; background: transparent; font-family: "Source Sans Pro", sans-serif; color: #fafafa; }
+                .box { border: 1px solid rgba(250,250,250,0.16); border-radius: 10px; padding: 10px 12px; background: rgba(250,250,250,0.04); }
+                .title { font-size: 13px; font-weight: 800; margin-bottom: 8px; color: rgba(250,250,250,0.9); }
+                table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                th, td { text-align: right; padding: 4px 2px; white-space: nowrap; }
+                th:first-child, td:first-child { text-align: left; }
+                th { color: rgba(250,250,250,0.62); font-weight: 700; }
+            </style>
+        </head>
+        <body>
+            <div class="box">
+                <div class="title">Feedback Paper</div>
+                <table>
+                    <thead><tr><th>janela</th><th>ganho</th><th>%/h</th></tr></thead>
+                    <tbody>
+        """
+        + "".join(rows)
+        + """
+                    </tbody>
+                </table>
+            </div>
+        </body>
+        </html>
+        """,
+        height=138,
+        scrolling=False,
+    )
+
+
 st.set_page_config(page_title="Radar de Anomalias Cripto", layout="wide")
 st.markdown("<meta http-equiv='refresh' content='10'>", unsafe_allow_html=True)
 st.title("Radar de Anomalias Cripto")
@@ -249,15 +320,20 @@ if updated_at:
     st.caption(f"Ultima atualizacao: {datetime.fromtimestamp(updated_at, DISPLAY_TZ).strftime('%Y-%m-%d %H:%M:%S')}")
 
 paper = status.get("paper", {})
+paper_history = status.get("paper_history", [])
 symbols = status.get("symbols", [])
 symbol_lookup = {item.get("symbol"): item for item in symbols if item.get("symbol")}
-st.subheader("Carteira Simulada")
-metric_cols = st.columns(5)
-metric_cols[0].metric("Banca inicial", _fmt_usd(paper.get("initial_cash")))
-metric_cols[1].metric("Saldo livre", _fmt_usd(paper.get("cash")))
-metric_cols[2].metric("Em posicoes", _fmt_usd(paper.get("open_value")))
-metric_cols[3].metric("Patrimonio", _fmt_usd(paper.get("equity")), _fmt_pct(paper.get("total_pnl_pct")))
-metric_cols[4].metric("Resultado", _fmt_usd(paper.get("total_pnl_usd")))
+top_left, top_right = st.columns([4, 1])
+with top_left:
+    st.subheader("Carteira Simulada")
+    metric_cols = st.columns(5)
+    metric_cols[0].metric("Banca inicial", _fmt_usd(paper.get("initial_cash")))
+    metric_cols[1].metric("Saldo livre", _fmt_usd(paper.get("cash")))
+    metric_cols[2].metric("Em posicoes", _fmt_usd(paper.get("open_value")))
+    metric_cols[3].metric("Patrimonio", _fmt_usd(paper.get("equity")), _fmt_pct(paper.get("total_pnl_pct")))
+    metric_cols[4].metric("Resultado", _fmt_usd(paper.get("total_pnl_usd")))
+with top_right:
+    _render_performance_box(paper, paper_history if isinstance(paper_history, list) else [], updated_at)
 
 positions = paper.get("positions", [])
 st.subheader("Moedas em Negociação Agora")
