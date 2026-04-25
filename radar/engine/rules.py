@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from radar.config import ClusterConfig
-from radar.engine.state import Candle, SymbolState
+from radar.engine.state import Candle, MarketState, SymbolState
 
 
 @dataclass(frozen=True)
@@ -18,7 +18,7 @@ class Alert:
     metrics: dict[str, float | str]
 
 
-def evaluate_symbol(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
+def evaluate_symbol(state: SymbolState, cluster: ClusterConfig, market_state: MarketState | None = None) -> Alert | None:
     if state.price is None:
         return None
 
@@ -26,15 +26,19 @@ def evaluate_symbol(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     if exit_alert is not None:
         return exit_alert
 
+    alert: Alert | None = None
     if cluster.rule == "cvd_rvol_compression":
-        return _evaluate_cvd_rvol_compression(state, cluster)
-    if cluster.rule == "orderbook_imbalance_vwap":
-        return _evaluate_orderbook_imbalance_vwap(state, cluster)
-    if cluster.rule == "support_absorption_reversal":
-        return _evaluate_support_absorption_reversal(state, cluster)
-    if cluster.rule == "microcap_spread_volume_anomaly":
-        return _evaluate_microcap_spread_volume_anomaly(state, cluster)
-    return None
+        alert = _evaluate_cvd_rvol_compression(state, cluster)
+    elif cluster.rule == "orderbook_imbalance_vwap":
+        alert = _evaluate_orderbook_imbalance_vwap(state, cluster)
+    elif cluster.rule == "support_absorption_reversal":
+        alert = _evaluate_support_absorption_reversal(state, cluster)
+    elif cluster.rule == "microcap_spread_volume_anomaly":
+        alert = _evaluate_microcap_spread_volume_anomaly(state, cluster)
+
+    if alert is None:
+        return None
+    return _quality_gate_entry_alert(state, cluster, alert, market_state)
 
 
 def _evaluate_exit_signal(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
@@ -452,6 +456,208 @@ def _evaluate_microcap_spread_volume_anomaly(state: SymbolState, cluster: Cluste
                 "cvd_ratio": round(cvd_ratio, 2),
             },
         ))
+    return None
+
+
+def _quality_gate_entry_alert(
+    state: SymbolState,
+    cluster: ClusterConfig,
+    alert: Alert,
+    market_state: MarketState | None,
+) -> Alert | None:
+    score, notes, regime = _entry_quality_score(state, cluster, alert, market_state)
+    min_score = float(cluster.settings.get("quality_min_score", _default_quality_min_score(cluster)))
+    min_turnover = float(cluster.settings.get("min_turnover_24h", _default_min_turnover(cluster)))
+
+    if _is_stable_pair(state.symbol):
+        state.deactivate_signal(cluster.rule)
+        return None
+    if state.turnover_24h is not None and state.turnover_24h < min_turnover:
+        state.deactivate_signal(cluster.rule)
+        return None
+    if regime == "risk_off" and not cluster.id.startswith("bybit_reversal") and score < 90:
+        state.deactivate_signal(cluster.rule)
+        return None
+    if score < min_score:
+        state.deactivate_signal(cluster.rule)
+        return None
+
+    enriched_metrics = {
+        **alert.metrics,
+        "quality_score": round(score, 1),
+        "market_regime": regime,
+        "quality_notes": "; ".join(notes[:4]),
+    }
+    if state.change_24h_pct is not None:
+        enriched_metrics["change_24h_pct"] = round(state.change_24h_pct, 2)
+    if state.range_24h_pct is not None:
+        enriched_metrics["range_24h_pct"] = round(state.range_24h_pct, 2)
+    if state.turnover_24h is not None:
+        enriched_metrics["turnover_24h_usd"] = round(state.turnover_24h, 2)
+
+    state.activate_signal(cluster.rule, alert.price, "CONFIRMADO", enriched_metrics)
+    return Alert(
+        symbol=alert.symbol,
+        cluster_id=alert.cluster_id,
+        cluster_name=alert.cluster_name,
+        rule=alert.rule,
+        price=alert.price,
+        title=alert.title,
+        message=alert.message,
+        metrics=enriched_metrics,
+    )
+
+
+def _entry_quality_score(
+    state: SymbolState,
+    cluster: ClusterConfig,
+    alert: Alert,
+    market_state: MarketState | None,
+) -> tuple[float, list[str], str]:
+    score = 0.0
+    notes: list[str] = []
+    turnover = state.turnover_24h or 0.0
+    change = state.change_24h_pct
+    range_pct = state.range_24h_pct
+
+    if turnover >= 20_000_000:
+        score += 25
+        notes.append("liquidez alta")
+    elif turnover >= 5_000_000:
+        score += 20
+        notes.append("liquidez boa")
+    elif turnover >= 1_000_000:
+        score += 12
+        notes.append("liquidez media")
+    elif turnover >= 250_000:
+        score += 5
+        notes.append("liquidez baixa")
+    else:
+        score -= 15
+        notes.append("liquidez fraca")
+
+    if change is not None:
+        if cluster.id.startswith("bybit_hot_momentum"):
+            if 8 <= change <= 45:
+                score += 25
+                notes.append("momentum forte sem excesso extremo")
+            elif change > 45:
+                score += 8
+                notes.append("muito esticada")
+            elif change < 0:
+                score -= 20
+        elif cluster.id.startswith("bybit_reversal"):
+            if change <= -6:
+                score += 18
+                notes.append("queda forte para reversao")
+            elif change > 5:
+                score -= 10
+        elif cluster.rule == "cvd_rvol_compression":
+            if abs(change) <= 4:
+                score += 15
+                notes.append("preco ainda comprimido")
+            elif change > 12:
+                score -= 12
+        elif change > 0:
+            score += 10
+
+    if range_pct is not None:
+        if cluster.rule == "cvd_rvol_compression" and range_pct <= 8:
+            score += 18
+            notes.append("range curto")
+        elif range_pct > 45:
+            score -= 12
+            notes.append("volatilidade exagerada")
+        elif 6 <= range_pct <= 25:
+            score += 8
+
+    score += _rule_specific_quality(alert)
+    regime = _market_regime(market_state)
+    if regime == "bull":
+        score += 8
+        notes.append("BTC favorece risco")
+    elif regime == "risk_off":
+        score -= 22
+        notes.append("BTC em modo risco")
+    else:
+        notes.append("BTC neutro")
+
+    if cluster.id.startswith("bybit_low_liquidity"):
+        score -= 12
+        notes.append("cluster de baixa liquidez")
+
+    return max(0.0, min(score, 100.0)), notes, regime
+
+
+def _rule_specific_quality(alert: Alert) -> float:
+    score = 0.0
+    bid_ask_ratio = _metric_float(alert.metrics.get("bid_ask_ratio_2pct"))
+    ask_drop_pct = _metric_float(alert.metrics.get("ask_drop_pct"))
+    rvol = _metric_float(alert.metrics.get("rvol_15m") or alert.metrics.get("rvol"))
+    cvd_ratio = _metric_float(alert.metrics.get("cvd_ratio"))
+    volume_vs_avg = _metric_float(alert.metrics.get("volume_vs_avg"))
+
+    if bid_ask_ratio is not None:
+        score += min(22.0, max(0.0, (bid_ask_ratio - 1.0) * 18.0))
+    if ask_drop_pct is not None:
+        score += min(16.0, ask_drop_pct / 3.0)
+    if rvol is not None:
+        score += min(18.0, rvol * 4.0)
+    if cvd_ratio is not None:
+        score += min(16.0, max(0.0, cvd_ratio) * 25.0)
+    if volume_vs_avg is not None:
+        score += min(16.0, volume_vs_avg * 5.0)
+    if alert.rule == "support_absorption_reversal":
+        score += 14.0
+    return score
+
+
+def _market_regime(market_state: MarketState | None) -> str:
+    if market_state is None:
+        return "neutral"
+    btc = market_state.get("BTCUSDT")
+    if btc is None:
+        return "neutral"
+    change = btc.change_24h_pct
+    if change is None:
+        return "neutral"
+    if change <= -2.5:
+        return "risk_off"
+    if change >= 1.0:
+        return "bull"
+    return "neutral"
+
+
+def _default_quality_min_score(cluster: ClusterConfig) -> float:
+    if cluster.id.startswith("bybit_low_liquidity"):
+        return 86.0
+    if cluster.id.startswith("bybit_hot_momentum"):
+        return 70.0
+    if cluster.id.startswith("bybit_reversal"):
+        return 74.0
+    return 72.0
+
+
+def _default_min_turnover(cluster: ClusterConfig) -> float:
+    if cluster.id.startswith("bybit_low_liquidity"):
+        return 75_000.0
+    if cluster.exchange == "bybit_linear":
+        return 300_000.0
+    return 0.0
+
+
+def _is_stable_pair(symbol: str) -> bool:
+    return symbol in {"USDCUSDT", "USDEUSDT", "USD1USDT", "RLUSDUSDT"}
+
+
+def _metric_float(value: float | str | None) -> float | None:
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return None
     return None
 
 

@@ -45,7 +45,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 70,
+        "min_turnover_24h": 2000000
       }
     },
     {
@@ -77,7 +79,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.35,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 74,
+        "min_turnover_24h": 5000000
       }
     },
     {
@@ -135,7 +139,9 @@
         "cooldown_minutes": 30,
         "exit_negative_cvd_ratio": 0.2,
         "exit_price_drop_pct": 2.0,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 72,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -193,7 +199,9 @@
         "cooldown_minutes": 30,
         "exit_negative_cvd_ratio": 0.2,
         "exit_price_drop_pct": 2.0,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 72,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -251,7 +259,9 @@
         "cooldown_minutes": 30,
         "exit_negative_cvd_ratio": 0.2,
         "exit_price_drop_pct": 2.0,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 72,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -297,7 +307,9 @@
         "cooldown_minutes": 30,
         "exit_negative_cvd_ratio": 0.2,
         "exit_price_drop_pct": 2.0,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 72,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -358,7 +370,9 @@
         "max_daily_distance_from_support_pct": 6.0,
         "cooldown_minutes": 240,
         "exit_support_break_pct": 1.0,
-        "exit_cooldown_minutes": 30
+        "exit_cooldown_minutes": 30,
+        "quality_min_score": 74,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -388,7 +402,9 @@
         "max_daily_distance_from_support_pct": 6.0,
         "cooldown_minutes": 240,
         "exit_support_break_pct": 1.0,
-        "exit_cooldown_minutes": 30
+        "exit_cooldown_minutes": 30,
+        "quality_min_score": 74,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -447,7 +463,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.45,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 78,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -506,7 +524,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.45,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 78,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -560,7 +580,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.45,
-        "exit_cooldown_minutes": 10
+        "exit_cooldown_minutes": 10,
+        "quality_min_score": 78,
+        "min_turnover_24h": 1000000
       }
     },
     {
@@ -619,7 +641,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 15
+        "exit_cooldown_minutes": 15,
+        "quality_min_score": 86,
+        "min_turnover_24h": 75000
       }
     },
     {
@@ -678,7 +702,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 15
+        "exit_cooldown_minutes": 15,
+        "quality_min_score": 86,
+        "min_turnover_24h": 75000
       }
     },
     {
@@ -737,7 +763,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 15
+        "exit_cooldown_minutes": 15,
+        "quality_min_score": 86,
+        "min_turnover_24h": 75000
       }
     },
     {
@@ -796,7 +824,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 15
+        "exit_cooldown_minutes": 15,
+        "quality_min_score": 86,
+        "min_turnover_24h": 75000
       }
     },
     {
@@ -855,7 +885,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 15
+        "exit_cooldown_minutes": 15,
+        "quality_min_score": 86,
+        "min_turnover_24h": 75000
       }
     },
     {
@@ -914,7 +946,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 15
+        "exit_cooldown_minutes": 15,
+        "quality_min_score": 86,
+        "min_turnover_24h": 75000
       }
     },
     {
@@ -973,7 +1007,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 15
+        "exit_cooldown_minutes": 15,
+        "quality_min_score": 86,
+        "min_turnover_24h": 75000
       }
     },
     {
@@ -1002,7 +1038,9 @@
         "exit_weak_reads": 3,
         "exit_lost_vwap_reads": 2,
         "exit_vwap_loss_pct": 0.5,
-        "exit_cooldown_minutes": 15
+        "exit_cooldown_minutes": 15,
+        "quality_min_score": 86,
+        "min_turnover_24h": 75000
       }
     },
     {

@@ -40,6 +40,9 @@ class SymbolState:
     cluster_name: str
     price: float | None = None
     price_updated_at: float = 0.0
+    change_24h_pct: float | None = None
+    range_24h_pct: float | None = None
+    turnover_24h: float | None = None
     candles: dict[str, Deque[Candle]] = field(default_factory=lambda: defaultdict(lambda: deque(maxlen=220)))
     trade_deltas: Deque[TradeDelta] = field(default_factory=lambda: deque(maxlen=10000))
     spread_samples: Deque[float] = field(default_factory=lambda: deque(maxlen=120))
@@ -50,6 +53,16 @@ class SymbolState:
     def update_price(self, price: float) -> None:
         self.price = price
         self.price_updated_at = time.time()
+
+    def update_market_stats(
+        self,
+        change_24h_pct: float | None = None,
+        range_24h_pct: float | None = None,
+        turnover_24h: float | None = None,
+    ) -> None:
+        self.change_24h_pct = change_24h_pct
+        self.range_24h_pct = range_24h_pct
+        self.turnover_24h = turnover_24h
 
     def upsert_candle(self, timeframe: str, candle: Candle) -> None:
         series = self.candles[timeframe]

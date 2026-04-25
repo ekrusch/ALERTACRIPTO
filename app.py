@@ -28,6 +28,18 @@ def _fmt_usd(value: float | None) -> str:
     return f"US$ {value:,.2f}"
 
 
+def _fmt_compact_usd(value: float | None) -> str:
+    if value is None:
+        return "aguardando"
+    if value >= 1_000_000_000:
+        return f"US$ {value / 1_000_000_000:.2f}B"
+    if value >= 1_000_000:
+        return f"US$ {value / 1_000_000:.2f}M"
+    if value >= 1_000:
+        return f"US$ {value / 1_000:.1f}K"
+    return f"US$ {value:.0f}"
+
+
 def _fmt_pct(value: float | None) -> str:
     if value is None:
         return "aguardando"
@@ -39,6 +51,19 @@ def _fmt_timestamp(value: float | None) -> str:
     if not value:
         return "aguardando"
     return datetime.fromtimestamp(value).strftime("%H:%M:%S")
+
+
+def _variation_sort_value(item: dict) -> float:
+    change = item.get("change_24h_pct")
+    if isinstance(change, (int, float)):
+        return float(change)
+    change = item.get("change_pct")
+    if isinstance(change, (int, float)):
+        return float(change)
+    tick_change = item.get("tick_change_pct")
+    if isinstance(tick_change, (int, float)):
+        return float(tick_change)
+    return -999999.0
 
 
 def _exchange_from_cluster(cluster: str | None) -> str:
@@ -70,6 +95,10 @@ def _render_symbols_table(rows: list[dict]) -> None:
             f"<td>{html.escape(str(item.get('symbol', '')))}</td>"
             f"<td>{html.escape(str(item.get('cluster', '')))}</td>"
             f"<td>{html.escape(_fmt_price(item.get('price')))}</td>"
+            f"<td>{html.escape(str(item.get('opportunity_score', 'aguardando')))}</td>"
+            f"<td>{_pct_html(item.get('change_24h_pct'))}</td>"
+            f"<td>{_pct_html(item.get('range_24h_pct'))}</td>"
+            f"<td>{html.escape(_fmt_compact_usd(item.get('turnover_24h')))}</td>"
             f"<td>{html.escape(_fmt_price(item.get('initial_price')))}</td>"
             f"<td>{_pct_html(item.get('change_pct'))}</td>"
             f"<td>{_pct_html(item.get('tick_change_pct'))}</td>"
@@ -128,6 +157,10 @@ def _render_symbols_table(rows: list[dict]) -> None:
                         <th>moeda</th>
                         <th>cluster</th>
                         <th>preco</th>
+                        <th>score</th>
+                        <th>var 24h</th>
+                        <th>range 24h</th>
+                        <th>volume 24h</th>
                         <th>preco inicial</th>
                         <th>variacao</th>
                         <th>variacao ciclo</th>
@@ -198,6 +231,13 @@ if positions:
 else:
     st.info("Nenhuma posicao simulada aberta. O paper trading compra apenas em alerta CONFIRMADO.")
 
+st.subheader("Top Oportunidades Agora")
+opportunities = status.get("opportunities", [])
+if opportunities:
+    _render_symbols_table(opportunities[:30])
+else:
+    st.info("Aguardando dados 24h suficientes para montar o ranking.")
+
 st.subheader("Moedas Monitoradas")
 symbols = status.get("symbols", [])
 if symbols:
@@ -206,7 +246,7 @@ if symbols:
         grouped_symbols.setdefault(_exchange_from_cluster(item.get("cluster")), []).append(item)
 
     for exchange in ("Bybit", "MEXC", "KuCoin", "Outras"):
-        rows = sorted(grouped_symbols.get(exchange, []), key=lambda row: row.get("change_pct") or 0, reverse=True)
+        rows = sorted(grouped_symbols.get(exchange, []), key=_variation_sort_value, reverse=True)
         if not rows:
             continue
         st.markdown(f"#### {exchange}")

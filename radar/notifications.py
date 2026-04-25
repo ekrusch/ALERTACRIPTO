@@ -227,6 +227,12 @@ def _friendly_metrics(alert: Alert) -> dict[str, str]:
         "cvd": "saldo comprador",
         "price_drop_pct": "queda desde o alerta",
         "lost_vwap": "perdeu VWAP",
+        "quality_score": "score de qualidade",
+        "market_regime": "regime do BTC",
+        "quality_notes": "motivos do score",
+        "change_24h_pct": "variação 24h",
+        "range_24h_pct": "range 24h",
+        "turnover_24h_usd": "volume financeiro 24h",
     }
     friendly = {}
     for key, value in alert.metrics.items():

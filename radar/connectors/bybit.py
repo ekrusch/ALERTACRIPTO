@@ -119,7 +119,7 @@ class BybitClusterWorker:
         symbol = topic.split(".")[-1]
         state = self.market_state.get(symbol)
         if state is not None:
-            alert = evaluate_symbol(state, self.cluster)
+            alert = evaluate_symbol(state, self.cluster, self.market_state)
             if alert is not None:
                 should_notify = self.status_store.record_alert(alert)
                 self.status_store.write(self.market_state)
@@ -134,6 +134,11 @@ class BybitClusterWorker:
         last_price = data.get("lastPrice")
         if last_price is not None:
             state.update_price(float(last_price))
+        state.update_market_stats(
+            change_24h_pct=_safe_float(data.get("price24hPcnt"), multiplier=100.0),
+            range_24h_pct=_range_24h_pct(data),
+            turnover_24h=_safe_float(data.get("turnover24h")),
+        )
 
     def _handle_kline(self, topic: str, data: list[dict]) -> None:
         parts = topic.split(".")
@@ -215,6 +220,24 @@ def _book_notional_in_band(state: SymbolState, band_pct: float) -> tuple[float, 
     bid_notional = sum(price * size for price, size in state.orderbook.bids.items() if lower <= price <= state.price)
     ask_notional = sum(price * size for price, size in state.orderbook.asks.items() if state.price <= price <= upper)
     return bid_notional, ask_notional
+
+
+def _safe_float(value: object, multiplier: float = 1.0) -> float | None:
+    try:
+        if value is None:
+            return None
+        return float(value) * multiplier
+    except (TypeError, ValueError):
+        return None
+
+
+def _range_24h_pct(data: dict) -> float | None:
+    last_price = _safe_float(data.get("lastPrice"))
+    high = _safe_float(data.get("highPrice24h"))
+    low = _safe_float(data.get("lowPrice24h"))
+    if last_price is None or high is None or low is None or last_price <= 0 or high <= 0 or low <= 0:
+        return None
+    return 100.0 * (high - low) / last_price
 
 
 def _fetch_bybit_klines(symbol: str, interval: str, limit: int = 200) -> list[Candle]:

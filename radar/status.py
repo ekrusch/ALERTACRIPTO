@@ -68,15 +68,27 @@ class StatusStore:
                     "previous_price": previous_price,
                     "change_pct": _pct_change(initial_price, item.price),
                     "tick_change_pct": _pct_change(previous_price, item.price),
+                    "change_24h_pct": _round_optional(item.change_24h_pct),
+                    "range_24h_pct": _round_optional(item.range_24h_pct),
+                    "turnover_24h": _round_optional(item.turnover_24h, 2),
+                    "opportunity_score": _opportunity_score(item),
                     "price_updated_at": item.price_updated_at,
                     "candles": {timeframe: len(candles) for timeframe, candles in item.candles.items()},
                 }
             )
 
+        opportunities = [
+            item
+            for item in symbols
+            if item.get("opportunity_score") is not None and item.get("price") is not None
+        ]
+        opportunities = sorted(opportunities, key=lambda row: row.get("opportunity_score") or 0, reverse=True)[:30]
+
         payload = {
             "updated_at": time.time(),
             "workers": self.workers,
             "symbols": sorted(symbols, key=lambda row: row["symbol"]),
+            "opportunities": opportunities,
             "alerts": self.alerts,
             "paper": self.paper.mark_to_market(prices),
         }
@@ -95,3 +107,39 @@ def _pct_change(start: float | None, current: float | None) -> float | None:
 
 def _is_exit(alert: Alert) -> bool:
     return alert.rule.endswith("_exit") or alert.metrics.get("alert_level") == "SAIDA"
+
+
+def _round_optional(value: float | None, digits: int = 2) -> float | None:
+    return round(value, digits) if value is not None else None
+
+
+def _opportunity_score(item: Any) -> float | None:
+    turnover = item.turnover_24h
+    change = item.change_24h_pct
+    range_pct = item.range_24h_pct
+    if turnover is None and change is None and range_pct is None:
+        return None
+
+    score = 0.0
+    if turnover is not None:
+        if turnover >= 20_000_000:
+            score += 35
+        elif turnover >= 5_000_000:
+            score += 28
+        elif turnover >= 1_000_000:
+            score += 18
+        elif turnover >= 250_000:
+            score += 8
+    if change is not None:
+        if change > 0:
+            score += min(35, change * 1.8)
+        else:
+            score += max(-20, change)
+    if range_pct is not None:
+        if 4 <= range_pct <= 25:
+            score += 18
+        elif range_pct > 45:
+            score -= 15
+        elif range_pct <= 3:
+            score += 6
+    return round(max(0.0, min(score, 100.0)), 1)
