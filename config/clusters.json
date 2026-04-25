@@ -59,6 +59,32 @@
       }
     },
     {
+      "id": "bybit_hot_momentum",
+      "name": "Bybit - Momentum Quente 24h",
+      "exchange": "bybit_linear",
+      "symbols": ["BSBUSDT", "HYPERUSDT", "AXSUSDT", "PIPPINUSDT", "ZBTUSDT", "API3USDT"],
+      "rule": "orderbook_imbalance_vwap",
+      "timeframes": ["60"],
+      "settings": {
+        "book_band_pct": 2.0,
+        "min_bid_ask_ratio": 1.35,
+        "sell_wall_drop_pct": 30.0,
+        "vwap_lookback_hours": 72,
+        "max_vwap_distance_pct": 6.0,
+        "cooldown_minutes": 20,
+        "early_min_bid_ask_ratio": 1.1,
+        "early_sell_wall_drop_pct": 18.0,
+        "early_vwap_distance_pct": 4.0,
+        "early_max_vwap_distance_pct": 8.0,
+        "early_cooldown_minutes": 10,
+        "exit_bid_ask_ratio": 0.8,
+        "exit_weak_reads": 3,
+        "exit_lost_vwap_reads": 2,
+        "exit_vwap_loss_pct": 0.5,
+        "exit_cooldown_minutes": 10
+      }
+    },
+    {
       "id": "bybit_infra_long_accumulation",
       "name": "Bybit - Infraestrutura e Acumulação Longa",
       "exchange": "bybit_linear",
