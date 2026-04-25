@@ -257,6 +257,7 @@ def _position_rows(positions: list[dict], symbol_lookup: dict[str, dict]) -> lis
             {
                 "moeda": symbol,
                 "cluster": symbol_data.get("cluster", ""),
+                "versão": item.get("strategy_version", "legacy"),
                 "preco medio": _fmt_price(item.get("avg_price")),
                 "preco atual": _fmt_price(item.get("last_price")),
                 "resultado": _fmt_usd(item.get("pnl_usd")),
@@ -275,6 +276,12 @@ def _current_version_trades(trades: list[dict], strategy_version: str | None) ->
     if not strategy_version:
         return trades
     return [item for item in trades if item.get("strategy_version") == strategy_version]
+
+
+def _current_version_positions(positions: list[dict], strategy_version: str | None) -> list[dict]:
+    if not strategy_version:
+        return positions
+    return [item for item in positions if item.get("strategy_version") == strategy_version]
 
 
 def _closed_trade_rows(trades: list[dict]) -> list[dict]:
@@ -331,6 +338,10 @@ def _closed_trade_summary(closed_trades: list[dict]) -> dict[str, str] | None:
 
 def _realized_pnl(trades: list[dict]) -> float:
     return sum(float(item.get("pnl_usd") or 0.0) for item in trades if item.get("side") == "SELL")
+
+
+def _positions_pnl(positions: list[dict]) -> float:
+    return sum(float(item.get("pnl_usd") or 0.0) for item in positions)
 
 
 def _paper_window_return(history: list[dict], current_equity: float | None, hours: int, now: float | None) -> tuple[float | None, float | None]:
@@ -431,7 +442,11 @@ def _render_dashboard() -> None:
     trades = paper.get("trades", [])
     current_strategy_version = paper.get("strategy_version")
     current_version_trades = _current_version_trades(trades, current_strategy_version if isinstance(current_strategy_version, str) else None)
+    positions = paper.get("positions", [])
+    current_version_positions = _current_version_positions(positions, current_strategy_version if isinstance(current_strategy_version, str) else None)
     realized_current = _realized_pnl(current_version_trades)
+    open_current = _positions_pnl(current_version_positions)
+    open_legacy = _positions_pnl(positions) - open_current
     symbol_lookup = {item.get("symbol"): item for item in symbols if item.get("symbol")}
     top_left, top_right = st.columns([4, 1])
     with top_left:
@@ -442,12 +457,12 @@ def _render_dashboard() -> None:
         metric_cols[2].metric("Em posicoes", _fmt_usd(paper.get("open_value")))
         metric_cols[3].metric("Patrimonio", _fmt_usd(paper.get("equity")), _fmt_pct(paper.get("total_pnl_pct")))
         metric_cols[4].metric("Realizado versao", _fmt_usd(realized_current))
-        metric_cols[5].metric("Aberto agora", _fmt_usd(paper.get("open_pnl_usd")))
-        metric_cols[6].metric("Total historico", _fmt_usd(paper.get("total_pnl_usd")))
+        metric_cols[5].metric("Aberto versao", _fmt_usd(open_current))
+        metric_cols[6].metric("Resultado versao", _fmt_usd(realized_current + open_current))
+        st.caption(f"Historico geral: { _fmt_usd(paper.get('total_pnl_usd')) } | Aberto legado: { _fmt_usd(open_legacy) }")
     with top_right:
         _render_performance_box(paper, paper_history if isinstance(paper_history, list) else [], updated_at)
 
-    positions = paper.get("positions", [])
     st.subheader("Moedas em Negociação Agora")
     if positions:
         st.dataframe(
