@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import html
 import json
 from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 
 STATUS_FILE = Path("storage/status.json")
@@ -37,6 +39,117 @@ def _fmt_timestamp(value: float | None) -> str:
     if not value:
         return "aguardando"
     return datetime.fromtimestamp(value).strftime("%H:%M:%S")
+
+
+def _exchange_from_cluster(cluster: str | None) -> str:
+    text = (cluster or "").lower()
+    if text.startswith("bybit") or "bybit" in text:
+        return "Bybit"
+    if text.startswith("mexc") or "mexc" in text:
+        return "MEXC"
+    if text.startswith("kucoin") or "kucoin" in text:
+        return "KuCoin"
+    return "Outras"
+
+
+def _pct_html(value: float | None) -> str:
+    if value is None:
+        return '<span class="pct-neutral">aguardando</span>'
+    if value > 0:
+        return f'<span class="pct-up">{html.escape(_fmt_pct(value))}</span>'
+    if value < 0:
+        return f'<span class="pct-down">{html.escape(_fmt_pct(value))}</span>'
+    return f'<span class="pct-neutral">{html.escape(_fmt_pct(value))}</span>'
+
+
+def _render_symbols_table(rows: list[dict]) -> None:
+    table_rows = []
+    for item in rows:
+        table_rows.append(
+            "<tr>"
+            f"<td>{html.escape(str(item.get('symbol', '')))}</td>"
+            f"<td>{html.escape(str(item.get('cluster', '')))}</td>"
+            f"<td>{html.escape(_fmt_price(item.get('price')))}</td>"
+            f"<td>{html.escape(_fmt_price(item.get('initial_price')))}</td>"
+            f"<td>{_pct_html(item.get('change_pct'))}</td>"
+            f"<td>{_pct_html(item.get('tick_change_pct'))}</td>"
+            f"<td>{html.escape(str(item.get('candles', {})))}</td>"
+            f"<td>{html.escape(_fmt_timestamp(item.get('price_updated_at')))}</td>"
+            "</tr>"
+        )
+
+    table_html = (
+        """
+        <!doctype html>
+        <html>
+        <head>
+            <style>
+                body {
+                    margin: 0;
+                    background: transparent;
+                    color: #fafafa;
+                    font-family: "Source Sans Pro", sans-serif;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    table-layout: auto;
+                    font-size: 14px;
+                }
+                th, td {
+                    border-bottom: 1px solid rgba(250, 250, 250, 0.13);
+                    padding: 8px 10px;
+                    text-align: left;
+                    white-space: nowrap;
+                }
+                th {
+                    background: rgba(250, 250, 250, 0.06);
+                    color: rgba(250, 250, 250, 0.76);
+                    font-weight: 600;
+                }
+                .pct-up {
+                    color: #22c55e;
+                    font-weight: 800;
+                }
+                .pct-down {
+                    color: #ef4444;
+                    font-weight: 800;
+                }
+                .pct-neutral {
+                    color: rgba(250, 250, 250, 0.62);
+                    font-weight: 700;
+                }
+            </style>
+        </head>
+        <body>
+            <table>
+                <thead>
+                    <tr>
+                        <th>moeda</th>
+                        <th>cluster</th>
+                        <th>preco</th>
+                        <th>preco inicial</th>
+                        <th>variacao</th>
+                        <th>variacao ciclo</th>
+                        <th>candles</th>
+                        <th>atualizado</th>
+                    </tr>
+                </thead>
+                <tbody>
+        """
+        + "".join(table_rows)
+        + """
+                </tbody>
+            </table>
+        </body>
+        </html>
+        """
+    )
+    components.html(
+        table_html,
+        height=44 * (len(rows) + 1) + 8,
+        scrolling=False,
+    )
 
 
 st.set_page_config(page_title="Radar de Anomalias Cripto", layout="wide")
@@ -88,23 +201,16 @@ else:
 st.subheader("Moedas Monitoradas")
 symbols = status.get("symbols", [])
 if symbols:
-    st.dataframe(
-        [
-            {
-                "moeda": item["symbol"],
-                "cluster": item["cluster"],
-                "preco": _fmt_price(item.get("price")),
-                "preco inicial": _fmt_price(item.get("initial_price")),
-                "variacao": _fmt_pct(item.get("change_pct")),
-                "variacao ciclo": _fmt_pct(item.get("tick_change_pct")),
-                "candles": item.get("candles", {}),
-                "atualizado": _fmt_timestamp(item.get("price_updated_at")),
-            }
-            for item in sorted(symbols, key=lambda row: row.get("change_pct") or 0, reverse=True)
-        ],
-        width="stretch",
-        hide_index=True,
-    )
+    grouped_symbols: dict[str, list[dict]] = {}
+    for item in symbols:
+        grouped_symbols.setdefault(_exchange_from_cluster(item.get("cluster")), []).append(item)
+
+    for exchange in ("Bybit", "MEXC", "KuCoin", "Outras"):
+        rows = sorted(grouped_symbols.get(exchange, []), key=lambda row: row.get("change_pct") or 0, reverse=True)
+        if not rows:
+            continue
+        st.markdown(f"#### {exchange}")
+        _render_symbols_table(rows)
 else:
     st.info("Aguardando os primeiros dados do WebSocket.")
 
