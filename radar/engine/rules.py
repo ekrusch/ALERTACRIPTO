@@ -26,6 +26,10 @@ def evaluate_symbol(state: SymbolState, cluster: ClusterConfig, market_state: Ma
     if exit_alert is not None:
         return exit_alert
 
+    alert = _evaluate_wave_surf_entry(state, cluster)
+    if alert is not None:
+        return _quality_gate_entry_alert(state, cluster, alert, market_state)
+
     alert: Alert | None = None
     if cluster.rule == "cvd_rvol_compression":
         alert = _evaluate_cvd_rvol_compression(state, cluster)
@@ -44,6 +48,11 @@ def evaluate_symbol(state: SymbolState, cluster: ClusterConfig, market_state: Ma
 def _evaluate_exit_signal(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     if cluster.rule not in state.active_signals:
         return None
+
+    trailing_stop_alert = _evaluate_trailing_stop_exit(state, cluster)
+    if trailing_stop_alert is not None:
+        return trailing_stop_alert
+
     exit_rule = f"{cluster.rule}_exit"
     if not state.can_alert(exit_rule, float(cluster.settings.get("exit_cooldown_minutes", 10))):
         return None
@@ -78,6 +87,35 @@ def _exit_alert(
         message=reason,
         metrics={"alert_level": "SAIDA", "price": round(state.price or 0.0, 8), **metrics},
     )
+
+
+def _evaluate_trailing_stop_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
+    active = state.active_signals[cluster.rule]
+    stop_pct = _metric_float(active.get("trailing_stop_pct"))
+    if stop_pct is None or stop_pct <= 0 or state.price is None or state.price <= 0:
+        return None
+
+    entry_price = float(active.get("price", state.price) or state.price)
+    peak_price = max(float(active.get("peak_price", entry_price) or entry_price), state.price)
+    active["peak_price"] = peak_price
+    trailing_stop_price = peak_price * (1.0 - stop_pct / 100.0)
+    active["trailing_stop_price"] = trailing_stop_price
+
+    if state.price <= trailing_stop_price:
+        drawdown_pct = 100.0 * (peak_price - state.price) / peak_price if peak_price > 0 else 0.0
+        return _exit_alert(
+            state,
+            cluster,
+            f"Stop movel de {stop_pct:.2f}% acionado. O preco devolveu a partir do topo monitorado.",
+            {
+                "entry_price": round(entry_price, 8),
+                "peak_price": round(peak_price, 8),
+                "trailing_stop_pct": round(stop_pct, 2),
+                "trailing_stop_price": round(trailing_stop_price, 8),
+                "drawdown_from_peak_pct": round(drawdown_pct, 2),
+            },
+        )
+    return None
 
 
 def _activate_entry(state: SymbolState, cluster: ClusterConfig, alert: Alert) -> Alert:
@@ -257,6 +295,57 @@ def _evaluate_cvd_rvol_compression(state: SymbolState, cluster: ClusterConfig) -
                 "cvd_15m": round(cvd_15m, 4),
                 "cvd_ratio": round(cvd_ratio, 2),
                 "range_24h_pct": round(compression, 2),
+            },
+        ))
+    return None
+
+
+def _evaluate_wave_surf_entry(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
+    if cluster.exchange != "bybit_linear":
+        return None
+    if _is_stable_pair(state.symbol):
+        return None
+    if not bool(cluster.settings.get("wave_surf_enabled", True)):
+        return None
+    if not state.can_alert(cluster.rule, float(cluster.settings.get("cooldown_minutes", 20))):
+        return None
+    if state.price is None or state.change_24h_pct is None or state.range_24h_pct is None or state.turnover_24h is None:
+        return None
+
+    min_change = float(cluster.settings.get("wave_surf_min_change_24h_pct", 6.0))
+    min_range = float(cluster.settings.get("wave_surf_min_range_24h_pct", 4.0))
+    min_turnover = float(cluster.settings.get("wave_surf_min_turnover_24h", _default_min_turnover(cluster)))
+    if cluster.id.startswith("bybit_hot_momentum"):
+        min_change = float(cluster.settings.get("wave_surf_min_change_24h_pct", 8.0))
+
+    if (
+        state.change_24h_pct >= min_change
+        and state.range_24h_pct >= min_range
+        and state.turnover_24h >= min_turnover
+    ):
+        stop_pct = _trailing_stop_pct(cluster)
+        state.mark_alert(cluster.rule)
+        return _activate_entry(state, cluster, Alert(
+            symbol=state.symbol,
+            cluster_id=cluster.id,
+            cluster_name=cluster.name,
+            rule=cluster.rule,
+            price=state.price,
+            title=f"Onda forte em andamento em {state.symbol}",
+            message=(
+                f"{state.symbol} esta surfando uma onda forte agora: variacao 24h alta, range aberto e volume suficiente. "
+                f"Entrada agressiva com stop movel de {stop_pct:.2f}% do topo monitorado."
+            ),
+            metrics={
+                "price": round(state.price, 8),
+                "wave_surf_signal": "sim",
+                "explosion_signal": "sim",
+                "change_24h_pct": round(state.change_24h_pct, 2),
+                "range_24h_pct": round(state.range_24h_pct, 2),
+                "turnover_24h_usd": round(state.turnover_24h, 2),
+                "peak_price": round(state.price, 8),
+                "trailing_stop_pct": round(stop_pct, 2),
+                "trailing_stop_price": round(state.price * (1.0 - stop_pct / 100.0), 8),
             },
         ))
     return None
@@ -527,13 +616,15 @@ def _quality_gate_entry_alert(
 ) -> Alert | None:
     score, notes, regime = _entry_quality_score(state, cluster, alert, market_state)
     is_explosion = alert.metrics.get("explosion_signal") == "sim"
+    is_wave_surf = alert.metrics.get("wave_surf_signal") == "sim"
     min_score = float(
         cluster.settings.get(
-            "explosion_quality_min_score" if is_explosion else "quality_min_score",
-            45.0 if is_explosion else _default_quality_min_score(cluster),
+            "wave_surf_quality_min_score" if is_wave_surf else "explosion_quality_min_score" if is_explosion else "quality_min_score",
+            25.0 if is_wave_surf else 45.0 if is_explosion else _default_quality_min_score(cluster),
         )
     )
-    min_turnover = float(cluster.settings.get("min_turnover_24h", _default_min_turnover(cluster)))
+    min_turnover_key = "wave_surf_min_turnover_24h" if is_wave_surf else "min_turnover_24h"
+    min_turnover = float(cluster.settings.get(min_turnover_key, _default_min_turnover(cluster)))
 
     if _is_stable_pair(state.symbol):
         state.deactivate_signal(cluster.rule)
@@ -560,6 +651,12 @@ def _quality_gate_entry_alert(
         enriched_metrics["range_24h_pct"] = round(state.range_24h_pct, 2)
     if state.turnover_24h is not None:
         enriched_metrics["turnover_24h_usd"] = round(state.turnover_24h, 2)
+    stop_pct = _trailing_stop_pct(cluster)
+    if stop_pct > 0:
+        peak_price = max(alert.price, state.price or alert.price)
+        enriched_metrics["peak_price"] = round(peak_price, 8)
+        enriched_metrics["trailing_stop_pct"] = round(stop_pct, 2)
+        enriched_metrics["trailing_stop_price"] = round(peak_price * (1.0 - stop_pct / 100.0), 8)
 
     state.activate_signal(cluster.rule, alert.price, "CONFIRMADO", enriched_metrics)
     return Alert(
@@ -712,6 +809,11 @@ def _default_min_turnover(cluster: ClusterConfig) -> float:
     if cluster.exchange == "bybit_linear":
         return 300_000.0
     return 0.0
+
+
+def _trailing_stop_pct(cluster: ClusterConfig) -> float:
+    default = 0.5 if cluster.exchange == "bybit_linear" else 0.0
+    return float(cluster.settings.get("trailing_stop_pct", default))
 
 
 def _is_stable_pair(symbol: str) -> bool:

@@ -66,9 +66,20 @@ def _format_alert(alert: Alert) -> str:
 
 def _human_explanation(alert: Alert) -> str:
     if _is_exit(alert):
+        if alert.metrics.get("trailing_stop_pct") is not None:
+            return (
+                f"{alert.message} O stop movel protegeu a operacao depois do topo monitorado. "
+                "Se voce estava surfando a onda, agora e sinal para realizar ou reduzir risco."
+            )
         return (
             f"{alert.message} Se voce entrou ou estava pensando em entrar, agora e hora de proteger capital: "
             "reduzir risco, sair parcial/total ou esperar o grafico recuperar antes de fazer qualquer coisa."
+        )
+    if alert.metrics.get("wave_surf_signal") == "sim":
+        stop = alert.metrics.get("trailing_stop_pct", "?")
+        return (
+            "O ativo entrou em modo onda forte: variacao 24h relevante, range aberto e volume financeiro suficiente. "
+            f"A ideia aqui e surfar momentum, nao esperar entrada perfeita. O stop movel sugerido fica em {stop}% abaixo do topo monitorado."
         )
     if alert.rule == "cvd_rvol_compression":
         rvol = alert.metrics.get("rvol_15m", "?")
@@ -234,6 +245,12 @@ def _friendly_metrics(alert: Alert) -> dict[str, str]:
         "range_24h_pct": "range 24h",
         "turnover_24h_usd": "volume financeiro 24h",
         "explosion_signal": "explosão detectada",
+        "wave_surf_signal": "onda para surfar",
+        "peak_price": "topo monitorado",
+        "trailing_stop_pct": "stop móvel",
+        "trailing_stop_price": "preço do stop móvel",
+        "entry_price": "preço de entrada",
+        "drawdown_from_peak_pct": "devolução desde o topo",
     }
     friendly = {}
     for key, value in alert.metrics.items():
