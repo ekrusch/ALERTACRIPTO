@@ -25,6 +25,7 @@ class StatusStore:
             initial_cash=float(os.getenv("PAPER_INITIAL_CASH", "1000")),
             position_fraction=float(os.getenv("PAPER_POSITION_FRACTION", "0.10")),
         )
+        self.paper.restore(self._load_paper_snapshot())
 
     def update_worker(self, worker_id: str, data: dict[str, Any]) -> None:
         self.workers[worker_id] = {"updated_at": time.time(), **data}
@@ -103,13 +104,7 @@ class StatusStore:
         os.replace(temp_name, self.path)
 
     def _load_paper_history(self) -> list[dict[str, float]]:
-        if not self.path.exists():
-            return []
-        try:
-            with self.path.open("r", encoding="utf-8") as file:
-                payload = json.load(file)
-        except (OSError, json.JSONDecodeError):
-            return []
+        payload = self._load_existing_status()
         history = payload.get("paper_history", [])
         if not isinstance(history, list):
             return []
@@ -133,6 +128,21 @@ class StatusStore:
         )
         cutoff = now - (25 * 60 * 60)
         self.paper_history = [item for item in self.paper_history if item["ts"] >= cutoff][-6000:]
+
+    def _load_paper_snapshot(self) -> dict[str, Any]:
+        payload = self._load_existing_status()
+        paper = payload.get("paper", {})
+        return paper if isinstance(paper, dict) else {}
+
+    def _load_existing_status(self) -> dict[str, Any]:
+        if not self.path.exists():
+            return {}
+        try:
+            with self.path.open("r", encoding="utf-8") as file:
+                payload = json.load(file)
+        except (OSError, json.JSONDecodeError):
+            return {}
+        return payload if isinstance(payload, dict) else {}
 
 
 def _pct_change(start: float | None, current: float | None) -> float | None:

@@ -14,6 +14,23 @@ class PaperPortfolio:
         self.positions: dict[str, dict[str, Any]] = {}
         self.trades: list[dict[str, Any]] = []
 
+    def restore(self, snapshot: dict[str, Any]) -> None:
+        cash = snapshot.get("cash")
+        if isinstance(cash, (int, float)):
+            self.cash = float(cash)
+
+        positions = snapshot.get("positions", [])
+        if isinstance(positions, list):
+            self.positions = {
+                str(position["symbol"]): position
+                for position in positions
+                if isinstance(position, dict) and position.get("symbol")
+            }
+
+        trades = snapshot.get("trades", [])
+        if isinstance(trades, list):
+            self.trades = [trade for trade in trades if isinstance(trade, dict)][:2000]
+
     def handle_alert(self, alert: Alert) -> bool:
         if _is_exit(alert):
             return self.sell(alert.symbol, alert.price, f"saida: {alert.rule}", alert.metrics)
