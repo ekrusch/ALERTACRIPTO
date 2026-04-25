@@ -303,22 +303,29 @@ def _closed_trade_rows(trades: list[dict]) -> list[dict]:
     return rows
 
 
-def _loss_summary(closed_trades: list[dict]) -> dict[str, str] | None:
-    losses = [item for item in closed_trades if isinstance(item.get("pnl_usd"), (int, float)) and item.get("pnl_usd") < 0]
-    if not losses:
+def _closed_trade_summary(closed_trades: list[dict]) -> dict[str, str] | None:
+    if not closed_trades:
         return None
-    avg_loss = sum(float(item.get("pnl_pct") or 0.0) for item in losses) / len(losses)
-    worst = min(losses, key=lambda item: float(item.get("pnl_pct") or 0.0))
-    reasons: dict[str, int] = {}
-    for item in losses:
-        reason = str(item.get("reason") or "sem motivo")
-        reasons[reason] = reasons.get(reason, 0) + 1
-    common_reason = max(reasons.items(), key=lambda item: item[1])[0]
+
+    wins = [item for item in closed_trades if isinstance(item.get("pnl_usd"), (int, float)) and item.get("pnl_usd") > 0]
+    losses = [item for item in closed_trades if isinstance(item.get("pnl_usd"), (int, float)) and item.get("pnl_usd") < 0]
+    zeros = [item for item in closed_trades if isinstance(item.get("pnl_usd"), (int, float)) and item.get("pnl_usd") == 0]
+    net_pnl = sum(float(item.get("pnl_usd") or 0.0) for item in closed_trades)
+    win_rate = 100.0 * len(wins) / len(closed_trades)
+
+    worst_text = "nenhuma"
+    if losses:
+        worst = min(losses, key=lambda item: float(item.get("pnl_pct") or 0.0))
+        worst_text = f"{worst.get('symbol')} {_fmt_pct(worst.get('pnl_pct'))}"
+
     return {
+        "encerradas": str(len(closed_trades)),
+        "ganhos": str(len(wins)),
         "perdas": str(len(losses)),
-        "perda média": _fmt_pct(avg_loss),
-        "pior perda": f"{worst.get('symbol')} {_fmt_pct(worst.get('pnl_pct'))}",
-        "motivo comum": common_reason,
+        "zeradas": str(len(zeros)),
+        "win rate": _fmt_pct(win_rate),
+        "resultado líquido": _fmt_usd(net_pnl),
+        "pior perda": worst_text,
     }
 
 
@@ -448,10 +455,10 @@ def _render_dashboard() -> None:
     closed_trades = _closed_trade_rows(current_version_trades)
     if closed_trades:
         st.caption(f"Mostrando somente negociações encerradas da versão atual: {current_strategy_version or 'desconhecida'}")
-        loss_summary = _loss_summary([item for item in current_version_trades if item.get("side") == "SELL"])
-        if loss_summary:
-            loss_cols = st.columns(4)
-            for column, (label, value) in zip(loss_cols, loss_summary.items()):
+        closed_summary = _closed_trade_summary([item for item in current_version_trades if item.get("side") == "SELL"])
+        if closed_summary:
+            loss_cols = st.columns(len(closed_summary))
+            for column, (label, value) in zip(loss_cols, closed_summary.items()):
                 column.metric(label, value)
         st.dataframe(
             _styled_dataframe(closed_trades),
