@@ -420,17 +420,20 @@ def _render_performance_box(paper: dict, history: list[dict], now: float | None)
 
 st.set_page_config(page_title="Radar de Anomalias Cripto", layout="wide")
 st.title("Radar de Anomalias Cripto")
-st.caption("Atualizacao interna a cada 10 segundos. Modo simulado: sem ordens reais.")
+st.caption("Acompanhamento atualiza a cada 10 segundos. Tabelas grandes ficam estaveis para evitar piscar.")
+
+
+def _load_status() -> dict:
+    if not STATUS_FILE.exists():
+        st.warning("O radar ainda nao gerou status. Rode: python -m radar.main")
+        st.stop()
+    with STATUS_FILE.open("r", encoding="utf-8") as file:
+        return json.load(file)
 
 
 @st.fragment(run_every="10s")
 def _render_dashboard() -> None:
-    if not STATUS_FILE.exists():
-        st.warning("O radar ainda nao gerou status. Rode: python -m radar.main")
-        st.stop()
-
-    with STATUS_FILE.open("r", encoding="utf-8") as file:
-        status = json.load(file)
+    status = _load_status()
 
     updated_at = status.get("updated_at")
     if updated_at:
@@ -490,6 +493,14 @@ def _render_dashboard() -> None:
         )
     else:
         st.info("Nenhuma negociação encerrada ainda.")
+
+
+
+def _render_reference_tables() -> None:
+    status = _load_status()
+    symbols = status.get("symbols", [])
+    paper = status.get("paper", {})
+    trades = paper.get("trades", [])
 
     st.subheader("Top Oportunidades Agora")
     opportunities = status.get("opportunities", [])
@@ -569,3 +580,4 @@ def _render_dashboard() -> None:
 
 
 _render_dashboard()
+_render_reference_tables()
