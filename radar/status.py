@@ -28,7 +28,11 @@ class StatusStore:
     def update_worker(self, worker_id: str, data: dict[str, Any]) -> None:
         self.workers[worker_id] = {"updated_at": time.time(), **data}
 
-    def record_alert(self, alert: Alert) -> None:
+    def record_alert(self, alert: Alert) -> bool:
+        paper_changed = self.paper.handle_alert(alert)
+        if _is_exit(alert) and not paper_changed:
+            return False
+
         payload = {
             "ts": time.time(),
             "symbol": alert.symbol,
@@ -41,7 +45,7 @@ class StatusStore:
         }
         self.alerts.insert(0, payload)
         self.alerts = self.alerts[:100]
-        self.paper.handle_alert(alert)
+        return True
 
     def write(self, state: MarketState) -> None:
         symbols = []
@@ -87,3 +91,7 @@ def _pct_change(start: float | None, current: float | None) -> float | None:
     if start is None or current is None or start <= 0:
         return None
     return round(100.0 * (current - start) / start, 2)
+
+
+def _is_exit(alert: Alert) -> bool:
+    return alert.rule.endswith("_exit") or alert.metrics.get("alert_level") == "SAIDA"

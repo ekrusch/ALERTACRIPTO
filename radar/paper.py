@@ -14,17 +14,14 @@ class PaperPortfolio:
         self.positions: dict[str, dict[str, Any]] = {}
         self.trades: list[dict[str, Any]] = []
 
-    def handle_alert(self, alert: Alert) -> None:
+    def handle_alert(self, alert: Alert) -> bool:
         if _is_exit(alert):
-            self.sell(alert.symbol, alert.price, f"saida: {alert.rule}")
-            return
-        if _is_preparing(alert):
-            return
-        self.buy(alert.symbol, alert.price, f"entrada: {alert.rule}")
+            return self.sell(alert.symbol, alert.price, f"saida: {alert.rule}")
+        return self.buy(alert.symbol, alert.price, f"entrada: {alert.rule}")
 
-    def buy(self, symbol: str, price: float, reason: str) -> None:
+    def buy(self, symbol: str, price: float, reason: str) -> bool:
         if price <= 0 or symbol in self.positions or self.cash <= 0:
-            return
+            return False
 
         amount_usd = min(self.cash, self.initial_cash * self.position_fraction)
         qty = amount_usd / price
@@ -40,19 +37,21 @@ class PaperPortfolio:
             "pnl_pct": 0.0,
         }
         self._record_trade("BUY", symbol, price, qty, amount_usd, 0.0, reason)
+        return True
 
-    def sell(self, symbol: str, price: float, reason: str) -> None:
+    def sell(self, symbol: str, price: float, reason: str) -> bool:
         if price <= 0:
-            return
+            return False
         position = self.positions.pop(symbol, None)
         if position is None:
-            return
+            return False
 
         qty = float(position["qty"])
         proceeds = qty * price
         pnl_usd = proceeds - float(position["invested_usd"])
         self.cash += proceeds
         self._record_trade("SELL", symbol, price, qty, proceeds, pnl_usd, reason)
+        return True
 
     def mark_to_market(self, prices: dict[str, float | None]) -> dict[str, Any]:
         open_value = 0.0
@@ -110,10 +109,6 @@ class PaperPortfolio:
             },
         )
         self.trades = self.trades[:100]
-
-
-def _is_preparing(alert: Alert) -> bool:
-    return alert.rule.endswith("_preparing") or alert.metrics.get("alert_level") == "PREPARANDO"
 
 
 def _is_exit(alert: Alert) -> bool:

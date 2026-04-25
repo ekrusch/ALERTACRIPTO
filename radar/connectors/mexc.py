@@ -93,9 +93,10 @@ class MexcSpotPollingWorker:
 
             alert = evaluate_symbol(state, self.cluster)
             if alert is not None:
-                self.status_store.record_alert(alert)
+                should_notify = self.status_store.record_alert(alert)
                 self.status_store.write(self.market_state)
-                asyncio.run(self.on_alert(alert))
+                if should_notify:
+                    asyncio.run(self.on_alert(alert))
 
     def snapshot_prices(self) -> dict[str, float | None]:
         return {symbol: self.market_state.get(symbol).price if self.market_state.get(symbol) else None for symbol in self.cluster.symbols}

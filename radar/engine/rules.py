@@ -78,8 +78,7 @@ def _exit_alert(
 
 def _activate_entry(state: SymbolState, cluster: ClusterConfig, alert: Alert) -> Alert:
     level = str(alert.metrics.get("alert_level", "CONFIRMADO"))
-    if level != "PREPARANDO":
-        state.activate_signal(cluster.rule, alert.price, level, alert.metrics)
+    state.activate_signal(cluster.rule, alert.price, level, alert.metrics)
     return alert
 
 
@@ -229,7 +228,6 @@ def _evaluate_cvd_rvol_compression(state: SymbolState, cluster: ClusterConfig) -
     cvd_15m = state.cvd_since(15 * 60 * 1000)
     cvd_ratio = cvd_15m / volume_avg
     confirmed_rule = cluster.rule
-    preparing_rule = f"{cluster.rule}_preparing"
 
     if (
         compression <= float(settings.get("compression_max_range_pct", 8.0))
@@ -250,30 +248,6 @@ def _evaluate_cvd_rvol_compression(state: SymbolState, cluster: ClusterConfig) -
                 "Possivel rompimento em formacao; verifique entrada manual."
             ),
             metrics={
-                "price": state.price,
-                "rvol_15m": round(rvol, 2),
-                "cvd_15m": round(cvd_15m, 4),
-                "cvd_ratio": round(cvd_ratio, 2),
-                "range_24h_pct": round(compression, 2),
-            },
-        ))
-    if (
-        compression <= float(settings.get("early_compression_max_range_pct", settings.get("compression_max_range_pct", 8.0) * 1.25))
-        and rvol >= float(settings.get("early_volume_multiplier", 1.8))
-        and cvd_ratio >= float(settings.get("early_min_positive_cvd_ratio", 0.18))
-        and state.can_alert(preparing_rule, float(settings.get("early_cooldown_minutes", 20)))
-    ):
-        state.mark_alert(preparing_rule)
-        return _activate_entry(state, cluster, Alert(
-            symbol=state.symbol,
-            cluster_id=cluster.id,
-            cluster_name=cluster.name,
-            rule=preparing_rule,
-            price=state.price,
-            title=f"Movimento preparando em {state.symbol}",
-            message=f"{state.symbol} comecou a mostrar compra acima do normal antes do rompimento confirmado.",
-            metrics={
-                "alert_level": "PREPARANDO",
                 "price": state.price,
                 "rvol_15m": round(rvol, 2),
                 "cvd_15m": round(cvd_15m, 4),
@@ -303,11 +277,7 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
     crossed_vwap = state.price is not None and weekly_vwap > 0 and state.price > weekly_vwap
     vwap_distance_pct = 100.0 * ((state.price or 0.0) - weekly_vwap) / weekly_vwap if weekly_vwap > 0 else 999.0
     not_overextended = vwap_distance_pct <= float(settings.get("max_vwap_distance_pct", 2.0))
-    near_vwap = state.price is not None and weekly_vwap > 0 and state.price >= weekly_vwap * (
-        1.0 - float(settings.get("early_vwap_distance_pct", 1.5)) / 100.0
-    ) and vwap_distance_pct <= float(settings.get("early_max_vwap_distance_pct", 2.5))
     confirmed_rule = cluster.rule
-    preparing_rule = f"{cluster.rule}_preparing"
 
     if (
         bid_ask_ratio >= float(settings.get("min_bid_ask_ratio", 1.6))
@@ -329,30 +299,6 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
                 "Possivel rompimento em formacao; verifique entrada manual."
             ),
             metrics={
-                "price": state.price or 0.0,
-                "bid_ask_ratio_2pct": round(bid_ask_ratio, 2),
-                "ask_drop_pct": round(ask_drop_pct, 2),
-                "weekly_vwap": round(weekly_vwap, 8),
-                "distance_to_vwap_pct": round(vwap_distance_pct, 2),
-            },
-        ))
-    if (
-        bid_ask_ratio >= float(settings.get("early_min_bid_ask_ratio", 1.2))
-        and ask_drop_pct >= float(settings.get("early_sell_wall_drop_pct", 25.0))
-        and near_vwap
-        and state.can_alert(preparing_rule, float(settings.get("early_cooldown_minutes", 15)))
-    ):
-        state.mark_alert(preparing_rule)
-        return _activate_entry(state, cluster, Alert(
-            symbol=state.symbol,
-            cluster_id=cluster.id,
-            cluster_name=cluster.name,
-            rule=preparing_rule,
-            price=state.price or 0.0,
-            title=f"Rompimento pode estar preparando em {state.symbol}",
-            message=f"{state.symbol} ainda nao confirmou rompimento, mas o book ja comecou a abrir caminho para cima.",
-            metrics={
-                "alert_level": "PREPARANDO",
                 "price": state.price or 0.0,
                 "bid_ask_ratio_2pct": round(bid_ask_ratio, 2),
                 "ask_drop_pct": round(ask_drop_pct, 2),
@@ -399,8 +345,6 @@ def _evaluate_support_absorption_reversal(state: SymbolState, cluster: ClusterCo
         and latest_reversal.close > previous_reversal.close
         and reversal_body_pct >= float(settings.get("min_reversal_body_pct", 0.15))
     )
-    early_reversal = latest_reversal.close > latest_reversal.open or latest_reversal.close >= previous_reversal.close
-
     daily_distance_ok = True
     lower_band = 0.0
     if len(daily_candles) >= 20:
@@ -433,34 +377,6 @@ def _evaluate_support_absorption_reversal(state: SymbolState, cluster: ClusterCo
                 "Possivel acumulacao longa; verifique entrada manual."
             ),
             metrics={
-                "price": round(state.price or latest_reversal.close, 8),
-                "support": round(support, 8),
-                "distance_from_support_pct": round(distance_from_support_pct, 2),
-                "volume_vs_avg": round(last_higher.volume / volume_avg, 2),
-                "reversal_body_pct": round(reversal_body_pct, 2),
-                "daily_lower_band": round(lower_band, 8),
-            },
-        ))
-    preparing_rule = f"{cluster.rule}_preparing"
-    if (
-        touched_support
-        and defended_support
-        and last_higher.volume >= volume_avg * float(settings.get("early_sell_volume_multiplier", 1.4))
-        and early_reversal
-        and distance_from_support_pct <= float(settings.get("max_daily_distance_from_support_pct", 6.0))
-        and state.can_alert(preparing_rule, float(settings.get("early_cooldown_minutes", 120)))
-    ):
-        state.mark_alert(preparing_rule)
-        return _activate_entry(state, cluster, Alert(
-            symbol=state.symbol,
-            cluster_id=cluster.id,
-            cluster_name=cluster.name,
-            rule=preparing_rule,
-            price=state.price or latest_reversal.close,
-            title=f"Suporte sendo defendido em {state.symbol}",
-            message=f"{state.symbol} encostou em suporte e ja mostra defesa, mas a reversao ainda esta se formando.",
-            metrics={
-                "alert_level": "PREPARANDO",
                 "price": round(state.price or latest_reversal.close, 8),
                 "support": round(support, 8),
                 "distance_from_support_pct": round(distance_from_support_pct, 2),
@@ -528,33 +444,6 @@ def _evaluate_microcap_spread_volume_anomaly(state: SymbolState, cluster: Cluste
                 "Possivel inicio de FOMO/manipulacao; verifique liquidez e entrada manual."
             ),
             metrics={
-                "price": round(state.price, 8),
-                "spread_pct": round(spread_pct, 3),
-                "avg_spread_pct": round(average_spread, 3),
-                "rvol": round(rvol, 2),
-                "cvd": round(cvd, 4),
-                "cvd_ratio": round(cvd_ratio, 2),
-            },
-        ))
-    preparing_rule = f"{cluster.rule}_preparing"
-    if (
-        spread_pct <= float(settings.get("early_max_spread_pct", settings.get("max_spread_pct", 1.2) * 1.5))
-        and spread_pct <= average_spread * float(settings.get("early_spread_compression_ratio", 0.75))
-        and rvol >= float(settings.get("early_volume_multiplier", 2.5))
-        and cvd_ratio >= float(settings.get("early_min_positive_cvd_ratio", 0.1))
-        and state.can_alert(preparing_rule, float(settings.get("early_cooldown_minutes", 25)))
-    ):
-        state.mark_alert(preparing_rule)
-        return _activate_entry(state, cluster, Alert(
-            symbol=state.symbol,
-            cluster_id=cluster.id,
-            cluster_name=cluster.name,
-            rule=preparing_rule,
-            price=state.price,
-            title=f"Microcap preparando movimento em {state.symbol}",
-            message=f"{state.symbol} comecou a apertar spread e receber volume antes do gatilho forte.",
-            metrics={
-                "alert_level": "PREPARANDO",
                 "price": round(state.price, 8),
                 "spread_pct": round(spread_pct, 3),
                 "avg_spread_pct": round(average_spread, 3),

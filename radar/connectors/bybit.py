@@ -121,9 +121,10 @@ class BybitClusterWorker:
         if state is not None:
             alert = evaluate_symbol(state, self.cluster)
             if alert is not None:
-                self.status_store.record_alert(alert)
+                should_notify = self.status_store.record_alert(alert)
                 self.status_store.write(self.market_state)
-                await self.on_alert(alert)
+                if should_notify:
+                    await self.on_alert(alert)
 
     def _handle_ticker(self, topic: str, data: dict) -> None:
         symbol = topic.split(".")[-1]
