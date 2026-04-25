@@ -329,6 +329,10 @@ def _closed_trade_summary(closed_trades: list[dict]) -> dict[str, str] | None:
     }
 
 
+def _realized_pnl(trades: list[dict]) -> float:
+    return sum(float(item.get("pnl_usd") or 0.0) for item in trades if item.get("side") == "SELL")
+
+
 def _paper_window_return(history: list[dict], current_equity: float | None, hours: int, now: float | None) -> tuple[float | None, float | None]:
     if not history or current_equity is None or current_equity <= 0 or not now:
         return None, None
@@ -424,16 +428,22 @@ def _render_dashboard() -> None:
     paper = status.get("paper", {})
     paper_history = status.get("paper_history", [])
     symbols = status.get("symbols", [])
+    trades = paper.get("trades", [])
+    current_strategy_version = paper.get("strategy_version")
+    current_version_trades = _current_version_trades(trades, current_strategy_version if isinstance(current_strategy_version, str) else None)
+    realized_current = _realized_pnl(current_version_trades)
     symbol_lookup = {item.get("symbol"): item for item in symbols if item.get("symbol")}
     top_left, top_right = st.columns([4, 1])
     with top_left:
         st.subheader("Carteira Simulada")
-        metric_cols = st.columns(5)
+        metric_cols = st.columns(7)
         metric_cols[0].metric("Banca inicial", _fmt_usd(paper.get("initial_cash")))
         metric_cols[1].metric("Saldo livre", _fmt_usd(paper.get("cash")))
         metric_cols[2].metric("Em posicoes", _fmt_usd(paper.get("open_value")))
         metric_cols[3].metric("Patrimonio", _fmt_usd(paper.get("equity")), _fmt_pct(paper.get("total_pnl_pct")))
-        metric_cols[4].metric("Resultado", _fmt_usd(paper.get("total_pnl_usd")))
+        metric_cols[4].metric("Realizado versao", _fmt_usd(realized_current))
+        metric_cols[5].metric("Aberto agora", _fmt_usd(paper.get("open_pnl_usd")))
+        metric_cols[6].metric("Total historico", _fmt_usd(paper.get("total_pnl_usd")))
     with top_right:
         _render_performance_box(paper, paper_history if isinstance(paper_history, list) else [], updated_at)
 
@@ -449,9 +459,6 @@ def _render_dashboard() -> None:
         st.info("Nenhuma moeda em negociação agora. O paper trading só aparece aqui quando abre posição de fato.")
 
     st.subheader("Negociações Encerradas")
-    trades = paper.get("trades", [])
-    current_strategy_version = paper.get("strategy_version")
-    current_version_trades = _current_version_trades(trades, current_strategy_version if isinstance(current_strategy_version, str) else None)
     closed_trades = _closed_trade_rows(current_version_trades)
     if closed_trades:
         st.caption(f"Mostrando somente negociações encerradas da versão atual: {current_strategy_version or 'desconhecida'}")
