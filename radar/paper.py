@@ -17,16 +17,17 @@ class PaperPortfolio:
     def handle_alert(self, alert: Alert) -> bool:
         if _is_exit(alert):
             return self.sell(alert.symbol, alert.price, f"saida: {alert.rule}")
-        return self.buy(alert.symbol, alert.price, f"entrada: {alert.rule}")
+        return self.buy(alert.symbol, alert.price, f"entrada: {alert.rule}", alert.metrics)
 
-    def buy(self, symbol: str, price: float, reason: str) -> bool:
+    def buy(self, symbol: str, price: float, reason: str, metrics: dict[str, float | str] | None = None) -> bool:
         if price <= 0 or symbol in self.positions or self.cash <= 0:
             return False
 
         amount_usd = min(self.cash, self.initial_cash * self.position_fraction)
         qty = amount_usd / price
+        metrics = metrics or {}
         self.cash -= amount_usd
-        self.positions[symbol] = {
+        position = {
             "symbol": symbol,
             "qty": qty,
             "avg_price": price,
@@ -36,6 +37,10 @@ class PaperPortfolio:
             "pnl_usd": 0.0,
             "pnl_pct": 0.0,
         }
+        for key in ("peak_price", "trailing_stop_pct", "trailing_stop_price"):
+            if key in metrics:
+                position[key] = metrics[key]
+        self.positions[symbol] = position
         self._record_trade("BUY", symbol, price, qty, amount_usd, 0.0, reason)
         return True
 
@@ -67,6 +72,11 @@ class PaperPortfolio:
             position["value_usd"] = value
             position["pnl_usd"] = pnl_usd
             position["pnl_pct"] = pnl_pct
+            stop_pct = _as_float(position.get("trailing_stop_pct"))
+            if stop_pct is not None and stop_pct > 0:
+                peak_price = max(_as_float(position.get("peak_price")) or price, price)
+                position["peak_price"] = peak_price
+                position["trailing_stop_price"] = peak_price * (1.0 - stop_pct / 100.0)
             open_value += value
             open_pnl += pnl_usd
 
@@ -113,3 +123,12 @@ class PaperPortfolio:
 
 def _is_exit(alert: Alert) -> bool:
     return alert.rule.endswith("_exit") or alert.metrics.get("alert_level") == "SAIDA"
+
+
+def _as_float(value: Any) -> float | None:
+    try:
+        if value is None:
+            return None
+        return float(value)
+    except (TypeError, ValueError):
+        return None

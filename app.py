@@ -190,7 +190,7 @@ def _position_rows(positions: list[dict], symbol_lookup: dict[str, dict]) -> lis
     for item in positions:
         symbol = item.get("symbol")
         symbol_data = symbol_lookup.get(symbol, {})
-        active_signal = symbol_data.get("active_signal") or {}
+        active_signal = symbol_data.get("active_signal") or item
         rows.append(
             {
                 "moeda": symbol,
