@@ -60,9 +60,12 @@ class SymbolState:
         range_24h_pct: float | None = None,
         turnover_24h: float | None = None,
     ) -> None:
-        self.change_24h_pct = change_24h_pct
-        self.range_24h_pct = range_24h_pct
-        self.turnover_24h = turnover_24h
+        if change_24h_pct is not None:
+            self.change_24h_pct = change_24h_pct
+        if range_24h_pct is not None:
+            self.range_24h_pct = range_24h_pct
+        if turnover_24h is not None:
+            self.turnover_24h = turnover_24h
 
     def upsert_candle(self, timeframe: str, candle: Candle) -> None:
         series = self.candles[timeframe]
