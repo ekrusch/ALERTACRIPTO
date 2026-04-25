@@ -391,138 +391,143 @@ def _render_performance_box(paper: dict, history: list[dict], now: float | None)
 
 
 st.set_page_config(page_title="Radar de Anomalias Cripto", layout="wide")
-st.markdown("<meta http-equiv='refresh' content='10'>", unsafe_allow_html=True)
 st.title("Radar de Anomalias Cripto")
-st.caption("Atualizacao automatica a cada 10 segundos. Modo simulado: sem ordens reais.")
+st.caption("Atualizacao interna a cada 10 segundos. Modo simulado: sem ordens reais.")
 
-if not STATUS_FILE.exists():
-    st.warning("O radar ainda nao gerou status. Rode: python -m radar.main")
-    st.stop()
 
-with STATUS_FILE.open("r", encoding="utf-8") as file:
-    status = json.load(file)
+@st.fragment(run_every="10s")
+def _render_dashboard() -> None:
+    if not STATUS_FILE.exists():
+        st.warning("O radar ainda nao gerou status. Rode: python -m radar.main")
+        st.stop()
 
-updated_at = status.get("updated_at")
-if updated_at:
-    st.caption(f"Ultima atualizacao: {datetime.fromtimestamp(updated_at, DISPLAY_TZ).strftime('%Y-%m-%d %H:%M:%S')}")
+    with STATUS_FILE.open("r", encoding="utf-8") as file:
+        status = json.load(file)
 
-paper = status.get("paper", {})
-paper_history = status.get("paper_history", [])
-symbols = status.get("symbols", [])
-symbol_lookup = {item.get("symbol"): item for item in symbols if item.get("symbol")}
-top_left, top_right = st.columns([4, 1])
-with top_left:
-    st.subheader("Carteira Simulada")
-    metric_cols = st.columns(5)
-    metric_cols[0].metric("Banca inicial", _fmt_usd(paper.get("initial_cash")))
-    metric_cols[1].metric("Saldo livre", _fmt_usd(paper.get("cash")))
-    metric_cols[2].metric("Em posicoes", _fmt_usd(paper.get("open_value")))
-    metric_cols[3].metric("Patrimonio", _fmt_usd(paper.get("equity")), _fmt_pct(paper.get("total_pnl_pct")))
-    metric_cols[4].metric("Resultado", _fmt_usd(paper.get("total_pnl_usd")))
-with top_right:
-    _render_performance_box(paper, paper_history if isinstance(paper_history, list) else [], updated_at)
+    updated_at = status.get("updated_at")
+    if updated_at:
+        st.caption(f"Ultima atualizacao: {datetime.fromtimestamp(updated_at, DISPLAY_TZ).strftime('%Y-%m-%d %H:%M:%S')}")
 
-positions = paper.get("positions", [])
-st.subheader("Moedas em Negociação Agora")
-if positions:
-    st.dataframe(
-        _styled_dataframe(_position_rows(positions, symbol_lookup)),
-        width="stretch",
-        hide_index=True,
-    )
-else:
-    st.info("Nenhuma moeda em negociação agora. O paper trading só aparece aqui quando abre posição de fato.")
+    paper = status.get("paper", {})
+    paper_history = status.get("paper_history", [])
+    symbols = status.get("symbols", [])
+    symbol_lookup = {item.get("symbol"): item for item in symbols if item.get("symbol")}
+    top_left, top_right = st.columns([4, 1])
+    with top_left:
+        st.subheader("Carteira Simulada")
+        metric_cols = st.columns(5)
+        metric_cols[0].metric("Banca inicial", _fmt_usd(paper.get("initial_cash")))
+        metric_cols[1].metric("Saldo livre", _fmt_usd(paper.get("cash")))
+        metric_cols[2].metric("Em posicoes", _fmt_usd(paper.get("open_value")))
+        metric_cols[3].metric("Patrimonio", _fmt_usd(paper.get("equity")), _fmt_pct(paper.get("total_pnl_pct")))
+        metric_cols[4].metric("Resultado", _fmt_usd(paper.get("total_pnl_usd")))
+    with top_right:
+        _render_performance_box(paper, paper_history if isinstance(paper_history, list) else [], updated_at)
 
-st.subheader("Negociações Encerradas")
-trades = paper.get("trades", [])
-closed_trades = _closed_trade_rows(trades)
-if closed_trades:
-    loss_summary = _loss_summary([item for item in trades if item.get("side") == "SELL"])
-    if loss_summary:
-        loss_cols = st.columns(4)
-        for column, (label, value) in zip(loss_cols, loss_summary.items()):
-            column.metric(label, value)
-    st.dataframe(
-        _styled_dataframe(closed_trades),
-        width="stretch",
-        hide_index=True,
-        height=min(900, 38 * (len(closed_trades) + 1)),
-    )
-else:
-    st.info("Nenhuma negociação encerrada ainda.")
-
-st.subheader("Top Oportunidades Agora")
-opportunities = status.get("opportunities", [])
-if opportunities:
-    _render_symbols_table(opportunities[:30])
-else:
-    st.info("Aguardando dados 24h suficientes para montar o ranking.")
-
-st.subheader("Moedas Monitoradas")
-if symbols:
-    grouped_symbols: dict[str, list[dict]] = {}
-    for item in symbols:
-        grouped_symbols.setdefault(_exchange_from_cluster(item.get("cluster")), []).append(item)
-
-    for exchange in ("Bybit", "MEXC", "KuCoin", "Outras"):
-        rows = sorted(grouped_symbols.get(exchange, []), key=_variation_sort_value, reverse=True)
-        if not rows:
-            continue
-        st.markdown(f"#### {exchange}")
-        _render_symbols_table(rows)
-else:
-    st.info("Aguardando os primeiros dados do WebSocket.")
-
-left_col, right_col = st.columns(2)
-
-with left_col:
-    st.subheader("Processos / Workers")
-    workers = status.get("workers", {})
-    if workers:
-        worker_rows = []
-        for worker_id, worker in workers.items():
-            prices = worker.get("prices", {})
-            worker_rows.append(
-                {
-                    "processo": worker_id,
-                    "status": worker.get("status"),
-                    "cluster": worker.get("cluster"),
-                    "moedas": ", ".join(worker.get("symbols", [])),
-                    "precos": ", ".join(f"{symbol}: {_fmt_price(price)}" for symbol, price in prices.items()),
-                }
-            )
-        st.dataframe(worker_rows, width="stretch", hide_index=True)
-    else:
-        st.info("Nenhum worker registrado ainda.")
-
-    st.subheader("Operacoes Simuladas")
-    if trades:
+    positions = paper.get("positions", [])
+    st.subheader("Moedas em Negociação Agora")
+    if positions:
         st.dataframe(
-            _styled_dataframe([
-                {
-                    "hora": _fmt_timestamp(item.get("ts")),
-                    "lado": item.get("side"),
-                    "moeda": item.get("symbol"),
-                    "preco": _fmt_price(item.get("price")),
-                    "valor": _fmt_usd(item.get("notional_usd")),
-                    "resultado": _fmt_usd(item.get("pnl_usd")),
-                    "motivo": item.get("reason"),
-                }
-                for item in trades[:20]
-            ]),
+            _styled_dataframe(_position_rows(positions, symbol_lookup)),
             width="stretch",
             hide_index=True,
         )
     else:
-        st.info("Nenhuma operacao simulada ainda.")
+        st.info("Nenhuma moeda em negociação agora. O paper trading só aparece aqui quando abre posição de fato.")
 
-with right_col:
-    st.subheader("Ultimos Alertas")
-    alerts = status.get("alerts", [])
-    if alerts:
-        for alert in alerts[:20]:
-            st.markdown(f"**{alert['title']}**")
-            st.write(alert["message"])
-            st.json(alert["metrics"])
+    st.subheader("Negociações Encerradas")
+    trades = paper.get("trades", [])
+    closed_trades = _closed_trade_rows(trades)
+    if closed_trades:
+        loss_summary = _loss_summary([item for item in trades if item.get("side") == "SELL"])
+        if loss_summary:
+            loss_cols = st.columns(4)
+            for column, (label, value) in zip(loss_cols, loss_summary.items()):
+                column.metric(label, value)
+        st.dataframe(
+            _styled_dataframe(closed_trades),
+            width="stretch",
+            hide_index=True,
+            height=min(900, 38 * (len(closed_trades) + 1)),
+        )
     else:
-        st.info("Nenhum alerta disparado ainda.")
+        st.info("Nenhuma negociação encerrada ainda.")
+
+    st.subheader("Top Oportunidades Agora")
+    opportunities = status.get("opportunities", [])
+    if opportunities:
+        _render_symbols_table(opportunities[:30])
+    else:
+        st.info("Aguardando dados 24h suficientes para montar o ranking.")
+
+    st.subheader("Moedas Monitoradas")
+    if symbols:
+        grouped_symbols: dict[str, list[dict]] = {}
+        for item in symbols:
+            grouped_symbols.setdefault(_exchange_from_cluster(item.get("cluster")), []).append(item)
+
+        for exchange in ("Bybit", "MEXC", "KuCoin", "Outras"):
+            rows = sorted(grouped_symbols.get(exchange, []), key=_variation_sort_value, reverse=True)
+            if not rows:
+                continue
+            st.markdown(f"#### {exchange}")
+            _render_symbols_table(rows)
+    else:
+        st.info("Aguardando os primeiros dados do WebSocket.")
+
+    left_col, right_col = st.columns(2)
+
+    with left_col:
+        st.subheader("Processos / Workers")
+        workers = status.get("workers", {})
+        if workers:
+            worker_rows = []
+            for worker_id, worker in workers.items():
+                prices = worker.get("prices", {})
+                worker_rows.append(
+                    {
+                        "processo": worker_id,
+                        "status": worker.get("status"),
+                        "cluster": worker.get("cluster"),
+                        "moedas": ", ".join(worker.get("symbols", [])),
+                        "precos": ", ".join(f"{symbol}: {_fmt_price(price)}" for symbol, price in prices.items()),
+                    }
+                )
+            st.dataframe(worker_rows, width="stretch", hide_index=True)
+        else:
+            st.info("Nenhum worker registrado ainda.")
+
+        st.subheader("Operacoes Simuladas")
+        if trades:
+            st.dataframe(
+                _styled_dataframe([
+                    {
+                        "hora": _fmt_timestamp(item.get("ts")),
+                        "lado": item.get("side"),
+                        "moeda": item.get("symbol"),
+                        "preco": _fmt_price(item.get("price")),
+                        "valor": _fmt_usd(item.get("notional_usd")),
+                        "resultado": _fmt_usd(item.get("pnl_usd")),
+                        "motivo": item.get("reason"),
+                    }
+                    for item in trades[:20]
+                ]),
+                width="stretch",
+                hide_index=True,
+            )
+        else:
+            st.info("Nenhuma operacao simulada ainda.")
+
+    with right_col:
+        st.subheader("Ultimos Alertas")
+        alerts = status.get("alerts", [])
+        if alerts:
+            for alert in alerts[:20]:
+                st.markdown(f"**{alert['title']}**")
+                st.write(alert["message"])
+                st.json(alert["metrics"])
+        else:
+            st.info("Nenhum alerta disparado ainda.")
+
+
+_render_dashboard()
