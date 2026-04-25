@@ -4,12 +4,14 @@ import html
 import json
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import streamlit as st
 import streamlit.components.v1 as components
 
 
 STATUS_FILE = Path("storage/status.json")
+DISPLAY_TZ = ZoneInfo("America/Sao_Paulo")
 
 
 def _fmt_price(price: float | None) -> str:
@@ -50,7 +52,7 @@ def _fmt_pct(value: float | None) -> str:
 def _fmt_timestamp(value: float | None) -> str:
     if not value:
         return "aguardando"
-    return datetime.fromtimestamp(value).strftime("%H:%M:%S")
+    return datetime.fromtimestamp(value, DISPLAY_TZ).strftime("%H:%M:%S")
 
 
 def _variation_sort_value(item: dict) -> float:
@@ -244,7 +246,7 @@ with STATUS_FILE.open("r", encoding="utf-8") as file:
 
 updated_at = status.get("updated_at")
 if updated_at:
-    st.caption(f"Ultima atualizacao: {datetime.fromtimestamp(updated_at).strftime('%Y-%m-%d %H:%M:%S')}")
+    st.caption(f"Ultima atualizacao: {datetime.fromtimestamp(updated_at, DISPLAY_TZ).strftime('%Y-%m-%d %H:%M:%S')}")
 
 paper = status.get("paper", {})
 symbols = status.get("symbols", [])
