@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -100,6 +101,54 @@ def _pct_html(value: float | None) -> str:
     return f'<span class="pct-neutral">{html.escape(_fmt_pct(value))}</span>'
 
 
+def _pct_class(value: float | None) -> str:
+    if value is None:
+        return "pct-neutral"
+    if value > 0:
+        return "pct-up"
+    if value < 0:
+        return "pct-down"
+    return "pct-neutral"
+
+
+def _pct_cell_style(value: object) -> str:
+    if not isinstance(value, str):
+        return ""
+    text = value.strip()
+    if text == "aguardando":
+        return "color: #38bdf8; font-weight: 800;"
+    if not text.endswith("%"):
+        return ""
+    try:
+        number = float(text.replace("%", "").replace("+", ""))
+    except ValueError:
+        return ""
+    if number > 0:
+        return "color: #22c55e; font-weight: 800;"
+    if number < 0:
+        return "color: #ef4444; font-weight: 800;"
+    return "color: #38bdf8; font-weight: 800;"
+
+
+def _styled_dataframe(rows: list[dict]):
+    dataframe = pd.DataFrame(rows)
+    pct_columns = [
+        column
+        for column in dataframe.columns
+        if "%" in str(column).lower()
+        or "var " in str(column).lower()
+        or str(column).lower().startswith("ganho")
+        or str(column).lower().startswith("perda")
+    ]
+    if not pct_columns:
+        return dataframe
+
+    styler = dataframe.style
+    if hasattr(styler, "map"):
+        return styler.map(_pct_cell_style, subset=pct_columns)
+    return styler.applymap(_pct_cell_style, subset=pct_columns)
+
+
 def _render_symbols_table(rows: list[dict]) -> None:
     table_rows = []
     for item in rows:
@@ -158,8 +207,8 @@ def _render_symbols_table(rows: list[dict]) -> None:
                     font-weight: 800;
                 }
                 .pct-neutral {
-                    color: rgba(250, 250, 250, 0.62);
-                    font-weight: 700;
+                    color: #38bdf8;
+                    font-weight: 800;
                 }
             </style>
         </head>
@@ -298,8 +347,8 @@ def _render_performance_box(paper: dict, history: list[dict], now: float | None)
         rows.append(
             "<tr>"
             f"<td>{label}</td>"
-            f"<td>{html.escape(_fmt_pct(gain_pct))}</td>"
-            f"<td>{html.escape(_fmt_pct(hourly_pct))}/h</td>"
+            f"<td class=\"{_pct_class(gain_pct)}\">{html.escape(_fmt_pct(gain_pct))}</td>"
+            f"<td class=\"{_pct_class(hourly_pct)}\">{html.escape(_fmt_pct(hourly_pct))}/h</td>"
             "</tr>"
         )
 
@@ -316,6 +365,9 @@ def _render_performance_box(paper: dict, history: list[dict], now: float | None)
                 th, td { text-align: right; padding: 4px 2px; white-space: nowrap; }
                 th:first-child, td:first-child { text-align: left; }
                 th { color: rgba(250,250,250,0.62); font-weight: 700; }
+                .pct-up { color: #22c55e; font-weight: 800; }
+                .pct-down { color: #ef4444; font-weight: 800; }
+                .pct-neutral { color: #38bdf8; font-weight: 800; }
             </style>
         </head>
         <body>
@@ -374,7 +426,7 @@ positions = paper.get("positions", [])
 st.subheader("Moedas em Negociação Agora")
 if positions:
     st.dataframe(
-        _position_rows(positions, symbol_lookup),
+        _styled_dataframe(_position_rows(positions, symbol_lookup)),
         width="stretch",
         hide_index=True,
     )
@@ -391,7 +443,7 @@ if closed_trades:
         for column, (label, value) in zip(loss_cols, loss_summary.items()):
             column.metric(label, value)
     st.dataframe(
-        closed_trades,
+        _styled_dataframe(closed_trades),
         width="stretch",
         hide_index=True,
         height=min(900, 38 * (len(closed_trades) + 1)),
@@ -446,7 +498,7 @@ with left_col:
     st.subheader("Operacoes Simuladas")
     if trades:
         st.dataframe(
-            [
+            _styled_dataframe([
                 {
                     "hora": _fmt_timestamp(item.get("ts")),
                     "lado": item.get("side"),
@@ -457,7 +509,7 @@ with left_col:
                     "motivo": item.get("reason"),
                 }
                 for item in trades[:20]
-            ],
+            ]),
             width="stretch",
             hide_index=True,
         )
