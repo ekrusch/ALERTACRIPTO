@@ -15,7 +15,7 @@
       "id": "bybit_institutional_rwa_defi",
       "name": "Bybit - Peso-Pesado Institucional (RWA & DeFi)",
       "exchange": "bybit_linear",
-      "symbols": ["ONDOUSDT", "OMUSDT", "PENDLEUSDT", "XDCUSDT", "ZETAUSDT"],
+      "symbols": ["ONDOUSDT", "PENDLEUSDT", "XDCUSDT", "ZETAUSDT"],
       "rule": "cvd_rvol_compression",
       "timeframes": ["15", "60"],
       "settings": {
@@ -38,7 +38,7 @@
       "id": "bybit_ai_gpu_directional",
       "name": "Bybit - A Bolha da IA e GPUs",
       "exchange": "bybit_linear",
-      "symbols": ["FETUSDT", "TAOUSDT", "RENDERUSDT", "IOUSDT", "ARKMUSDT"],
+      "symbols": ["TAOUSDT", "RENDERUSDT", "IOUSDT", "ARKMUSDT"],
       "rule": "orderbook_imbalance_vwap",
       "timeframes": ["60"],
       "settings": {
@@ -46,12 +46,15 @@
         "min_bid_ask_ratio": 1.6,
         "sell_wall_drop_pct": 45.0,
         "vwap_lookback_hours": 168,
+        "max_vwap_distance_pct": 2.0,
         "cooldown_minutes": 30,
         "early_min_bid_ask_ratio": 1.2,
         "early_sell_wall_drop_pct": 25.0,
         "early_vwap_distance_pct": 1.5,
+        "early_max_vwap_distance_pct": 2.5,
         "early_cooldown_minutes": 15,
         "exit_bid_ask_ratio": 0.85,
+        "exit_weak_reads": 3,
         "exit_cooldown_minutes": 10
       }
     },

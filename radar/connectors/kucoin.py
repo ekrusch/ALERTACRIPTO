@@ -141,7 +141,7 @@ class KuCoinSpotClusterWorker:
             candles = data.get("candles", [])
             state = self.market_state.get(symbol)
             if state is not None and timeframe and len(candles) >= 6:
-                candle = _kucoin_candle_from_row(candles)
+                candle = _kucoin_candle_from_row(candles, timeframe)
                 state.upsert_candle(timeframe, candle)
                 state.update_price(candle.close)
 
@@ -190,19 +190,20 @@ def _fetch_kucoin_candles(symbol: str, timeframe: str, limit: int = 200) -> list
         print(f"[kucoin:history] {symbol} {timeframe}: {payload}", flush=True)
         return []
 
-    candles = [_kucoin_candle_from_row(row) for row in payload.get("data", [])]
+    candles = [_kucoin_candle_from_row(row, timeframe) for row in payload.get("data", [])]
     return sorted(candles, key=lambda candle: candle.start_ms)
 
 
-def _kucoin_candle_from_row(row: list[str]) -> Candle:
+def _kucoin_candle_from_row(row: list[str], timeframe: str) -> Candle:
+    start_ms = int(float(row[0])) * 1000
     return Candle(
-        start_ms=int(float(row[0])) * 1000,
+        start_ms=start_ms,
         open=float(row[1]),
         close=float(row[2]),
         high=float(row[3]),
         low=float(row[4]),
         volume=float(row[5]),
-        confirmed=True,
+        confirmed=start_ms + _interval_seconds(timeframe) * 1000 <= int(time.time() * 1000),
     )
 
 

@@ -78,13 +78,14 @@ def _exit_alert(
 
 def _activate_entry(state: SymbolState, cluster: ClusterConfig, alert: Alert) -> Alert:
     level = str(alert.metrics.get("alert_level", "CONFIRMADO"))
-    state.activate_signal(cluster.rule, alert.price, level, alert.metrics)
+    if level != "PREPARANDO":
+        state.activate_signal(cluster.rule, alert.price, level, alert.metrics)
     return alert
 
 
 def _evaluate_cvd_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     settings = cluster.settings
-    candles_15m = list(state.candles.get("15", []))
+    candles_15m = _confirmed_candles(list(state.candles.get("15", [])))
     ma_length = int(settings.get("volume_ma_length", 20))
     if len(candles_15m) < ma_length + 1:
         return None
@@ -115,17 +116,25 @@ def _evaluate_cvd_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | No
 
 def _evaluate_orderbook_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     settings = cluster.settings
-    candles_1h = list(state.candles.get("60", []))
+    candles_1h = _confirmed_candles(list(state.candles.get("60", [])))
     if len(candles_1h) < 24:
         return None
 
     weekly_vwap = _vwap(candles_1h[-int(settings.get("vwap_lookback_hours", 168)) :])
     book = state.orderbook
     bid_ask_ratio = book.bid_notional_band / book.ask_notional_band if book.ask_notional_band > 0 else 0.0
-    lost_vwap = state.price is not None and weekly_vwap > 0 and state.price < weekly_vwap
+    vwap_loss_pct = float(settings.get("exit_vwap_loss_pct", 0.35))
+    lost_vwap = state.price is not None and weekly_vwap > 0 and state.price < weekly_vwap * (1.0 - vwap_loss_pct / 100.0)
     book_flipped = bid_ask_ratio > 0 and bid_ask_ratio <= float(settings.get("exit_bid_ask_ratio", 0.85))
+    active = state.active_signals[cluster.rule]
+    weak_reads = int(active.get("exit_weak_reads", 0))
+    weak_reads = weak_reads + 1 if book_flipped else 0
+    active["exit_weak_reads"] = weak_reads
+    lost_vwap_reads = int(active.get("exit_lost_vwap_reads", 0))
+    lost_vwap_reads = lost_vwap_reads + 1 if lost_vwap else 0
+    active["exit_lost_vwap_reads"] = lost_vwap_reads
 
-    if lost_vwap or book_flipped:
+    if lost_vwap_reads >= int(settings.get("exit_lost_vwap_reads", 2)) or weak_reads >= int(settings.get("exit_weak_reads", 3)):
         reason = "O rompimento perdeu sustentacao: o preco perdeu a VWAP ou o book virou contra a compra."
         return _exit_alert(
             state,
@@ -135,6 +144,8 @@ def _evaluate_orderbook_exit(state: SymbolState, cluster: ClusterConfig) -> Aler
                 "bid_ask_ratio_2pct": round(bid_ask_ratio, 2),
                 "weekly_vwap": round(weekly_vwap, 8),
                 "lost_vwap": "sim" if lost_vwap else "nao",
+                "lost_vwap_reads": lost_vwap_reads,
+                "weak_book_reads": weak_reads,
             },
         )
     return None
@@ -146,7 +157,7 @@ def _evaluate_support_exit(state: SymbolState, cluster: ClusterConfig) -> Alert 
     support = float(active.get("support", 0.0) or 0.0)
     if support <= 0:
         higher_timeframe = str(settings.get("higher_timeframe", "240"))
-        candles = list(state.candles.get(higher_timeframe, []))
+        candles = _confirmed_candles(list(state.candles.get(higher_timeframe, [])))
         if len(candles) < int(settings.get("support_lookback_candles", 30)):
             return None
         support = min(candle.low for candle in candles[-int(settings.get("support_lookback_candles", 30)) :])
@@ -202,8 +213,8 @@ def _evaluate_microcap_exit(state: SymbolState, cluster: ClusterConfig) -> Alert
 
 def _evaluate_cvd_rvol_compression(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     settings = cluster.settings
-    candles_15m = list(state.candles.get("15", []))
-    candles_1h = list(state.candles.get("60", []))
+    candles_15m = _confirmed_candles(list(state.candles.get("15", [])))
+    candles_1h = _confirmed_candles(list(state.candles.get("60", [])))
     ma_length = int(settings.get("volume_ma_length", 20))
     if len(candles_15m) < ma_length + 1 or len(candles_1h) < 12:
         return None
@@ -275,7 +286,7 @@ def _evaluate_cvd_rvol_compression(state: SymbolState, cluster: ClusterConfig) -
 
 def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     settings = cluster.settings
-    candles_1h = list(state.candles.get("60", []))
+    candles_1h = _confirmed_candles(list(state.candles.get("60", [])))
     if len(candles_1h) < 24:
         return None
 
@@ -290,9 +301,11 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
 
     weekly_vwap = _vwap(candles_1h[-int(settings.get("vwap_lookback_hours", 168)) :])
     crossed_vwap = state.price is not None and weekly_vwap > 0 and state.price > weekly_vwap
+    vwap_distance_pct = 100.0 * ((state.price or 0.0) - weekly_vwap) / weekly_vwap if weekly_vwap > 0 else 999.0
+    not_overextended = vwap_distance_pct <= float(settings.get("max_vwap_distance_pct", 2.0))
     near_vwap = state.price is not None and weekly_vwap > 0 and state.price >= weekly_vwap * (
         1.0 - float(settings.get("early_vwap_distance_pct", 1.5)) / 100.0
-    )
+    ) and vwap_distance_pct <= float(settings.get("early_max_vwap_distance_pct", 2.5))
     confirmed_rule = cluster.rule
     preparing_rule = f"{cluster.rule}_preparing"
 
@@ -300,6 +313,7 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
         bid_ask_ratio >= float(settings.get("min_bid_ask_ratio", 1.6))
         and ask_drop_pct >= float(settings.get("sell_wall_drop_pct", 45.0))
         and crossed_vwap
+        and not_overextended
         and state.can_alert(confirmed_rule, float(settings.get("cooldown_minutes", 30)))
     ):
         state.mark_alert(confirmed_rule)
@@ -319,6 +333,7 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
                 "bid_ask_ratio_2pct": round(bid_ask_ratio, 2),
                 "ask_drop_pct": round(ask_drop_pct, 2),
                 "weekly_vwap": round(weekly_vwap, 8),
+                "distance_to_vwap_pct": round(vwap_distance_pct, 2),
             },
         ))
     if (
@@ -342,7 +357,7 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
                 "bid_ask_ratio_2pct": round(bid_ask_ratio, 2),
                 "ask_drop_pct": round(ask_drop_pct, 2),
                 "weekly_vwap": round(weekly_vwap, 8),
-                "distance_to_vwap_pct": round(100.0 * ((state.price or 0.0) - weekly_vwap) / weekly_vwap, 2),
+                "distance_to_vwap_pct": round(vwap_distance_pct, 2),
             },
         ))
     return None
@@ -352,9 +367,9 @@ def _evaluate_support_absorption_reversal(state: SymbolState, cluster: ClusterCo
     settings = cluster.settings
     higher_timeframe = str(settings.get("higher_timeframe", "240"))
     reversal_timeframe = str(settings.get("reversal_timeframe", "60"))
-    higher_candles = list(state.candles.get(higher_timeframe, []))
-    reversal_candles = list(state.candles.get(reversal_timeframe, []))
-    daily_candles = list(state.candles.get("D", []))
+    higher_candles = _confirmed_candles(list(state.candles.get(higher_timeframe, [])))
+    reversal_candles = _confirmed_candles(list(state.candles.get(reversal_timeframe, [])))
+    daily_candles = _confirmed_candles(list(state.candles.get("D", [])))
     volume_ma_length = int(settings.get("volume_ma_length", 20))
     support_lookback = int(settings.get("support_lookback_candles", 30))
 
@@ -460,7 +475,7 @@ def _evaluate_support_absorption_reversal(state: SymbolState, cluster: ClusterCo
 def _evaluate_microcap_spread_volume_anomaly(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     settings = cluster.settings
     timeframe = str(settings.get("volume_timeframe", "15"))
-    candles = list(state.candles.get(timeframe, []))
+    candles = _confirmed_candles(list(state.candles.get(timeframe, [])))
     volume_ma_length = int(settings.get("volume_ma_length", 16))
     if len(candles) < volume_ma_length + 1 or len(state.spread_samples) < int(settings.get("min_spread_samples", 6)):
         return None
@@ -555,6 +570,10 @@ def _avg_volume(candles: list[Candle]) -> float:
     if not candles:
         return 0.0
     return sum(candle.volume for candle in candles) / len(candles)
+
+
+def _confirmed_candles(candles: list[Candle]) -> list[Candle]:
+    return [candle for candle in candles if candle.confirmed]
 
 
 def _range_pct(candles: list[Candle]) -> float:

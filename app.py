@@ -79,7 +79,7 @@ if positions:
             }
             for item in positions
         ],
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 else:
@@ -102,7 +102,7 @@ if symbols:
             }
             for item in sorted(symbols, key=lambda row: row.get("change_pct") or 0, reverse=True)
         ],
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 else:
@@ -126,7 +126,7 @@ with left_col:
                     "precos": ", ".join(f"{symbol}: {_fmt_price(price)}" for symbol, price in prices.items()),
                 }
             )
-        st.dataframe(worker_rows, use_container_width=True, hide_index=True)
+        st.dataframe(worker_rows, width="stretch", hide_index=True)
     else:
         st.info("Nenhum worker registrado ainda.")
 
@@ -146,7 +146,7 @@ with left_col:
                 }
                 for item in trades[:20]
             ],
-            use_container_width=True,
+            width="stretch",
             hide_index=True,
         )
     else:

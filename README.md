@@ -4,8 +4,8 @@ Sistema passivo de monitoramento por WebSocket para detectar anomalias de volume
 
 ## Moedas monitoradas nesta primeira versao
 
-- Processo `bybit:bybit_institutional_rwa_defi`: `ONDOUSDT`, `OMUSDT`, `PENDLEUSDT`, `XDCUSDT`, `ZETAUSDT`.
-- Processo `bybit:bybit_ai_gpu_directional`: `FETUSDT`, `TAOUSDT`, `RENDERUSDT`, `IOUSDT`, `ARKMUSDT`.
+- Processo `bybit:bybit_institutional_rwa_defi`: `ONDOUSDT`, `PENDLEUSDT`, `XDCUSDT`, `ZETAUSDT`.
+- Processo `bybit:bybit_ai_gpu_directional`: `TAOUSDT`, `RENDERUSDT`, `IOUSDT`, `ARKMUSDT`.
 - Processo `bybit:bybit_infra_long_accumulation`: `JASMYUSDT`, `VETUSDT`, `AKTUSDT`, `AIOZUSDT`, `ATHUSDT`.
 - Processo `mexc:mexc_infra_long_accumulation_alt`: `OLASUSDT`, `TRACUSDT`.
 - Processo `mexc:mexc_microcaps_depin`: `NOSUSDT`, `HONEYUSDT`, `CFGUSDT`.

@@ -185,8 +185,18 @@ def _fetch_mexc_klines(symbol: str, timeframe: str, limit: int = 200) -> list[Ca
             low=float(row[3]),
             close=float(row[4]),
             volume=float(row[5]),
-            confirmed=True,
+            confirmed=_is_closed_candle(int(row[0]), timeframe),
         )
         for row in rows
     ]
     return sorted(candles, key=lambda candle: candle.start_ms)
+
+
+def _is_closed_candle(start_ms: int, timeframe: str) -> bool:
+    return start_ms + _interval_ms(timeframe) <= int(time.time() * 1000)
+
+
+def _interval_ms(timeframe: str) -> int:
+    if timeframe == "D":
+        return 24 * 60 * 60 * 1000
+    return int(timeframe) * 60 * 1000
