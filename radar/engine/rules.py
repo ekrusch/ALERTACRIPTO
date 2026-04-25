@@ -383,11 +383,35 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
     if explosion_alert is not None:
         return explosion_alert
 
+    latest_candle = candles_1h[-1]
+    previous_candle = candles_1h[-2]
+    min_ratio = float(settings.get("min_bid_ask_ratio", 1.6)) + float(settings.get("entry_ratio_buffer", 0.25))
+    min_ask_drop = float(settings.get("sell_wall_drop_pct", 45.0)) + float(settings.get("entry_ask_drop_buffer_pct", 10.0))
+    min_vwap_breakout = float(settings.get("min_vwap_breakout_distance_pct", 0.15))
+    min_change_24h = float(settings.get("orderbook_min_change_24h_pct", 1.0))
+    min_range_24h = float(settings.get("orderbook_min_range_24h_pct", 2.0))
+    max_range_24h = float(settings.get("orderbook_max_range_24h_pct", 35.0))
+    min_turnover = float(settings.get("min_turnover_24h", _default_min_turnover(cluster)))
+    candle_confirms = latest_candle.close > latest_candle.open and latest_candle.close > previous_candle.close
+    current_price_confirms = state.price is not None and state.price >= latest_candle.close
+    market_stats_confirm = (
+        state.change_24h_pct is not None
+        and state.range_24h_pct is not None
+        and state.turnover_24h is not None
+        and state.change_24h_pct >= min_change_24h
+        and min_range_24h <= state.range_24h_pct <= max_range_24h
+        and state.turnover_24h >= min_turnover
+    )
+
     if (
-        bid_ask_ratio >= float(settings.get("min_bid_ask_ratio", 1.6))
-        and ask_drop_pct >= float(settings.get("sell_wall_drop_pct", 45.0))
+        bid_ask_ratio >= min_ratio
+        and ask_drop_pct >= min_ask_drop
         and crossed_vwap
         and not_overextended
+        and vwap_distance_pct >= min_vwap_breakout
+        and candle_confirms
+        and current_price_confirms
+        and market_stats_confirm
         and state.can_alert(confirmed_rule, float(settings.get("cooldown_minutes", 30)))
     ):
         state.mark_alert(confirmed_rule)
@@ -408,6 +432,11 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
                 "ask_drop_pct": round(ask_drop_pct, 2),
                 "weekly_vwap": round(weekly_vwap, 8),
                 "distance_to_vwap_pct": round(vwap_distance_pct, 2),
+                "orderbook_confirmation": "candle_1h_momentum",
+                "confirmed_1h_close": round(latest_candle.close, 8),
+                "change_24h_pct": round(state.change_24h_pct or 0.0, 2),
+                "range_24h_pct": round(state.range_24h_pct or 0.0, 2),
+                "turnover_24h_usd": round(state.turnover_24h or 0.0, 2),
             },
         ))
     return None
