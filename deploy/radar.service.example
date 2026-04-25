@@ -1,0 +1,15 @@
+[Unit]
+Description=Radar de Anomalias Cripto
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/radar-cripto
+EnvironmentFile=/opt/radar-cripto/.env
+ExecStart=/opt/radar-cripto/.venv/bin/python -m radar.main
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,142 @@
+Conversa salva para retomada - 2026-04-23
+
+Objetivo do usuario:
+- Encontrar criptos com potencial de forte valorizacao (alvo 20x+) e menor chance de erro operacional.
+
+Resumo tecnico da conversa:
+- JASMY: potencial especulativo existe, mas sem confirmacao tecnica de rompimento forte no momento.
+- Narrativas priorizadas para assimetria: AI infra, DePIN e RWA.
+- Filtro usado: market cap, liquidez, oferta circulante/tokenomics e possiveis catalisadores.
+
+Watchlist proposta:
+- NOS (Nosana)
+- OLAS (Autonolas)
+- HONEY (Hivemapper)
+- DIMO
+- GFI (Goldfinch)
+- CFG (Centrifuge)
+- AIOZ
+- AKT (Akash)
+
+Ordem por probabilidade de resultado positivo (na conversa):
+1) AKT
+2) CFG
+3) AIOZ
+4) GFI
+5) DIMO
+6) NOS
+7) HONEY
+8) OLAS
+
+Corretoras citadas (principais, verificar disponibilidade regional):
+- NOS: MEXC, Gate.io, XT, CoinEx
+- OLAS: XT, MEXC, CoinEx, Uniswap
+- HONEY: MEXC, AscendEX, Coinbase, Gate.io, Kraken, KuCoin
+- DIMO: Gate.io, Coinbase, CoinEx, DigiFinex, Uniswap
+- GFI: MEXC, Gate.io, Coinbase, CoinEx, Kraken, Bitget
+- CFG: MEXC, Gate.io, KuCoin, Binance, OKX, Bybit, Kraken, Coinbase
+- AIOZ: Gate.io, KuCoin, HTX, Bybit, BitMart
+- AKT: Gate.io, BitMart, HTX, KuCoin, Kraken, Coinbase
+
+Precos aproximados informados hoje (USD):
+- AKT: 0.5065
+- CFG: 0.1692
+- AIOZ: 0.06368
+- GFI: 0.1349
+- DIMO: 0.0111 a 0.0121
+- NOS: 0.2794
+- HONEY: 0.002888
+- OLAS: 0.0407 a 0.0504
+
+Plano de retomada para amanha:
+- Atualizar preco, volume e variacao 24h/7d de cada ativo
+- Reordenar ranking por forca relativa e estrutura tecnica semanal
+- Definir entradas por rompimento + invalidacao (stop estrutural)
+
+---
+Continuacao salva - 2026-04-23 (parte 2)
+
+Novas moedas discutidas:
+- JasmyCoin (JASMY), VeChain (VET), XDC Network (XDC)
+- FET, AGIX/ASI, TAO, RNDR, IO, ATH, ARKM, TRAC, OM, ONDO, PENDLE, ZETA
+
+Insight adicional:
+- Usuario pediu watchlist completa para operar via Bybit.
+- Foi definido que gatilhos genericos nao sao suficientes; necessidade de gatilho tecnico especifico por ativo para automacao em Pine + alertas.
+
+Bybit (status operacional na conversa, sujeito a revalidacao no app):
+- Confirmados/fortes indicios: AKT, AIOZ, JASMY, FET, ONDO, PENDLE, OM, XDC, ATH, OLAS
+- Nao confirmados na varredura rapida: CFG, GFI, DIMO, NOS, HONEY, AGIX/ASI, TAO, RNDR, IO, ARKM, TRAC, ZETA, VET (provavel)
+- Regra acordada: se nao tiver par na Bybit, manter corretora alternativa para escolha posterior.
+
+Gatilhos tecnicos personalizados (resumo por ativo):
+- AKT: breakout continuidade com ADX e RVOL
+- AIOZ: breakout + candle de confirmacao
+- JASMY: momentum com filtro anti-fake (ATR + RVOL alto)
+- FET: trend-following com alinhamento de EMAs
+- ONDO: pullback em tendencia + reversao
+- PENDLE: breakout de compressao (Bollinger squeeze)
+- OM: breakout impulsivo com filtro de esticamento
+- XDC: rompimento de range maior (40 barras)
+- ATH: breakout apenas com RVOL muito alto
+- OLAS: dupla confirmacao de fechamento acima de canal
+- VET: continuidade conservadora
+- CFG: breakout com reteste obrigatorio
+
+Estrutura de alertas sugerida para Pine (por moeda):
+- ALERTA_1_PRE_BREAKOUT
+- ALERTA_2_ENTRY_CONFIRMED
+- ALERTA_3_INVALIDATION
+
+Proximo passo pedido/esperado:
+- Gerar Pine v6 unico com presets por ticker e alertcondition() separados para entrada e invalidacao.
+
+---
+Continuacao salva - 2026-04-24
+
+Pedido do usuario:
+- Salvar esta conversa (append).
+
+Snapshot de precos USD (referencia CoinGecko, agregado global) - todas as citadas ate o momento na conversa:
+
+Grandes:
+- BTC: 77741.23
+- ETH: 2254.92
+- SOL: 84.18
+- BNB: 637.83
+
+Watchlist inicial:
+- AKT: 0.5065
+- CFG: 0.1692
+- AIOZ: 0.06368
+- GFI: 0.1349
+- DIMO: 0.01211
+- NOS: 0.2794
+- HONEY: 0.002888
+- OLAS: 0.2724
+
+Outras citadas:
+- JASMY: 0.005362
+- VET: 0.007476
+- XDC: 0.03023
+- FET (pagina CoinGecko Artificial Superintelligence Alliance): 0.2395
+- AGIX: 0.09893
+- TAO: 309.97 (converter CG ~309.48)
+- RENDER (ex-RNDR): 1.95
+- IO: 0.1212
+- ATH (Aethir): 0.006539
+- ARKM: 0.09981
+- TRAC: 0.3314
+- ONDO: 0.2533
+- PENDLE: 1.09
+- ZETA: 0.04946
+
+MANTRA / OM (rebrand):
+- MANTRA (novo ticker na CG): 0.01747
+- MANTRA Old OM legado CG: 0.03774
+
+Nota ASI:
+- Listagem ASI Alliance na CG aparece como FET; se usuario quiser outro token ticker ASI, precisa rede/contrato para precificar sem homonimo.
+
+Fonte/timestamp:
+- Valores conforme resposta do assistente no chat; divergencias entre CG/CMC/exchange sao esperadas; para par exato BYBIT:XXXUSDT usar mid do par.
