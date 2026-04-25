@@ -209,6 +209,27 @@ def _position_rows(positions: list[dict], symbol_lookup: dict[str, dict]) -> lis
     return sorted(rows, key=lambda row: row["moeda"] or "")
 
 
+def _closed_trade_rows(trades: list[dict]) -> list[dict]:
+    rows = []
+    for item in trades:
+        if item.get("side") != "SELL":
+            continue
+        rows.append(
+            {
+                "fechada": _fmt_timestamp(item.get("closed_at") or item.get("ts")),
+                "moeda": item.get("symbol"),
+                "entrada": _fmt_price(item.get("entry_price")),
+                "saida": _fmt_price(item.get("exit_price") or item.get("price")),
+                "valor": _fmt_usd(item.get("notional_usd")),
+                "resultado": _fmt_usd(item.get("pnl_usd")),
+                "resultado %": _fmt_pct(item.get("pnl_pct")),
+                "aberta": _fmt_timestamp(item.get("opened_at")),
+                "motivo": item.get("reason"),
+            }
+        )
+    return rows
+
+
 st.set_page_config(page_title="Radar de Anomalias Cripto", layout="wide")
 st.markdown("<meta http-equiv='refresh' content='10'>", unsafe_allow_html=True)
 st.title("Radar de Anomalias Cripto")
@@ -246,6 +267,19 @@ if positions:
     )
 else:
     st.info("Nenhuma moeda em negociação agora. O paper trading só aparece aqui quando abre posição de fato.")
+
+st.subheader("Negociações Encerradas")
+trades = paper.get("trades", [])
+closed_trades = _closed_trade_rows(trades)
+if closed_trades:
+    st.dataframe(
+        closed_trades,
+        width="stretch",
+        hide_index=True,
+        height=min(900, 38 * (len(closed_trades) + 1)),
+    )
+else:
+    st.info("Nenhuma negociação encerrada ainda.")
 
 st.subheader("Top Oportunidades Agora")
 opportunities = status.get("opportunities", [])
@@ -292,7 +326,6 @@ with left_col:
         st.info("Nenhum worker registrado ainda.")
 
     st.subheader("Operacoes Simuladas")
-    trades = paper.get("trades", [])
     if trades:
         st.dataframe(
             [

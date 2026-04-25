@@ -53,9 +53,27 @@ class PaperPortfolio:
 
         qty = float(position["qty"])
         proceeds = qty * price
-        pnl_usd = proceeds - float(position["invested_usd"])
+        invested = float(position["invested_usd"])
+        avg_price = float(position["avg_price"])
+        pnl_usd = proceeds - invested
+        pnl_pct = 100.0 * pnl_usd / invested if invested > 0 else 0.0
         self.cash += proceeds
-        self._record_trade("SELL", symbol, price, qty, proceeds, pnl_usd, reason)
+        self._record_trade(
+            "SELL",
+            symbol,
+            price,
+            qty,
+            proceeds,
+            pnl_usd,
+            reason,
+            {
+                "entry_price": round(avg_price, 8),
+                "exit_price": round(price, 8),
+                "pnl_pct": round(pnl_pct, 2),
+                "opened_at": position.get("opened_at"),
+                "closed_at": time.time(),
+            },
+        )
         return True
 
     def mark_to_market(self, prices: dict[str, float | None]) -> dict[str, Any]:
@@ -92,7 +110,7 @@ class PaperPortfolio:
             "total_pnl_pct": round(100.0 * total_pnl / self.initial_cash, 2) if self.initial_cash > 0 else 0.0,
             "open_pnl_usd": round(open_pnl, 2),
             "positions": list(self.positions.values()),
-            "trades": self.trades[:50],
+            "trades": self.trades[:2000],
         }
 
     def _record_trade(
@@ -104,7 +122,9 @@ class PaperPortfolio:
         notional_usd: float,
         pnl_usd: float,
         reason: str,
+        extra: dict[str, Any] | None = None,
     ) -> None:
+        extra = extra or {}
         self.trades.insert(
             0,
             {
@@ -116,9 +136,10 @@ class PaperPortfolio:
                 "notional_usd": round(notional_usd, 2),
                 "pnl_usd": round(pnl_usd, 2),
                 "reason": reason,
+                **extra,
             },
         )
-        self.trades = self.trades[:100]
+        self.trades = self.trades[:2000]
 
 
 def _is_exit(alert: Alert) -> bool:
