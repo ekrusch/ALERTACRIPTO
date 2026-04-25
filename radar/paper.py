@@ -1,16 +1,21 @@
 from __future__ import annotations
 
+import json
+import os
 import time
+from pathlib import Path
 from typing import Any
 
 from radar.engine.rules import Alert
 
 
 class PaperPortfolio:
-    def __init__(self, initial_cash: float = 1000.0, position_fraction: float = 0.10) -> None:
+    def __init__(self, initial_cash: float = 1000.0, position_fraction: float = 0.10, audit_path: str | None = None) -> None:
         self.initial_cash = initial_cash
         self.cash = initial_cash
         self.position_fraction = position_fraction
+        self.audit_path = Path(audit_path or os.getenv("PAPER_AUDIT_FILE", "storage/trade_audit.jsonl"))
+        self.audit_path.parent.mkdir(parents=True, exist_ok=True)
         self.positions: dict[str, dict[str, Any]] = {}
         self.trades: list[dict[str, Any]] = []
 
@@ -156,21 +161,25 @@ class PaperPortfolio:
         extra: dict[str, Any] | None = None,
     ) -> None:
         extra = extra or {}
-        self.trades.insert(
-            0,
-            {
-                "ts": time.time(),
-                "side": side,
-                "symbol": symbol,
-                "price": round(price, 8),
-                "qty": round(qty, 8),
-                "notional_usd": round(notional_usd, 2),
-                "pnl_usd": round(pnl_usd, 2),
-                "reason": reason,
-                **extra,
-            },
-        )
+        record = {
+            "ts": time.time(),
+            "side": side,
+            "symbol": symbol,
+            "price": round(price, 8),
+            "qty": round(qty, 8),
+            "notional_usd": round(notional_usd, 2),
+            "pnl_usd": round(pnl_usd, 2),
+            "reason": reason,
+            **extra,
+        }
+        self.trades.insert(0, record)
         self.trades = self.trades[:2000]
+        self._append_audit_record(record)
+
+    def _append_audit_record(self, record: dict[str, Any]) -> None:
+        with self.audit_path.open("a", encoding="utf-8") as file:
+            json.dump(record, file, ensure_ascii=False, sort_keys=True)
+            file.write("\n")
 
 
 def _is_exit(alert: Alert) -> bool:

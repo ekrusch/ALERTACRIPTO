@@ -96,6 +96,7 @@ class StatusStore:
             "alerts": self.alerts,
             "paper": paper,
             "paper_history": self.paper_history,
+            "paper_audit": self._paper_audit_status(),
         }
 
         fd, temp_name = tempfile.mkstemp(prefix="status-", suffix=".json", dir=str(self.path.parent))
@@ -143,6 +144,17 @@ class StatusStore:
         except (OSError, json.JSONDecodeError):
             return {}
         return payload if isinstance(payload, dict) else {}
+
+    def _paper_audit_status(self) -> dict[str, Any]:
+        path = self.paper.audit_path
+        if not path.exists():
+            return {"path": str(path), "records": 0}
+        try:
+            with path.open("r", encoding="utf-8") as file:
+                records = sum(1 for _ in file)
+        except OSError:
+            records = None
+        return {"path": str(path), "records": records}
 
 
 def _pct_change(start: float | None, current: float | None) -> float | None:
