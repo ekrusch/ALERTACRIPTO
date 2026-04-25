@@ -432,6 +432,7 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
                 "ask_drop_pct": round(ask_drop_pct, 2),
                 "weekly_vwap": round(weekly_vwap, 8),
                 "distance_to_vwap_pct": round(vwap_distance_pct, 2),
+                "paper_trade": "monitor_only",
                 "orderbook_confirmation": "candle_1h_momentum",
                 "confirmed_1h_close": round(latest_candle.close, 8),
                 "change_24h_pct": round(state.change_24h_pct or 0.0, 2),

@@ -38,6 +38,8 @@ class PaperPortfolio:
             self.trades = [trade for trade in trades if isinstance(trade, dict)][:2000]
 
     def handle_alert(self, alert: Alert) -> bool:
+        if alert.metrics.get("paper_trade") == "monitor_only":
+            return False
         if _is_exit(alert):
             return self.sell(alert.symbol, alert.price, f"saida: {alert.rule}", alert.metrics)
         return self.buy(alert.symbol, alert.price, f"entrada: {alert.rule}", alert.metrics)
