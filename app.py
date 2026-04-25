@@ -185,6 +185,30 @@ def _render_symbols_table(rows: list[dict]) -> None:
     )
 
 
+def _position_rows(positions: list[dict], symbol_lookup: dict[str, dict]) -> list[dict]:
+    rows = []
+    for item in positions:
+        symbol = item.get("symbol")
+        symbol_data = symbol_lookup.get(symbol, {})
+        active_signal = symbol_data.get("active_signal") or {}
+        rows.append(
+            {
+                "moeda": symbol,
+                "cluster": symbol_data.get("cluster", ""),
+                "preco medio": _fmt_price(item.get("avg_price")),
+                "preco atual": _fmt_price(item.get("last_price")),
+                "resultado": _fmt_usd(item.get("pnl_usd")),
+                "resultado %": _fmt_pct(item.get("pnl_pct")),
+                "var 24h": _fmt_pct(symbol_data.get("change_24h_pct")),
+                "score": symbol_data.get("opportunity_score", "aguardando"),
+                "stop movel": _fmt_price(active_signal.get("trailing_stop_price")),
+                "topo monitorado": _fmt_price(active_signal.get("peak_price")),
+                "aberta": _fmt_timestamp(item.get("opened_at")),
+            }
+        )
+    return sorted(rows, key=lambda row: row["moeda"] or "")
+
+
 st.set_page_config(page_title="Radar de Anomalias Cripto", layout="wide")
 st.markdown("<meta http-equiv='refresh' content='10'>", unsafe_allow_html=True)
 st.title("Radar de Anomalias Cripto")
@@ -202,6 +226,8 @@ if updated_at:
     st.caption(f"Ultima atualizacao: {datetime.fromtimestamp(updated_at).strftime('%Y-%m-%d %H:%M:%S')}")
 
 paper = status.get("paper", {})
+symbols = status.get("symbols", [])
+symbol_lookup = {item.get("symbol"): item for item in symbols if item.get("symbol")}
 st.subheader("Carteira Simulada")
 metric_cols = st.columns(5)
 metric_cols[0].metric("Banca inicial", _fmt_usd(paper.get("initial_cash")))
@@ -211,25 +237,15 @@ metric_cols[3].metric("Patrimonio", _fmt_usd(paper.get("equity")), _fmt_pct(pape
 metric_cols[4].metric("Resultado", _fmt_usd(paper.get("total_pnl_usd")))
 
 positions = paper.get("positions", [])
+st.subheader("Moedas em Negociação Agora")
 if positions:
     st.dataframe(
-        [
-            {
-                "moeda": item.get("symbol"),
-                "preco medio": _fmt_price(item.get("avg_price")),
-                "preco atual": _fmt_price(item.get("last_price")),
-                "valor atual": _fmt_usd(item.get("value_usd")),
-                "resultado": _fmt_usd(item.get("pnl_usd")),
-                "resultado %": _fmt_pct(item.get("pnl_pct")),
-                "aberta": _fmt_timestamp(item.get("opened_at")),
-            }
-            for item in positions
-        ],
+        _position_rows(positions, symbol_lookup),
         width="stretch",
         hide_index=True,
     )
 else:
-    st.info("Nenhuma posicao simulada aberta. O paper trading compra apenas em alerta CONFIRMADO.")
+    st.info("Nenhuma moeda em negociação agora. O paper trading só aparece aqui quando abre posição de fato.")
 
 st.subheader("Top Oportunidades Agora")
 opportunities = status.get("opportunities", [])
@@ -239,7 +255,6 @@ else:
     st.info("Aguardando dados 24h suficientes para montar o ranking.")
 
 st.subheader("Moedas Monitoradas")
-symbols = status.get("symbols", [])
 if symbols:
     grouped_symbols: dict[str, list[dict]] = {}
     for item in symbols:

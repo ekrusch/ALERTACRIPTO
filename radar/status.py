@@ -70,6 +70,7 @@ class StatusStore:
                     "range_24h_pct": _round_optional(item.range_24h_pct),
                     "turnover_24h": _round_optional(item.turnover_24h, 2),
                     "opportunity_score": _opportunity_score(item),
+                    "active_signal": _active_signal(item.active_signals),
                     "price_updated_at": item.price_updated_at,
                     "candles": {timeframe: len(candles) for timeframe, candles in item.candles.items()},
                 }
@@ -105,6 +106,22 @@ def _pct_change(start: float | None, current: float | None) -> float | None:
 
 def _is_exit(alert: Alert) -> bool:
     return alert.rule.endswith("_exit") or alert.metrics.get("alert_level") == "SAIDA"
+
+
+def _active_signal(signals: dict[str, dict[str, float | str]]) -> dict[str, float | str] | None:
+    if not signals:
+        return None
+    rule, signal = next(iter(signals.items()))
+    fields = {
+        "rule": rule,
+        "price": signal.get("price"),
+        "level": signal.get("level"),
+        "started_at": signal.get("started_at"),
+        "peak_price": signal.get("peak_price"),
+        "trailing_stop_pct": signal.get("trailing_stop_pct"),
+        "trailing_stop_price": signal.get("trailing_stop_price"),
+    }
+    return {key: value for key, value in fields.items() if value is not None}
 
 
 def _round_optional(value: float | None, digits: int = 2) -> float | None:
