@@ -16,7 +16,7 @@ class PaperPortfolio:
 
     def handle_alert(self, alert: Alert) -> bool:
         if _is_exit(alert):
-            return self.sell(alert.symbol, alert.price, f"saida: {alert.rule}")
+            return self.sell(alert.symbol, alert.price, f"saida: {alert.rule}", alert.metrics)
         return self.buy(alert.symbol, alert.price, f"entrada: {alert.rule}", alert.metrics)
 
     def buy(self, symbol: str, price: float, reason: str, metrics: dict[str, float | str] | None = None) -> bool:
@@ -36,15 +36,17 @@ class PaperPortfolio:
             "last_price": price,
             "pnl_usd": 0.0,
             "pnl_pct": 0.0,
+            "entry_reason": reason,
+            "entry_metrics": metrics,
         }
         for key in ("peak_price", "trailing_stop_pct", "trailing_stop_price"):
             if key in metrics:
                 position[key] = metrics[key]
         self.positions[symbol] = position
-        self._record_trade("BUY", symbol, price, qty, amount_usd, 0.0, reason)
+        self._record_trade("BUY", symbol, price, qty, amount_usd, 0.0, reason, {"entry_metrics": metrics})
         return True
 
-    def sell(self, symbol: str, price: float, reason: str) -> bool:
+    def sell(self, symbol: str, price: float, reason: str, metrics: dict[str, float | str] | None = None) -> bool:
         if price <= 0:
             return False
         position = self.positions.pop(symbol, None)
@@ -57,6 +59,10 @@ class PaperPortfolio:
         avg_price = float(position["avg_price"])
         pnl_usd = proceeds - invested
         pnl_pct = 100.0 * pnl_usd / invested if invested > 0 else 0.0
+        opened_at = _as_float(position.get("opened_at"))
+        closed_at = time.time()
+        peak_price = _as_float(position.get("peak_price")) or max(avg_price, price)
+        max_gain_pct = 100.0 * (peak_price - avg_price) / avg_price if avg_price > 0 else 0.0
         self.cash += proceeds
         self._record_trade(
             "SELL",
@@ -70,8 +76,16 @@ class PaperPortfolio:
                 "entry_price": round(avg_price, 8),
                 "exit_price": round(price, 8),
                 "pnl_pct": round(pnl_pct, 2),
-                "opened_at": position.get("opened_at"),
-                "closed_at": time.time(),
+                "opened_at": opened_at,
+                "closed_at": closed_at,
+                "duration_seconds": round(closed_at - opened_at, 2) if opened_at is not None else None,
+                "entry_reason": position.get("entry_reason"),
+                "entry_metrics": position.get("entry_metrics", {}),
+                "exit_metrics": metrics or {},
+                "peak_price": round(peak_price, 8),
+                "max_gain_pct": round(max_gain_pct, 2),
+                "trailing_stop_pct": position.get("trailing_stop_pct"),
+                "trailing_stop_price": position.get("trailing_stop_price"),
             },
         )
         return True

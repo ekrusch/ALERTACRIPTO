@@ -55,6 +55,17 @@ def _fmt_timestamp(value: float | None) -> str:
     return datetime.fromtimestamp(value, DISPLAY_TZ).strftime("%H:%M:%S")
 
 
+def _fmt_duration(seconds: float | None) -> str:
+    if seconds is None:
+        return "aguardando"
+    if seconds < 60:
+        return f"{seconds:.0f}s"
+    minutes = seconds / 60
+    if minutes < 60:
+        return f"{minutes:.1f}min"
+    return f"{minutes / 60:.1f}h"
+
+
 def _variation_sort_value(item: dict) -> float:
     change = item.get("change_24h_pct")
     if isinstance(change, (int, float)):
@@ -225,11 +236,35 @@ def _closed_trade_rows(trades: list[dict]) -> list[dict]:
                 "valor": _fmt_usd(item.get("notional_usd")),
                 "resultado": _fmt_usd(item.get("pnl_usd")),
                 "resultado %": _fmt_pct(item.get("pnl_pct")),
+                "ganho max": _fmt_pct(item.get("max_gain_pct")),
+                "duração": _fmt_duration(item.get("duration_seconds")),
                 "aberta": _fmt_timestamp(item.get("opened_at")),
+                "topo": _fmt_price(item.get("peak_price")),
+                "stop": _fmt_price(item.get("trailing_stop_price")),
                 "motivo": item.get("reason"),
+                "entrada motivo": item.get("entry_reason"),
             }
         )
     return rows
+
+
+def _loss_summary(closed_trades: list[dict]) -> dict[str, str] | None:
+    losses = [item for item in closed_trades if isinstance(item.get("pnl_usd"), (int, float)) and item.get("pnl_usd") < 0]
+    if not losses:
+        return None
+    avg_loss = sum(float(item.get("pnl_pct") or 0.0) for item in losses) / len(losses)
+    worst = min(losses, key=lambda item: float(item.get("pnl_pct") or 0.0))
+    reasons: dict[str, int] = {}
+    for item in losses:
+        reason = str(item.get("reason") or "sem motivo")
+        reasons[reason] = reasons.get(reason, 0) + 1
+    common_reason = max(reasons.items(), key=lambda item: item[1])[0]
+    return {
+        "perdas": str(len(losses)),
+        "perda média": _fmt_pct(avg_loss),
+        "pior perda": f"{worst.get('symbol')} {_fmt_pct(worst.get('pnl_pct'))}",
+        "motivo comum": common_reason,
+    }
 
 
 def _paper_window_return(history: list[dict], current_equity: float | None, hours: int, now: float | None) -> tuple[float | None, float | None]:
@@ -350,6 +385,11 @@ st.subheader("Negociações Encerradas")
 trades = paper.get("trades", [])
 closed_trades = _closed_trade_rows(trades)
 if closed_trades:
+    loss_summary = _loss_summary([item for item in trades if item.get("side") == "SELL"])
+    if loss_summary:
+        loss_cols = st.columns(4)
+        for column, (label, value) in zip(loss_cols, loss_summary.items()):
+            column.metric(label, value)
     st.dataframe(
         closed_trades,
         width="stretch",
