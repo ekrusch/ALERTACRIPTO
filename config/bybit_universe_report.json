@@ -1,0 +1,4327 @@
+{
+  "generated_at": "2026-04-25T17:47:12.761744+00:00",
+  "source": "Bybit v5 market/instruments-info + market/tickers, category=linear, quoteCoin=USDT, status=Trading",
+  "total_symbols": 538,
+  "classification_rules": {
+    "hot_momentum": "turnover24h >= 2M and change24h_pct >= 8",
+    "reversal": "turnover24h >= 1M and change24h_pct <= -6",
+    "compression": "turnover24h >= 1M and range24h_pct <= 8 and abs(change24h_pct) < 4",
+    "liquid_directional": "turnover24h >= 20M, after previous filters",
+    "mid_volume": "turnover24h >= 1M, after previous filters",
+    "low_liquidity": "turnover24h < 1M"
+  },
+  "counts": {
+    "hot_momentum": 13,
+    "liquid_directional": 8,
+    "compression": 128,
+    "reversal": 39,
+    "mid_volume": 100,
+    "low_liquidity": 250
+  },
+  "symbols": [
+    {
+      "symbol": "BTCUSDT",
+      "category": "compression",
+      "last_price": 77255.1,
+      "change24h_pct": -0.3653,
+      "range24h_pct": 0.9804,
+      "turnover24h": 1732634336.87
+    },
+    {
+      "symbol": "ETHUSDT",
+      "category": "compression",
+      "last_price": 2309.35,
+      "change24h_pct": -0.1025,
+      "range24h_pct": 1.2294,
+      "turnover24h": 880058554.84
+    },
+    {
+      "symbol": "APEUSDT",
+      "category": "liquid_directional",
+      "last_price": 0.15597,
+      "change24h_pct": -4.3598,
+      "range24h_pct": 145.1754,
+      "turnover24h": 548616967.97
+    },
+    {
+      "symbol": "SOLUSDT",
+      "category": "compression",
+      "last_price": 85.64,
+      "change24h_pct": -0.6957,
+      "range24h_pct": 1.588,
+      "turnover24h": 384173495.93
+    },
+    {
+      "symbol": "AXSUSDT",
+      "category": "hot_momentum",
+      "last_price": 1.5299,
+      "change24h_pct": 37.1369,
+      "range24h_pct": 42.8263,
+      "turnover24h": 199737399.87
+    },
+    {
+      "symbol": "KATUSDT",
+      "category": "reversal",
+      "last_price": 0.01636,
+      "change24h_pct": -28.4965,
+      "range24h_pct": 91.5648,
+      "turnover24h": 176447072.6
+    },
+    {
+      "symbol": "TRUMPUSDT",
+      "category": "reversal",
+      "last_price": 2.541,
+      "change24h_pct": -16.9607,
+      "range24h_pct": 26.1708,
+      "turnover24h": 174275357.42
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "category": "compression",
+      "last_price": 0.09781,
+      "change24h_pct": 0.0204,
+      "range24h_pct": 2.0652,
+      "turnover24h": 113619867.86
+    },
+    {
+      "symbol": "XRPUSDT",
+      "category": "compression",
+      "last_price": 1.4198,
+      "change24h_pct": -1.1763,
+      "range24h_pct": 1.7115,
+      "turnover24h": 97980863.46
+    },
+    {
+      "symbol": "GALAUSDT",
+      "category": "liquid_directional",
+      "last_price": 0.003467,
+      "change24h_pct": 4.3648,
+      "range24h_pct": 15.2581,
+      "turnover24h": 93248897.67
+    },
+    {
+      "symbol": "CHIPUSDT",
+      "category": "reversal",
+      "last_price": 0.07079,
+      "change24h_pct": -19.639,
+      "range24h_pct": 29.7923,
+      "turnover24h": 92514518.32
+    },
+    {
+      "symbol": "HYPERUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.1596,
+      "change24h_pct": 63.6587,
+      "range24h_pct": 53.1078,
+      "turnover24h": 91782758.36
+    },
+    {
+      "symbol": "BSBUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.691,
+      "change24h_pct": 64.3281,
+      "range24h_pct": 55.4993,
+      "turnover24h": 76964171.02
+    },
+    {
+      "symbol": "1000PEPEUSDT",
+      "category": "compression",
+      "last_price": 0.00379,
+      "change24h_pct": -2.0165,
+      "range24h_pct": 4.2216,
+      "turnover24h": 71582885.63
+    },
+    {
+      "symbol": "HYPEUSDT",
+      "category": "compression",
+      "last_price": 41.15,
+      "change24h_pct": 0.2216,
+      "range24h_pct": 2.5273,
+      "turnover24h": 69215237.55
+    },
+    {
+      "symbol": "RAVEUSDT",
+      "category": "liquid_directional",
+      "last_price": 0.8676,
+      "change24h_pct": -4.7368,
+      "range24h_pct": 32.6568,
+      "turnover24h": 63078088.61
+    },
+    {
+      "symbol": "API3USDT",
+      "category": "hot_momentum",
+      "last_price": 0.3716,
+      "change24h_pct": 12.914,
+      "range24h_pct": 49.1927,
+      "turnover24h": 56497423.39
+    },
+    {
+      "symbol": "ZECUSDT",
+      "category": "compression",
+      "last_price": 353.17,
+      "change24h_pct": -3.5739,
+      "range24h_pct": 4.839,
+      "turnover24h": 54498155.49
+    },
+    {
+      "symbol": "ADAUSDT",
+      "category": "compression",
+      "last_price": 0.2485,
+      "change24h_pct": -0.9565,
+      "range24h_pct": 2.2938,
+      "turnover24h": 51944482.5
+    },
+    {
+      "symbol": "AAVEUSDT",
+      "category": "compression",
+      "last_price": 94.1,
+      "change24h_pct": 0.4697,
+      "range24h_pct": 3.0925,
+      "turnover24h": 46212299.76
+    },
+    {
+      "symbol": "TAOUSDT",
+      "category": "compression",
+      "last_price": 245.63,
+      "change24h_pct": -1.1628,
+      "range24h_pct": 3.3831,
+      "turnover24h": 37359019.34
+    },
+    {
+      "symbol": "ZBTUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.15287,
+      "change24h_pct": 20.8171,
+      "range24h_pct": 27.8472,
+      "turnover24h": 34847158.84
+    },
+    {
+      "symbol": "FARTCOINUSDT",
+      "category": "compression",
+      "last_price": 0.19565,
+      "change24h_pct": -2.8598,
+      "range24h_pct": 4.7074,
+      "turnover24h": 34113395.68
+    },
+    {
+      "symbol": "SOONUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.20097,
+      "change24h_pct": 9.0805,
+      "range24h_pct": 35.5575,
+      "turnover24h": 33249367.01
+    },
+    {
+      "symbol": "SUIUSDT",
+      "category": "compression",
+      "last_price": 0.9328,
+      "change24h_pct": -1.7277,
+      "range24h_pct": 2.6158,
+      "turnover24h": 29733786.07
+    },
+    {
+      "symbol": "ORDIUSDT",
+      "category": "liquid_directional",
+      "last_price": 4.633,
+      "change24h_pct": -0.3441,
+      "range24h_pct": 11.8066,
+      "turnover24h": 29558383.13
+    },
+    {
+      "symbol": "MUSDT",
+      "category": "liquid_directional",
+      "last_price": 4.3192,
+      "change24h_pct": 0.6196,
+      "range24h_pct": 14.7898,
+      "turnover24h": 28844736.85
+    },
+    {
+      "symbol": "ENAUSDT",
+      "category": "compression",
+      "last_price": 0.10626,
+      "change24h_pct": -2.4063,
+      "range24h_pct": 4.5831,
+      "turnover24h": 26372373.8
+    },
+    {
+      "symbol": "PIPPINUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.02994,
+      "change24h_pct": 15.1095,
+      "range24h_pct": 19.7061,
+      "turnover24h": 25748043.25
+    },
+    {
+      "symbol": "OPUSDT",
+      "category": "liquid_directional",
+      "last_price": 0.12397,
+      "change24h_pct": 0.5026,
+      "range24h_pct": 8.5827,
+      "turnover24h": 25358551.48
+    },
+    {
+      "symbol": "DYDXUSDT",
+      "category": "liquid_directional",
+      "last_price": 0.15914,
+      "change24h_pct": 1.9213,
+      "range24h_pct": 14.792,
+      "turnover24h": 24674989.61
+    },
+    {
+      "symbol": "XAUTUSDT",
+      "category": "compression",
+      "last_price": 4689.8,
+      "change24h_pct": -0.3124,
+      "range24h_pct": 0.58,
+      "turnover24h": 22565139.76
+    },
+    {
+      "symbol": "ARBUSDT",
+      "category": "compression",
+      "last_price": 0.12794,
+      "change24h_pct": -1.3873,
+      "range24h_pct": 4.8695,
+      "turnover24h": 21758245.48
+    },
+    {
+      "symbol": "SANDUSDT",
+      "category": "liquid_directional",
+      "last_price": 0.07913,
+      "change24h_pct": 1.3837,
+      "range24h_pct": 10.9819,
+      "turnover24h": 21504162.32
+    },
+    {
+      "symbol": "PENGUUSDT",
+      "category": "compression",
+      "last_price": 0.008376,
+      "change24h_pct": -1.7132,
+      "range24h_pct": 5.0024,
+      "turnover24h": 20778313.81
+    },
+    {
+      "symbol": "CRVUSDT",
+      "category": "compression",
+      "last_price": 0.2231,
+      "change24h_pct": -0.5793,
+      "range24h_pct": 4.2134,
+      "turnover24h": 20753177.5
+    },
+    {
+      "symbol": "OPGUSDT",
+      "category": "reversal",
+      "last_price": 0.2613,
+      "change24h_pct": -8.3157,
+      "range24h_pct": 25.6793,
+      "turnover24h": 19480629.36
+    },
+    {
+      "symbol": "SAHARAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.022799,
+      "change24h_pct": 4.9919,
+      "range24h_pct": 22.1633,
+      "turnover24h": 19381056.26
+    },
+    {
+      "symbol": "WIFUSDT",
+      "category": "compression",
+      "last_price": 0.17658,
+      "change24h_pct": -2.0414,
+      "range24h_pct": 3.211,
+      "turnover24h": 19172480.67
+    },
+    {
+      "symbol": "MOVRUSDT",
+      "category": "hot_momentum",
+      "last_price": 2.4557,
+      "change24h_pct": 9.181,
+      "range24h_pct": 26.2369,
+      "turnover24h": 17959909.64
+    },
+    {
+      "symbol": "SPKUSDT",
+      "category": "reversal",
+      "last_price": 0.039131,
+      "change24h_pct": -10.9363,
+      "range24h_pct": 22.4349,
+      "turnover24h": 17343423.12
+    },
+    {
+      "symbol": "SKRUSDT",
+      "category": "reversal",
+      "last_price": 0.016511,
+      "change24h_pct": -16.6868,
+      "range24h_pct": 30.2647,
+      "turnover24h": 17268043.18
+    },
+    {
+      "symbol": "DOTUSDT",
+      "category": "compression",
+      "last_price": 1.2434,
+      "change24h_pct": -1.0504,
+      "range24h_pct": 2.5253,
+      "turnover24h": 17164479.19
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "category": "compression",
+      "last_price": 9.298,
+      "change24h_pct": -1.2217,
+      "range24h_pct": 2.2801,
+      "turnover24h": 16983826.45
+    },
+    {
+      "symbol": "ORCAUSDT",
+      "category": "hot_momentum",
+      "last_price": 1.1772,
+      "change24h_pct": 25.3807,
+      "range24h_pct": 33.3673,
+      "turnover24h": 16682557.78
+    },
+    {
+      "symbol": "RIVERUSDT",
+      "category": "reversal",
+      "last_price": 6.111,
+      "change24h_pct": -11.7927,
+      "range24h_pct": 14.9075,
+      "turnover24h": 16593592.08
+    },
+    {
+      "symbol": "ASTERUSDT",
+      "category": "mid_volume",
+      "last_price": 0.6339,
+      "change24h_pct": -5.0194,
+      "range24h_pct": 6.3259,
+      "turnover24h": 16377810.57
+    },
+    {
+      "symbol": "LABUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.77314,
+      "change24h_pct": 8.7979,
+      "range24h_pct": 14.2445,
+      "turnover24h": 16360831.26
+    },
+    {
+      "symbol": "NEARUSDT",
+      "category": "compression",
+      "last_price": 1.3894,
+      "change24h_pct": -1.8438,
+      "range24h_pct": 2.3175,
+      "turnover24h": 16322423.01
+    },
+    {
+      "symbol": "WUSDT",
+      "category": "mid_volume",
+      "last_price": 0.013323,
+      "change24h_pct": -2.8935,
+      "range24h_pct": 17.6462,
+      "turnover24h": 15834569.87
+    },
+    {
+      "symbol": "LINKUSDT",
+      "category": "compression",
+      "last_price": 9.3,
+      "change24h_pct": -0.6091,
+      "range24h_pct": 1.6237,
+      "turnover24h": 15471208.91
+    },
+    {
+      "symbol": "IPUSDT",
+      "category": "compression",
+      "last_price": 0.5286,
+      "change24h_pct": 1.2062,
+      "range24h_pct": 7.5482,
+      "turnover24h": 14771770.32
+    },
+    {
+      "symbol": "APTUSDT",
+      "category": "compression",
+      "last_price": 0.9595,
+      "change24h_pct": -0.208,
+      "range24h_pct": 4.2731,
+      "turnover24h": 14756988.68
+    },
+    {
+      "symbol": "MONUSDT",
+      "category": "compression",
+      "last_price": 0.029875,
+      "change24h_pct": -3.1416,
+      "range24h_pct": 5.6067,
+      "turnover24h": 14448136.42
+    },
+    {
+      "symbol": "MAGMAUSDT",
+      "category": "reversal",
+      "last_price": 0.19074,
+      "change24h_pct": -26.321,
+      "range24h_pct": 51.2792,
+      "turnover24h": 14321735.1
+    },
+    {
+      "symbol": "ALGOUSDT",
+      "category": "mid_volume",
+      "last_price": 0.11465,
+      "change24h_pct": 6.3247,
+      "range24h_pct": 9.0973,
+      "turnover24h": 14066070.53
+    },
+    {
+      "symbol": "BNBUSDT",
+      "category": "compression",
+      "last_price": 627.7,
+      "change24h_pct": -1.3825,
+      "range24h_pct": 1.8958,
+      "turnover24h": 13751549.97
+    },
+    {
+      "symbol": "WLDUSDT",
+      "category": "compression",
+      "last_price": 0.2563,
+      "change24h_pct": -2.1755,
+      "range24h_pct": 3.4335,
+      "turnover24h": 12951720.62
+    },
+    {
+      "symbol": "CLUSDT",
+      "category": "compression",
+      "last_price": 95.885,
+      "change24h_pct": 2.7111,
+      "range24h_pct": 3.6429,
+      "turnover24h": 12857687.63
+    },
+    {
+      "symbol": "XAUUSDT",
+      "category": "compression",
+      "last_price": 4709.05,
+      "change24h_pct": -0.2776,
+      "range24h_pct": 0.4018,
+      "turnover24h": 12717444.64
+    },
+    {
+      "symbol": "SAFEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.15834,
+      "change24h_pct": 6.4828,
+      "range24h_pct": 29.0009,
+      "turnover24h": 12509132.34
+    },
+    {
+      "symbol": "HBARUSDT",
+      "category": "compression",
+      "last_price": 0.09023,
+      "change24h_pct": -0.7916,
+      "range24h_pct": 2.3606,
+      "turnover24h": 12258778.59
+    },
+    {
+      "symbol": "POLUSDT",
+      "category": "compression",
+      "last_price": 0.09166,
+      "change24h_pct": -1.4938,
+      "range24h_pct": 4.1567,
+      "turnover24h": 11946393.05
+    },
+    {
+      "symbol": "INJUSDT",
+      "category": "compression",
+      "last_price": 3.542,
+      "change24h_pct": 3.3557,
+      "range24h_pct": 7.1711,
+      "turnover24h": 11860491.09
+    },
+    {
+      "symbol": "XMRUSDT",
+      "category": "compression",
+      "last_price": 376.28,
+      "change24h_pct": 0.8847,
+      "range24h_pct": 2.8941,
+      "turnover24h": 11847488.12
+    },
+    {
+      "symbol": "LTCUSDT",
+      "category": "compression",
+      "last_price": 56.22,
+      "change24h_pct": -0.3897,
+      "range24h_pct": 1.0672,
+      "turnover24h": 10554396.33
+    },
+    {
+      "symbol": "XLMUSDT",
+      "category": "compression",
+      "last_price": 0.17069,
+      "change24h_pct": -2.1216,
+      "range24h_pct": 2.8121,
+      "turnover24h": 10279326.4
+    },
+    {
+      "symbol": "SEIUSDT",
+      "category": "compression",
+      "last_price": 0.06039,
+      "change24h_pct": -2.1707,
+      "range24h_pct": 5.3982,
+      "turnover24h": 10278033.91
+    },
+    {
+      "symbol": "1000BONKUSDT",
+      "category": "compression",
+      "last_price": 0.006162,
+      "change24h_pct": -3.0827,
+      "range24h_pct": 4.5764,
+      "turnover24h": 10112939.0
+    },
+    {
+      "symbol": "VIRTUALUSDT",
+      "category": "compression",
+      "last_price": 0.6926,
+      "change24h_pct": -1.7309,
+      "range24h_pct": 3.1187,
+      "turnover24h": 10035714.63
+    },
+    {
+      "symbol": "ATOMUSDT",
+      "category": "compression",
+      "last_price": 2.017,
+      "change24h_pct": 1.7761,
+      "range24h_pct": 4.3381,
+      "turnover24h": 9951923.36
+    },
+    {
+      "symbol": "STABLEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.033409,
+      "change24h_pct": -3.2744,
+      "range24h_pct": 13.6819,
+      "turnover24h": 9810510.98
+    },
+    {
+      "symbol": "XPLUSDT",
+      "category": "compression",
+      "last_price": 0.09837,
+      "change24h_pct": -1.6791,
+      "range24h_pct": 3.0395,
+      "turnover24h": 9740930.99
+    },
+    {
+      "symbol": "IMXUSDT",
+      "category": "mid_volume",
+      "last_price": 0.18146,
+      "change24h_pct": 3.6381,
+      "range24h_pct": 14.9289,
+      "turnover24h": 9641079.41
+    },
+    {
+      "symbol": "TONUSDT",
+      "category": "compression",
+      "last_price": 1.3117,
+      "change24h_pct": -0.7716,
+      "range24h_pct": 3.4459,
+      "turnover24h": 9522823.38
+    },
+    {
+      "symbol": "ENSOUSDT",
+      "category": "mid_volume",
+      "last_price": 0.856,
+      "change24h_pct": 4.0476,
+      "range24h_pct": 15.5607,
+      "turnover24h": 9412828.36
+    },
+    {
+      "symbol": "ENJUSDT",
+      "category": "mid_volume",
+      "last_price": 0.061382,
+      "change24h_pct": -4.9725,
+      "range24h_pct": 11.8846,
+      "turnover24h": 9353672.74
+    },
+    {
+      "symbol": "EDGEUSDT",
+      "category": "reversal",
+      "last_price": 1.2726,
+      "change24h_pct": -12.6261,
+      "range24h_pct": 18.1204,
+      "turnover24h": 9227396.27
+    },
+    {
+      "symbol": "STRKUSDT",
+      "category": "compression",
+      "last_price": 0.04031,
+      "change24h_pct": -2.5857,
+      "range24h_pct": 4.3662,
+      "turnover24h": 9207541.95
+    },
+    {
+      "symbol": "LINEAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.003479,
+      "change24h_pct": 2.7769,
+      "range24h_pct": 13.3084,
+      "turnover24h": 8988917.56
+    },
+    {
+      "symbol": "TRXUSDT",
+      "category": "compression",
+      "last_price": 0.32386,
+      "change24h_pct": -0.0277,
+      "range24h_pct": 0.9696,
+      "turnover24h": 8882377.74
+    },
+    {
+      "symbol": "HIGHUSDT",
+      "category": "mid_volume",
+      "last_price": 0.20514,
+      "change24h_pct": -3.9471,
+      "range24h_pct": 26.5185,
+      "turnover24h": 8492487.17
+    },
+    {
+      "symbol": "PIEVERSEUSDT",
+      "category": "reversal",
+      "last_price": 0.7433,
+      "change24h_pct": -10.4996,
+      "range24h_pct": 14.4356,
+      "turnover24h": 8445173.21
+    },
+    {
+      "symbol": "OPNUSDT",
+      "category": "reversal",
+      "last_price": 0.1902,
+      "change24h_pct": -7.0381,
+      "range24h_pct": 21.5037,
+      "turnover24h": 8390734.32
+    },
+    {
+      "symbol": "BLURUSDT",
+      "category": "reversal",
+      "last_price": 0.029335,
+      "change24h_pct": -12.2468,
+      "range24h_pct": 16.1854,
+      "turnover24h": 7875525.45
+    },
+    {
+      "symbol": "PUMPFUNUSDT",
+      "category": "compression",
+      "last_price": 0.0017315,
+      "change24h_pct": -2.9373,
+      "range24h_pct": 4.5625,
+      "turnover24h": 7774132.23
+    },
+    {
+      "symbol": "BIOUSDT",
+      "category": "reversal",
+      "last_price": 0.02974,
+      "change24h_pct": -7.0334,
+      "range24h_pct": 10.659,
+      "turnover24h": 7753309.05
+    },
+    {
+      "symbol": "GMTUSDT",
+      "category": "mid_volume",
+      "last_price": 0.011588,
+      "change24h_pct": 0.9231,
+      "range24h_pct": 12.3231,
+      "turnover24h": 7649700.14
+    },
+    {
+      "symbol": "WLFIUSDT",
+      "category": "compression",
+      "last_price": 0.07473,
+      "change24h_pct": -0.3998,
+      "range24h_pct": 2.8235,
+      "turnover24h": 7569361.6
+    },
+    {
+      "symbol": "ONDOUSDT",
+      "category": "compression",
+      "last_price": 0.258,
+      "change24h_pct": -2.6047,
+      "range24h_pct": 3.2558,
+      "turnover24h": 7307703.77
+    },
+    {
+      "symbol": "ALICEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.15957,
+      "change24h_pct": 7.0364,
+      "range24h_pct": 27.1041,
+      "turnover24h": 7108948.08
+    },
+    {
+      "symbol": "TIAUSDT",
+      "category": "compression",
+      "last_price": 0.347,
+      "change24h_pct": -3.9579,
+      "range24h_pct": 5.1873,
+      "turnover24h": 6988077.78
+    },
+    {
+      "symbol": "MNTUSDT",
+      "category": "compression",
+      "last_price": 0.6544,
+      "change24h_pct": 0.9097,
+      "range24h_pct": 2.8576,
+      "turnover24h": 6910700.46
+    },
+    {
+      "symbol": "HUMAUSDT",
+      "category": "reversal",
+      "last_price": 0.024924,
+      "change24h_pct": -6.4203,
+      "range24h_pct": 21.4974,
+      "turnover24h": 6855126.08
+    },
+    {
+      "symbol": "HUSDT",
+      "category": "mid_volume",
+      "last_price": 0.14588,
+      "change24h_pct": 5.9943,
+      "range24h_pct": 9.0965,
+      "turnover24h": 6738299.73
+    },
+    {
+      "symbol": "SHIB1000USDT",
+      "category": "compression",
+      "last_price": 0.006131,
+      "change24h_pct": -1.589,
+      "range24h_pct": 2.5608,
+      "turnover24h": 6682364.09
+    },
+    {
+      "symbol": "SLPUSDT",
+      "category": "mid_volume",
+      "last_price": 0.0007182,
+      "change24h_pct": 5.4161,
+      "range24h_pct": 35.1156,
+      "turnover24h": 6653747.59
+    },
+    {
+      "symbol": "BCHUSDT",
+      "category": "compression",
+      "last_price": 452.4,
+      "change24h_pct": -1.0931,
+      "range24h_pct": 1.4589,
+      "turnover24h": 6635113.62
+    },
+    {
+      "symbol": "PLUMEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.013492,
+      "change24h_pct": 3.6331,
+      "range24h_pct": 12.1998,
+      "turnover24h": 6487980.99
+    },
+    {
+      "symbol": "ESPORTSUSDT",
+      "category": "reversal",
+      "last_price": 0.35451,
+      "change24h_pct": -27.35,
+      "range24h_pct": 42.6927,
+      "turnover24h": 6337148.03
+    },
+    {
+      "symbol": "HOLOUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06599,
+      "change24h_pct": 4.8125,
+      "range24h_pct": 12.5322,
+      "turnover24h": 6265381.82
+    },
+    {
+      "symbol": "BASEDUSDT",
+      "category": "mid_volume",
+      "last_price": 0.1307,
+      "change24h_pct": 2.1093,
+      "range24h_pct": 10.9411,
+      "turnover24h": 6166510.09
+    },
+    {
+      "symbol": "SIRENUSDT",
+      "category": "mid_volume",
+      "last_price": 0.71019,
+      "change24h_pct": 5.4351,
+      "range24h_pct": 13.6344,
+      "turnover24h": 5956511.96
+    },
+    {
+      "symbol": "STOUSDT",
+      "category": "reversal",
+      "last_price": 0.088,
+      "change24h_pct": -11.8413,
+      "range24h_pct": 15.8409,
+      "turnover24h": 5944071.08
+    },
+    {
+      "symbol": "INITUSDT",
+      "category": "mid_volume",
+      "last_price": 0.09351,
+      "change24h_pct": 2.4318,
+      "range24h_pct": 10.8865,
+      "turnover24h": 5884031.52
+    },
+    {
+      "symbol": "ZAMAUSDT",
+      "category": "reversal",
+      "last_price": 0.02873,
+      "change24h_pct": -10.3867,
+      "range24h_pct": 21.0581,
+      "turnover24h": 5754214.03
+    },
+    {
+      "symbol": "RENDERUSDT",
+      "category": "compression",
+      "last_price": 1.7726,
+      "change24h_pct": -1.7187,
+      "range24h_pct": 2.9166,
+      "turnover24h": 5688335.87
+    },
+    {
+      "symbol": "FILUSDT",
+      "category": "compression",
+      "last_price": 0.9305,
+      "change24h_pct": -1.43,
+      "range24h_pct": 2.9447,
+      "turnover24h": 5676216.27
+    },
+    {
+      "symbol": "CHZUSDT",
+      "category": "compression",
+      "last_price": 0.04851,
+      "change24h_pct": 1.0625,
+      "range24h_pct": 5.4422,
+      "turnover24h": 5487060.04
+    },
+    {
+      "symbol": "UNIUSDT",
+      "category": "compression",
+      "last_price": 3.227,
+      "change24h_pct": -0.7992,
+      "range24h_pct": 2.1072,
+      "turnover24h": 5296341.07
+    },
+    {
+      "symbol": "COAIUSDT",
+      "category": "mid_volume",
+      "last_price": 0.3404,
+      "change24h_pct": 5.1915,
+      "range24h_pct": 17.3325,
+      "turnover24h": 5271969.31
+    },
+    {
+      "symbol": "VVVUSDT",
+      "category": "compression",
+      "last_price": 8.8724,
+      "change24h_pct": 2.891,
+      "range24h_pct": 5.7549,
+      "turnover24h": 5255399.58
+    },
+    {
+      "symbol": "BEATUSDT",
+      "category": "reversal",
+      "last_price": 0.54952,
+      "change24h_pct": -7.639,
+      "range24h_pct": 11.2061,
+      "turnover24h": 5219191.81
+    },
+    {
+      "symbol": "SAPIENUSDT",
+      "category": "mid_volume",
+      "last_price": 0.09606,
+      "change24h_pct": 4.9836,
+      "range24h_pct": 29.7731,
+      "turnover24h": 5153202.81
+    },
+    {
+      "symbol": "MEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.10825,
+      "change24h_pct": -0.2855,
+      "range24h_pct": 10.0046,
+      "turnover24h": 5011519.2
+    },
+    {
+      "symbol": "CYSUSDT",
+      "category": "mid_volume",
+      "last_price": 0.4684,
+      "change24h_pct": -3.1831,
+      "range24h_pct": 25.0,
+      "turnover24h": 4986051.23
+    },
+    {
+      "symbol": "MANAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.09515,
+      "change24h_pct": 1.6234,
+      "range24h_pct": 8.8071,
+      "turnover24h": 4879391.05
+    },
+    {
+      "symbol": "DYMUSDT",
+      "category": "mid_volume",
+      "last_price": 0.0187,
+      "change24h_pct": -4.9313,
+      "range24h_pct": 24.6524,
+      "turnover24h": 4759151.22
+    },
+    {
+      "symbol": "ICPUSDT",
+      "category": "compression",
+      "last_price": 2.414,
+      "change24h_pct": -2.1483,
+      "range24h_pct": 3.1069,
+      "turnover24h": 4723240.82
+    },
+    {
+      "symbol": "REDUSDT",
+      "category": "reversal",
+      "last_price": 0.12977,
+      "change24h_pct": -10.4663,
+      "range24h_pct": 12.7996,
+      "turnover24h": 4531534.86
+    },
+    {
+      "symbol": "TREEUSDT",
+      "category": "reversal",
+      "last_price": 0.06979,
+      "change24h_pct": -13.1533,
+      "range24h_pct": 19.9599,
+      "turnover24h": 4477008.21
+    },
+    {
+      "symbol": "YGGUSDT",
+      "category": "mid_volume",
+      "last_price": 0.04303,
+      "change24h_pct": 2.6723,
+      "range24h_pct": 9.8536,
+      "turnover24h": 4394183.64
+    },
+    {
+      "symbol": "EGLDUSDT",
+      "category": "compression",
+      "last_price": 4.277,
+      "change24h_pct": 0.2813,
+      "range24h_pct": 5.8218,
+      "turnover24h": 4392196.78
+    },
+    {
+      "symbol": "MOODENGUSDT",
+      "category": "mid_volume",
+      "last_price": 0.05713,
+      "change24h_pct": -4.2727,
+      "range24h_pct": 5.7063,
+      "turnover24h": 4373407.8
+    },
+    {
+      "symbol": "GRASSUSDT",
+      "category": "reversal",
+      "last_price": 0.3601,
+      "change24h_pct": -6.3678,
+      "range24h_pct": 9.4974,
+      "turnover24h": 4326323.43
+    },
+    {
+      "symbol": "GRIFFAINUSDT",
+      "category": "reversal",
+      "last_price": 0.017991,
+      "change24h_pct": -14.8757,
+      "range24h_pct": 32.0271,
+      "turnover24h": 4279405.54
+    },
+    {
+      "symbol": "LDOUSDT",
+      "category": "compression",
+      "last_price": 0.3745,
+      "change24h_pct": -2.0146,
+      "range24h_pct": 2.9105,
+      "turnover24h": 4215676.22
+    },
+    {
+      "symbol": "KITEUSDT",
+      "category": "compression",
+      "last_price": 0.14431,
+      "change24h_pct": -2.2223,
+      "range24h_pct": 6.5484,
+      "turnover24h": 4162677.37
+    },
+    {
+      "symbol": "GUNUSDT",
+      "category": "compression",
+      "last_price": 0.015476,
+      "change24h_pct": 0.8142,
+      "range24h_pct": 6.6425,
+      "turnover24h": 4147075.47
+    },
+    {
+      "symbol": "ROBOUSDT",
+      "category": "reversal",
+      "last_price": 0.02114,
+      "change24h_pct": -10.0042,
+      "range24h_pct": 19.2053,
+      "turnover24h": 3945396.09
+    },
+    {
+      "symbol": "XAGUSDT",
+      "category": "compression",
+      "last_price": 75.74,
+      "change24h_pct": -1.0064,
+      "range24h_pct": 1.3071,
+      "turnover24h": 3893421.56
+    },
+    {
+      "symbol": "GENIUSUSDT",
+      "category": "reversal",
+      "last_price": 0.5737,
+      "change24h_pct": -11.1506,
+      "range24h_pct": 15.6353,
+      "turnover24h": 3876562.8
+    },
+    {
+      "symbol": "PUMPBTCUSDT",
+      "category": "mid_volume",
+      "last_price": 0.026306,
+      "change24h_pct": -3.13,
+      "range24h_pct": 14.2135,
+      "turnover24h": 3874700.51
+    },
+    {
+      "symbol": "ZROUSDT",
+      "category": "compression",
+      "last_price": 1.5351,
+      "change24h_pct": -2.8048,
+      "range24h_pct": 4.0519,
+      "turnover24h": 3797846.84
+    },
+    {
+      "symbol": "ZKPUSDT",
+      "category": "compression",
+      "last_price": 0.07762,
+      "change24h_pct": -0.8051,
+      "range24h_pct": 6.3901,
+      "turnover24h": 3796135.6
+    },
+    {
+      "symbol": "DASHUSDT",
+      "category": "compression",
+      "last_price": 35.89,
+      "change24h_pct": -3.1831,
+      "range24h_pct": 3.9008,
+      "turnover24h": 3788896.37
+    },
+    {
+      "symbol": "COREUSDT",
+      "category": "reversal",
+      "last_price": 0.03992,
+      "change24h_pct": -11.4463,
+      "range24h_pct": 15.6563,
+      "turnover24h": 3697272.49
+    },
+    {
+      "symbol": "RVNUSDT",
+      "category": "mid_volume",
+      "last_price": 0.005922,
+      "change24h_pct": -0.4203,
+      "range24h_pct": 10.0979,
+      "turnover24h": 3662016.42
+    },
+    {
+      "symbol": "ZBCNUSDT",
+      "category": "mid_volume",
+      "last_price": 0.0035387,
+      "change24h_pct": 3.832,
+      "range24h_pct": 12.6628,
+      "turnover24h": 3529948.46
+    },
+    {
+      "symbol": "BIGTIMEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.01407,
+      "change24h_pct": 2.1341,
+      "range24h_pct": 11.2935,
+      "turnover24h": 3517772.8
+    },
+    {
+      "symbol": "CFGUSDT",
+      "category": "reversal",
+      "last_price": 0.2087,
+      "change24h_pct": -13.5101,
+      "range24h_pct": 17.4892,
+      "turnover24h": 3446823.67
+    },
+    {
+      "symbol": "NOTUSDT",
+      "category": "mid_volume",
+      "last_price": 0.0004086,
+      "change24h_pct": -2.9914,
+      "range24h_pct": 8.419,
+      "turnover24h": 3431808.65
+    },
+    {
+      "symbol": "MYXUSDT",
+      "category": "mid_volume",
+      "last_price": 0.2448,
+      "change24h_pct": 1.3664,
+      "range24h_pct": 12.5,
+      "turnover24h": 3363928.61
+    },
+    {
+      "symbol": "SUSDT",
+      "category": "compression",
+      "last_price": 0.04553,
+      "change24h_pct": 0.198,
+      "range24h_pct": 6.9624,
+      "turnover24h": 3330917.85
+    },
+    {
+      "symbol": "POWERUSDT",
+      "category": "mid_volume",
+      "last_price": 0.0956,
+      "change24h_pct": 3.2955,
+      "range24h_pct": 11.0146,
+      "turnover24h": 3326008.17
+    },
+    {
+      "symbol": "SENTUSDT",
+      "category": "mid_volume",
+      "last_price": 0.018573,
+      "change24h_pct": -5.4809,
+      "range24h_pct": 7.8501,
+      "turnover24h": 3324310.44
+    },
+    {
+      "symbol": "BERAUSDT",
+      "category": "compression",
+      "last_price": 0.3881,
+      "change24h_pct": -2.291,
+      "range24h_pct": 4.638,
+      "turnover24h": 3295730.91
+    },
+    {
+      "symbol": "AXLUSDT",
+      "category": "mid_volume",
+      "last_price": 0.05608,
+      "change24h_pct": -5.6844,
+      "range24h_pct": 10.9308,
+      "turnover24h": 3284355.05
+    },
+    {
+      "symbol": "BLESSUSDT",
+      "category": "mid_volume",
+      "last_price": 0.005969,
+      "change24h_pct": -4.2969,
+      "range24h_pct": 21.0756,
+      "turnover24h": 3283685.69
+    },
+    {
+      "symbol": "PLAYSOUTUSDT",
+      "category": "reversal",
+      "last_price": 0.12173,
+      "change24h_pct": -15.1411,
+      "range24h_pct": 54.0048,
+      "turnover24h": 3246709.65
+    },
+    {
+      "symbol": "UBUSDT",
+      "category": "mid_volume",
+      "last_price": 0.0472,
+      "change24h_pct": 1.7899,
+      "range24h_pct": 14.7246,
+      "turnover24h": 3226725.16
+    },
+    {
+      "symbol": "BANUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.09688,
+      "change24h_pct": 25.071,
+      "range24h_pct": 22.3369,
+      "turnover24h": 3189714.98
+    },
+    {
+      "symbol": "WCTUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06606,
+      "change24h_pct": 5.1073,
+      "range24h_pct": 7.7657,
+      "turnover24h": 3136807.28
+    },
+    {
+      "symbol": "ESPUSDT",
+      "category": "reversal",
+      "last_price": 0.07072,
+      "change24h_pct": -12.0288,
+      "range24h_pct": 15.3422,
+      "turnover24h": 3118677.67
+    },
+    {
+      "symbol": "LITUSDT",
+      "category": "mid_volume",
+      "last_price": 0.9018,
+      "change24h_pct": -4.4399,
+      "range24h_pct": 5.866,
+      "turnover24h": 3096627.98
+    },
+    {
+      "symbol": "ARIAUSDT",
+      "category": "reversal",
+      "last_price": 0.06312,
+      "change24h_pct": -9.7383,
+      "range24h_pct": 11.7554,
+      "turnover24h": 2967934.98
+    },
+    {
+      "symbol": "BUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.12177,
+      "change24h_pct": 23.8632,
+      "range24h_pct": 24.497,
+      "turnover24h": 2948143.29
+    },
+    {
+      "symbol": "YZYUSDT",
+      "category": "mid_volume",
+      "last_price": 0.32,
+      "change24h_pct": 7.1309,
+      "range24h_pct": 8.8437,
+      "turnover24h": 2909521.76
+    },
+    {
+      "symbol": "LAUSDT",
+      "category": "compression",
+      "last_price": 0.16854,
+      "change24h_pct": 3.5257,
+      "range24h_pct": 7.0013,
+      "turnover24h": 2887365.5
+    },
+    {
+      "symbol": "AVNTUSDT",
+      "category": "compression",
+      "last_price": 0.14664,
+      "change24h_pct": -3.4945,
+      "range24h_pct": 4.8213,
+      "turnover24h": 2850804.02
+    },
+    {
+      "symbol": "CYBERUSDT",
+      "category": "mid_volume",
+      "last_price": 0.544,
+      "change24h_pct": 0.7407,
+      "range24h_pct": 9.4853,
+      "turnover24h": 2849991.92
+    },
+    {
+      "symbol": "SPXUSDT",
+      "category": "compression",
+      "last_price": 0.373,
+      "change24h_pct": -2.7125,
+      "range24h_pct": 4.6381,
+      "turnover24h": 2813666.95
+    },
+    {
+      "symbol": "ANIMEUSDT",
+      "category": "compression",
+      "last_price": 0.004842,
+      "change24h_pct": -1.8049,
+      "range24h_pct": 7.8686,
+      "turnover24h": 2758890.58
+    },
+    {
+      "symbol": "ZKUSDT",
+      "category": "mid_volume",
+      "last_price": 0.015921,
+      "change24h_pct": -4.9946,
+      "range24h_pct": 7.9015,
+      "turnover24h": 2746570.34
+    },
+    {
+      "symbol": "LYNUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06132,
+      "change24h_pct": -2.4498,
+      "range24h_pct": 13.6986,
+      "turnover24h": 2734965.14
+    },
+    {
+      "symbol": "DEXEUSDT",
+      "category": "compression",
+      "last_price": 13.5553,
+      "change24h_pct": 0.5989,
+      "range24h_pct": 7.7719,
+      "turnover24h": 2639645.21
+    },
+    {
+      "symbol": "1000FLOKIUSDT",
+      "category": "compression",
+      "last_price": 0.03201,
+      "change24h_pct": -3.6133,
+      "range24h_pct": 5.2171,
+      "turnover24h": 2577579.57
+    },
+    {
+      "symbol": "PYTHUSDT",
+      "category": "mid_volume",
+      "last_price": 0.04809,
+      "change24h_pct": -5.9088,
+      "range24h_pct": 8.0058,
+      "turnover24h": 2567764.42
+    },
+    {
+      "symbol": "TRIAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.03549,
+      "change24h_pct": 6.1875,
+      "range24h_pct": 12.4796,
+      "turnover24h": 2538751.34
+    },
+    {
+      "symbol": "THETAUSDT",
+      "category": "compression",
+      "last_price": 0.21678,
+      "change24h_pct": 0.482,
+      "range24h_pct": 6.3659,
+      "turnover24h": 2535927.8
+    },
+    {
+      "symbol": "MAGICUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06766,
+      "change24h_pct": 0.8345,
+      "range24h_pct": 10.7449,
+      "turnover24h": 2507421.38
+    },
+    {
+      "symbol": "PAXGUSDT",
+      "category": "compression",
+      "last_price": 4694.2,
+      "change24h_pct": -0.291,
+      "range24h_pct": 0.4708,
+      "turnover24h": 2488587.59
+    },
+    {
+      "symbol": "CUSDT",
+      "category": "reversal",
+      "last_price": 0.08424,
+      "change24h_pct": -10.211,
+      "range24h_pct": 23.0413,
+      "turnover24h": 2460932.72
+    },
+    {
+      "symbol": "METUSDT",
+      "category": "mid_volume",
+      "last_price": 0.15716,
+      "change24h_pct": -5.7398,
+      "range24h_pct": 7.5401,
+      "turnover24h": 2451579.33
+    },
+    {
+      "symbol": "ETHFIUSDT",
+      "category": "compression",
+      "last_price": 0.4352,
+      "change24h_pct": -3.9505,
+      "range24h_pct": 4.8713,
+      "turnover24h": 2445535.82
+    },
+    {
+      "symbol": "ETCUSDT",
+      "category": "compression",
+      "last_price": 8.417,
+      "change24h_pct": -1.6705,
+      "range24h_pct": 2.3049,
+      "turnover24h": 2431838.83
+    },
+    {
+      "symbol": "GIGGLEUSDT",
+      "category": "reversal",
+      "last_price": 33.06,
+      "change24h_pct": -6.3456,
+      "range24h_pct": 11.222,
+      "turnover24h": 2415139.72
+    },
+    {
+      "symbol": "CROSSUSDT",
+      "category": "hot_momentum",
+      "last_price": 0.12758,
+      "change24h_pct": 17.7045,
+      "range24h_pct": 20.4499,
+      "turnover24h": 2386820.64
+    },
+    {
+      "symbol": "POPCATUSDT",
+      "category": "mid_volume",
+      "last_price": 0.05826,
+      "change24h_pct": -4.2091,
+      "range24h_pct": 7.0031,
+      "turnover24h": 2383739.77
+    },
+    {
+      "symbol": "ARCUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06749,
+      "change24h_pct": 4.0388,
+      "range24h_pct": 12.2685,
+      "turnover24h": 2380440.25
+    },
+    {
+      "symbol": "EIGENUSDT",
+      "category": "compression",
+      "last_price": 0.17687,
+      "change24h_pct": -3.4973,
+      "range24h_pct": 5.6708,
+      "turnover24h": 2371723.87
+    },
+    {
+      "symbol": "PIXELUSDT",
+      "category": "mid_volume",
+      "last_price": 0.00817,
+      "change24h_pct": 5.2835,
+      "range24h_pct": 10.4651,
+      "turnover24h": 2366126.03
+    },
+    {
+      "symbol": "PNUTUSDT",
+      "category": "mid_volume",
+      "last_price": 0.05104,
+      "change24h_pct": -5.7954,
+      "range24h_pct": 6.5831,
+      "turnover24h": 2357200.45
+    },
+    {
+      "symbol": "FLOCKUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06713,
+      "change24h_pct": -2.2141,
+      "range24h_pct": 8.7591,
+      "turnover24h": 2356071.81
+    },
+    {
+      "symbol": "MERLUSDT",
+      "category": "mid_volume",
+      "last_price": 0.03653,
+      "change24h_pct": -5.3872,
+      "range24h_pct": 11.9628,
+      "turnover24h": 2306561.7
+    },
+    {
+      "symbol": "COMPUSDT",
+      "category": "mid_volume",
+      "last_price": 22.07,
+      "change24h_pct": -4.3221,
+      "range24h_pct": 5.2787,
+      "turnover24h": 2304649.12
+    },
+    {
+      "symbol": "CARVUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06199,
+      "change24h_pct": 5.0499,
+      "range24h_pct": 9.437,
+      "turnover24h": 2290836.15
+    },
+    {
+      "symbol": "PRLUSDT",
+      "category": "mid_volume",
+      "last_price": 0.2158,
+      "change24h_pct": 2.7619,
+      "range24h_pct": 12.836,
+      "turnover24h": 2285895.37
+    },
+    {
+      "symbol": "SPORTFUNUSDT",
+      "category": "reversal",
+      "last_price": 0.04161,
+      "change24h_pct": -10.842,
+      "range24h_pct": 20.6921,
+      "turnover24h": 2276109.6
+    },
+    {
+      "symbol": "JUPUSDT",
+      "category": "compression",
+      "last_price": 0.17046,
+      "change24h_pct": -1.803,
+      "range24h_pct": 3.4847,
+      "turnover24h": 2269406.88
+    },
+    {
+      "symbol": "BOMEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.0005122,
+      "change24h_pct": -5.2183,
+      "range24h_pct": 9.3909,
+      "turnover24h": 2259064.88
+    },
+    {
+      "symbol": "FFUSDT",
+      "category": "compression",
+      "last_price": 0.06965,
+      "change24h_pct": -3.9177,
+      "range24h_pct": 5.1256,
+      "turnover24h": 2225685.3
+    },
+    {
+      "symbol": "SONICUSDT",
+      "category": "mid_volume",
+      "last_price": 0.03703,
+      "change24h_pct": 2.3493,
+      "range24h_pct": 8.2636,
+      "turnover24h": 2211895.1
+    },
+    {
+      "symbol": "VANAUSDT",
+      "category": "compression",
+      "last_price": 1.466,
+      "change24h_pct": -0.5427,
+      "range24h_pct": 4.3656,
+      "turnover24h": 2206101.8
+    },
+    {
+      "symbol": "PENDLEUSDT",
+      "category": "compression",
+      "last_price": 1.2667,
+      "change24h_pct": -0.9694,
+      "range24h_pct": 2.8736,
+      "turnover24h": 2096553.24
+    },
+    {
+      "symbol": "ZKCUSDT",
+      "category": "compression",
+      "last_price": 0.07384,
+      "change24h_pct": 0.3124,
+      "range24h_pct": 6.3651,
+      "turnover24h": 2067824.83
+    },
+    {
+      "symbol": "AEROUSDT",
+      "category": "compression",
+      "last_price": 0.4236,
+      "change24h_pct": -0.61,
+      "range24h_pct": 2.7856,
+      "turnover24h": 2066886.29
+    },
+    {
+      "symbol": "ZEREBROUSDT",
+      "category": "mid_volume",
+      "last_price": 0.018676,
+      "change24h_pct": 12.8595,
+      "range24h_pct": 14.8747,
+      "turnover24h": 1984910.57
+    },
+    {
+      "symbol": "MAVIAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.03582,
+      "change24h_pct": 2.5773,
+      "range24h_pct": 12.507,
+      "turnover24h": 1974492.07
+    },
+    {
+      "symbol": "NEWTUSDT",
+      "category": "compression",
+      "last_price": 0.08033,
+      "change24h_pct": 2.214,
+      "range24h_pct": 7.8551,
+      "turnover24h": 1965417.96
+    },
+    {
+      "symbol": "BARDUSDT",
+      "category": "compression",
+      "last_price": 0.3018,
+      "change24h_pct": -2.3616,
+      "range24h_pct": 3.0152,
+      "turnover24h": 1962627.47
+    },
+    {
+      "symbol": "ONTUSDT",
+      "category": "compression",
+      "last_price": 0.07455,
+      "change24h_pct": -3.7692,
+      "range24h_pct": 7.3374,
+      "turnover24h": 1895480.51
+    },
+    {
+      "symbol": "NIGHTUSDT",
+      "category": "compression",
+      "last_price": 0.03582,
+      "change24h_pct": -3.8131,
+      "range24h_pct": 5.6393,
+      "turnover24h": 1834447.56
+    },
+    {
+      "symbol": "JTOUSDT",
+      "category": "compression",
+      "last_price": 0.345,
+      "change24h_pct": -0.6908,
+      "range24h_pct": 3.3623,
+      "turnover24h": 1820924.1
+    },
+    {
+      "symbol": "AUCTIONUSDT",
+      "category": "compression",
+      "last_price": 4.862,
+      "change24h_pct": 1.5031,
+      "range24h_pct": 3.4554,
+      "turnover24h": 1815250.89
+    },
+    {
+      "symbol": "CELOUSDT",
+      "category": "compression",
+      "last_price": 0.09069,
+      "change24h_pct": -3.14,
+      "range24h_pct": 7.2004,
+      "turnover24h": 1799049.38
+    },
+    {
+      "symbol": "0GUSDT",
+      "category": "compression",
+      "last_price": 0.5624,
+      "change24h_pct": -1.8841,
+      "range24h_pct": 3.8229,
+      "turnover24h": 1778577.97
+    },
+    {
+      "symbol": "JASMYUSDT",
+      "category": "compression",
+      "last_price": 0.005651,
+      "change24h_pct": -1.6533,
+      "range24h_pct": 3.7339,
+      "turnover24h": 1769863.54
+    },
+    {
+      "symbol": "MIRAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.08567,
+      "change24h_pct": -0.6263,
+      "range24h_pct": 8.9063,
+      "turnover24h": 1737408.48
+    },
+    {
+      "symbol": "USELESSUSDT",
+      "category": "mid_volume",
+      "last_price": 0.04062,
+      "change24h_pct": -5.9068,
+      "range24h_pct": 8.1241,
+      "turnover24h": 1734709.57
+    },
+    {
+      "symbol": "STXUSDT",
+      "category": "compression",
+      "last_price": 0.2253,
+      "change24h_pct": -1.7015,
+      "range24h_pct": 3.2845,
+      "turnover24h": 1714541.29
+    },
+    {
+      "symbol": "ALTUSDT",
+      "category": "compression",
+      "last_price": 0.007981,
+      "change24h_pct": 2.0588,
+      "range24h_pct": 4.849,
+      "turnover24h": 1706614.93
+    },
+    {
+      "symbol": "SIGNUSDT",
+      "category": "compression",
+      "last_price": 0.01724,
+      "change24h_pct": -3.0916,
+      "range24h_pct": 4.4084,
+      "turnover24h": 1701317.7
+    },
+    {
+      "symbol": "RUNEUSDT",
+      "category": "compression",
+      "last_price": 0.4754,
+      "change24h_pct": -0.3145,
+      "range24h_pct": 2.4821,
+      "turnover24h": 1697337.99
+    },
+    {
+      "symbol": "EULUSDT",
+      "category": "mid_volume",
+      "last_price": 1.4115,
+      "change24h_pct": -3.8749,
+      "range24h_pct": 9.2242,
+      "turnover24h": 1670126.04
+    },
+    {
+      "symbol": "CFXUSDT",
+      "category": "compression",
+      "last_price": 0.06018,
+      "change24h_pct": -2.998,
+      "range24h_pct": 7.4111,
+      "turnover24h": 1661019.3
+    },
+    {
+      "symbol": "SUPERUSDT",
+      "category": "compression",
+      "last_price": 0.12715,
+      "change24h_pct": -1.4417,
+      "range24h_pct": 5.6233,
+      "turnover24h": 1657299.7
+    },
+    {
+      "symbol": "LPTUSDT",
+      "category": "compression",
+      "last_price": 2.176,
+      "change24h_pct": 1.5873,
+      "range24h_pct": 6.5257,
+      "turnover24h": 1632916.48
+    },
+    {
+      "symbol": "CCUSDT",
+      "category": "compression",
+      "last_price": 0.15168,
+      "change24h_pct": -0.4005,
+      "range24h_pct": 2.347,
+      "turnover24h": 1624413.88
+    },
+    {
+      "symbol": "RAYDIUMUSDT",
+      "category": "compression",
+      "last_price": 0.6802,
+      "change24h_pct": 1.7958,
+      "range24h_pct": 6.601,
+      "turnover24h": 1616216.41
+    },
+    {
+      "symbol": "PARTIUSDT",
+      "category": "mid_volume",
+      "last_price": 0.04728,
+      "change24h_pct": 11.8523,
+      "range24h_pct": 14.8054,
+      "turnover24h": 1614673.76
+    },
+    {
+      "symbol": "ENSUSDT",
+      "category": "compression",
+      "last_price": 6.12,
+      "change24h_pct": -3.4243,
+      "range24h_pct": 4.1667,
+      "turnover24h": 1596338.13
+    },
+    {
+      "symbol": "RONINUSDT",
+      "category": "mid_volume",
+      "last_price": 0.10061,
+      "change24h_pct": 2.5272,
+      "range24h_pct": 20.9323,
+      "turnover24h": 1573102.6
+    },
+    {
+      "symbol": "JSTUSDT",
+      "category": "compression",
+      "last_price": 0.08017,
+      "change24h_pct": -1.2781,
+      "range24h_pct": 7.7473,
+      "turnover24h": 1550750.68
+    },
+    {
+      "symbol": "WETUSDT",
+      "category": "mid_volume",
+      "last_price": 0.09521,
+      "change24h_pct": -5.1976,
+      "range24h_pct": 6.2703,
+      "turnover24h": 1541920.95
+    },
+    {
+      "symbol": "ARKMUSDT",
+      "category": "mid_volume",
+      "last_price": 0.11837,
+      "change24h_pct": -3.0628,
+      "range24h_pct": 9.0057,
+      "turnover24h": 1527713.04
+    },
+    {
+      "symbol": "PORTALUSDT",
+      "category": "mid_volume",
+      "last_price": 0.011622,
+      "change24h_pct": 1.9384,
+      "range24h_pct": 11.788,
+      "turnover24h": 1525224.04
+    },
+    {
+      "symbol": "BIRBUSDT",
+      "category": "reversal",
+      "last_price": 0.14696,
+      "change24h_pct": -7.0638,
+      "range24h_pct": 10.2273,
+      "turnover24h": 1519523.78
+    },
+    {
+      "symbol": "QUSDT",
+      "category": "mid_volume",
+      "last_price": 0.010396,
+      "change24h_pct": -4.4309,
+      "range24h_pct": 14.8422,
+      "turnover24h": 1515365.33
+    },
+    {
+      "symbol": "ZENUSDT",
+      "category": "compression",
+      "last_price": 6.001,
+      "change24h_pct": -3.3032,
+      "range24h_pct": 3.8827,
+      "turnover24h": 1514851.94
+    },
+    {
+      "symbol": "1000NEIROCTOUSDT",
+      "category": "mid_volume",
+      "last_price": 0.08612,
+      "change24h_pct": -4.2259,
+      "range24h_pct": 5.1788,
+      "turnover24h": 1510934.94
+    },
+    {
+      "symbol": "FOLKSUSDT",
+      "category": "mid_volume",
+      "last_price": 1.4412,
+      "change24h_pct": -2.5557,
+      "range24h_pct": 10.1027,
+      "turnover24h": 1509071.12
+    },
+    {
+      "symbol": "KASUSDT",
+      "category": "compression",
+      "last_price": 0.03315,
+      "change24h_pct": -1.7486,
+      "range24h_pct": 2.5339,
+      "turnover24h": 1501119.76
+    },
+    {
+      "symbol": "AGLDUSDT",
+      "category": "compression",
+      "last_price": 0.27525,
+      "change24h_pct": 0.6766,
+      "range24h_pct": 7.4005,
+      "turnover24h": 1466034.79
+    },
+    {
+      "symbol": "1000LUNCUSDT",
+      "category": "compression",
+      "last_price": 0.05024,
+      "change24h_pct": -1.8366,
+      "range24h_pct": 4.5183,
+      "turnover24h": 1459197.14
+    },
+    {
+      "symbol": "AWEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.05337,
+      "change24h_pct": 3.4703,
+      "range24h_pct": 13.0598,
+      "turnover24h": 1455563.01
+    },
+    {
+      "symbol": "ELSAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06991,
+      "change24h_pct": -4.5206,
+      "range24h_pct": 10.0701,
+      "turnover24h": 1421125.77
+    },
+    {
+      "symbol": "HAEDALUSDT",
+      "category": "mid_volume",
+      "last_price": 0.03567,
+      "change24h_pct": 0.394,
+      "range24h_pct": 9.6159,
+      "turnover24h": 1419535.19
+    },
+    {
+      "symbol": "INXUSDT",
+      "category": "reversal",
+      "last_price": 0.00927,
+      "change24h_pct": -11.8905,
+      "range24h_pct": 15.9008,
+      "turnover24h": 1408407.64
+    },
+    {
+      "symbol": "ICNTUSDT",
+      "category": "mid_volume",
+      "last_price": 0.38,
+      "change24h_pct": 0.5291,
+      "range24h_pct": 11.2895,
+      "turnover24h": 1388579.81
+    },
+    {
+      "symbol": "FUSDT",
+      "category": "compression",
+      "last_price": 0.005678,
+      "change24h_pct": -0.316,
+      "range24h_pct": 4.6671,
+      "turnover24h": 1382372.27
+    },
+    {
+      "symbol": "ZETAUSDT",
+      "category": "compression",
+      "last_price": 0.05504,
+      "change24h_pct": -1.2735,
+      "range24h_pct": 5.5233,
+      "turnover24h": 1367652.2
+    },
+    {
+      "symbol": "MOVEUSDT",
+      "category": "compression",
+      "last_price": 0.01839,
+      "change24h_pct": -1.3412,
+      "range24h_pct": 3.4802,
+      "turnover24h": 1354762.17
+    },
+    {
+      "symbol": "XAIUSDT",
+      "category": "mid_volume",
+      "last_price": 0.010857,
+      "change24h_pct": 4.9188,
+      "range24h_pct": 10.7765,
+      "turnover24h": 1343187.94
+    },
+    {
+      "symbol": "INUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06441,
+      "change24h_pct": -4.733,
+      "range24h_pct": 9.5948,
+      "turnover24h": 1340827.04
+    },
+    {
+      "symbol": "ZORAUSDT",
+      "category": "compression",
+      "last_price": 0.013989,
+      "change24h_pct": -1.735,
+      "range24h_pct": 3.517,
+      "turnover24h": 1334520.67
+    },
+    {
+      "symbol": "JCTUSDT",
+      "category": "mid_volume",
+      "last_price": 0.002621,
+      "change24h_pct": 4.0492,
+      "range24h_pct": 13.6704,
+      "turnover24h": 1333573.44
+    },
+    {
+      "symbol": "GRTUSDT",
+      "category": "compression",
+      "last_price": 0.02467,
+      "change24h_pct": -0.0405,
+      "range24h_pct": 4.2156,
+      "turnover24h": 1330052.51
+    },
+    {
+      "symbol": "WHITEWHALEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.00718,
+      "change24h_pct": 0.4195,
+      "range24h_pct": 14.3454,
+      "turnover24h": 1328717.4
+    },
+    {
+      "symbol": "SKYUSDT",
+      "category": "compression",
+      "last_price": 0.08363,
+      "change24h_pct": 0.3118,
+      "range24h_pct": 3.7307,
+      "turnover24h": 1313278.65
+    },
+    {
+      "symbol": "DRIFTUSDT",
+      "category": "mid_volume",
+      "last_price": 0.03417,
+      "change24h_pct": -2.705,
+      "range24h_pct": 8.0187,
+      "turnover24h": 1311702.75
+    },
+    {
+      "symbol": "KERNELUSDT",
+      "category": "mid_volume",
+      "last_price": 0.06572,
+      "change24h_pct": -5.7372,
+      "range24h_pct": 9.6926,
+      "turnover24h": 1307158.08
+    },
+    {
+      "symbol": "RESOLVUSDT",
+      "category": "mid_volume",
+      "last_price": 0.02737,
+      "change24h_pct": -3.4908,
+      "range24h_pct": 8.0015,
+      "turnover24h": 1286546.62
+    },
+    {
+      "symbol": "UAIUSDT",
+      "category": "mid_volume",
+      "last_price": 0.3029,
+      "change24h_pct": 0.2581,
+      "range24h_pct": 9.0063,
+      "turnover24h": 1283554.03
+    },
+    {
+      "symbol": "TRUUSDT",
+      "category": "reversal",
+      "last_price": 0.003398,
+      "change24h_pct": -11.5334,
+      "range24h_pct": 21.5421,
+      "turnover24h": 1272120.86
+    },
+    {
+      "symbol": "BBUSDT",
+      "category": "mid_volume",
+      "last_price": 0.02727,
+      "change24h_pct": -1.0163,
+      "range24h_pct": 8.9109,
+      "turnover24h": 1268280.47
+    },
+    {
+      "symbol": "NOMUSDT",
+      "category": "reversal",
+      "last_price": 0.00268,
+      "change24h_pct": -8.5011,
+      "range24h_pct": 11.194,
+      "turnover24h": 1255698.86
+    },
+    {
+      "symbol": "BREVUSDT",
+      "category": "compression",
+      "last_price": 0.13136,
+      "change24h_pct": -3.6384,
+      "range24h_pct": 5.9379,
+      "turnover24h": 1253972.6
+    },
+    {
+      "symbol": "SAGAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.01764,
+      "change24h_pct": -2.5414,
+      "range24h_pct": 10.6576,
+      "turnover24h": 1242874.71
+    },
+    {
+      "symbol": "BANANAS31USDT",
+      "category": "compression",
+      "last_price": 0.009157,
+      "change24h_pct": -0.2722,
+      "range24h_pct": 2.7302,
+      "turnover24h": 1228357.8
+    },
+    {
+      "symbol": "AEVOUSDT",
+      "category": "mid_volume",
+      "last_price": 0.02626,
+      "change24h_pct": -4.8895,
+      "range24h_pct": 8.3397,
+      "turnover24h": 1226852.21
+    },
+    {
+      "symbol": "ATHUSDT",
+      "category": "compression",
+      "last_price": 0.005968,
+      "change24h_pct": -1.3716,
+      "range24h_pct": 3.3177,
+      "turnover24h": 1219942.78
+    },
+    {
+      "symbol": "IRYSUSDT",
+      "category": "mid_volume",
+      "last_price": 0.034537,
+      "change24h_pct": 5.7697,
+      "range24h_pct": 10.4352,
+      "turnover24h": 1216255.15
+    },
+    {
+      "symbol": "VINEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.015219,
+      "change24h_pct": -5.2484,
+      "range24h_pct": 9.9349,
+      "turnover24h": 1213136.52
+    },
+    {
+      "symbol": "HEMIUSDT",
+      "category": "mid_volume",
+      "last_price": 0.008787,
+      "change24h_pct": 3.4251,
+      "range24h_pct": 14.1687,
+      "turnover24h": 1196911.69
+    },
+    {
+      "symbol": "ILVUSDT",
+      "category": "mid_volume",
+      "last_price": 4.79,
+      "change24h_pct": 0.927,
+      "range24h_pct": 12.0251,
+      "turnover24h": 1184358.2
+    },
+    {
+      "symbol": "IDUSDT",
+      "category": "compression",
+      "last_price": 0.03219,
+      "change24h_pct": 2.418,
+      "range24h_pct": 5.7782,
+      "turnover24h": 1181977.75
+    },
+    {
+      "symbol": "MORPHOUSDT",
+      "category": "compression",
+      "last_price": 1.8429,
+      "change24h_pct": -0.866,
+      "range24h_pct": 3.0495,
+      "turnover24h": 1180590.89
+    },
+    {
+      "symbol": "VETUSDT",
+      "category": "compression",
+      "last_price": 0.007279,
+      "change24h_pct": -0.5872,
+      "range24h_pct": 3.1186,
+      "turnover24h": 1174975.66
+    },
+    {
+      "symbol": "MELANIAUSDT",
+      "category": "reversal",
+      "last_price": 0.11169,
+      "change24h_pct": -7.0721,
+      "range24h_pct": 9.5085,
+      "turnover24h": 1140981.55
+    },
+    {
+      "symbol": "ROSEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.010183,
+      "change24h_pct": -5.4327,
+      "range24h_pct": 6.8938,
+      "turnover24h": 1131842.5
+    },
+    {
+      "symbol": "RAREUSDT",
+      "category": "mid_volume",
+      "last_price": 0.018002,
+      "change24h_pct": 4.8762,
+      "range24h_pct": 8.3324,
+      "turnover24h": 1090242.61
+    },
+    {
+      "symbol": "ACEUSDT",
+      "category": "mid_volume",
+      "last_price": 0.12046,
+      "change24h_pct": -5.1122,
+      "range24h_pct": 13.6228,
+      "turnover24h": 1089686.72
+    },
+    {
+      "symbol": "IOTAUSDT",
+      "category": "compression",
+      "last_price": 0.05738,
+      "change24h_pct": -0.7781,
+      "range24h_pct": 4.1129,
+      "turnover24h": 1075649.56
+    },
+    {
+      "symbol": "APRUSDT",
+      "category": "compression",
+      "last_price": 0.17756,
+      "change24h_pct": 0.254,
+      "range24h_pct": 5.5136,
+      "turnover24h": 1073969.81
+    },
+    {
+      "symbol": "ERAUSDT",
+      "category": "compression",
+      "last_price": 0.14601,
+      "change24h_pct": 1.1219,
+      "range24h_pct": 7.3625,
+      "turnover24h": 1068811.04
+    },
+    {
+      "symbol": "FLOWUSDT",
+      "category": "compression",
+      "last_price": 0.03904,
+      "change24h_pct": -0.4589,
+      "range24h_pct": 4.8668,
+      "turnover24h": 1053329.56
+    },
+    {
+      "symbol": "TWTUSDT",
+      "category": "compression",
+      "last_price": 0.4411,
+      "change24h_pct": -0.2036,
+      "range24h_pct": 4.058,
+      "turnover24h": 1053000.61
+    },
+    {
+      "symbol": "CETUSUSDT",
+      "category": "mid_volume",
+      "last_price": 0.029958,
+      "change24h_pct": 7.5266,
+      "range24h_pct": 18.1053,
+      "turnover24h": 1049308.11
+    },
+    {
+      "symbol": "AZTECUSDT",
+      "category": "reversal",
+      "last_price": 0.021513,
+      "change24h_pct": -8.1661,
+      "range24h_pct": 10.2264,
+      "turnover24h": 1049136.53
+    },
+    {
+      "symbol": "AUSDT",
+      "category": "mid_volume",
+      "last_price": 0.08706,
+      "change24h_pct": -4.6335,
+      "range24h_pct": 6.4094,
+      "turnover24h": 1044848.14
+    },
+    {
+      "symbol": "1000RATSUSDT",
+      "category": "compression",
+      "last_price": 0.03736,
+      "change24h_pct": -1.5546,
+      "range24h_pct": 6.3437,
+      "turnover24h": 1027113.65
+    },
+    {
+      "symbol": "UMAUSDT",
+      "category": "mid_volume",
+      "last_price": 0.4749,
+      "change24h_pct": -2.8039,
+      "range24h_pct": 9.0545,
+      "turnover24h": 1023531.46
+    },
+    {
+      "symbol": "KAITOUSDT",
+      "category": "compression",
+      "last_price": 0.4044,
+      "change24h_pct": -1.2695,
+      "range24h_pct": 2.3986,
+      "turnover24h": 1019809.38
+    },
+    {
+      "symbol": "KGENUSDT",
+      "category": "mid_volume",
+      "last_price": 0.17909,
+      "change24h_pct": -3.1631,
+      "range24h_pct": 12.6696,
+      "turnover24h": 1015176.91
+    },
+    {
+      "symbol": "AKEUSDT",
+      "category": "reversal",
+      "last_price": 0.0003221,
+      "change24h_pct": -15.2814,
+      "range24h_pct": 21.3598,
+      "turnover24h": 1005425.64
+    },
+    {
+      "symbol": "SKLUSDT",
+      "category": "mid_volume",
+      "last_price": 0.007144,
+      "change24h_pct": -1.3668,
+      "range24h_pct": 12.9899,
+      "turnover24h": 1002702.25
+    },
+    {
+      "symbol": "ARUSDT",
+      "category": "compression",
+      "last_price": 1.937,
+      "change24h_pct": -0.5289,
+      "range24h_pct": 5.0129,
+      "turnover24h": 1000189.71
+    },
+    {
+      "symbol": "MASKUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.5055,
+      "change24h_pct": -1.115,
+      "range24h_pct": 5.2028,
+      "turnover24h": 984875.2
+    },
+    {
+      "symbol": "GODSUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03462,
+      "change24h_pct": 7.9513,
+      "range24h_pct": 12.7383,
+      "turnover24h": 983464.37
+    },
+    {
+      "symbol": "PHAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03363,
+      "change24h_pct": 4.6359,
+      "range24h_pct": 11.7455,
+      "turnover24h": 978180.67
+    },
+    {
+      "symbol": "ORDERUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.05699,
+      "change24h_pct": 2.7217,
+      "range24h_pct": 4.7026,
+      "turnover24h": 957794.13
+    },
+    {
+      "symbol": "OPENUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.22735,
+      "change24h_pct": -1.0273,
+      "range24h_pct": 7.5082,
+      "turnover24h": 953967.21
+    },
+    {
+      "symbol": "JELLYJELLYUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04674,
+      "change24h_pct": 1.83,
+      "range24h_pct": 5.5841,
+      "turnover24h": 929246.99
+    },
+    {
+      "symbol": "MOCAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.014001,
+      "change24h_pct": 3.9575,
+      "range24h_pct": 6.8067,
+      "turnover24h": 926775.5
+    },
+    {
+      "symbol": "CLOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.11763,
+      "change24h_pct": -12.9698,
+      "range24h_pct": 21.3721,
+      "turnover24h": 907586.94
+    },
+    {
+      "symbol": "MMTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.13653,
+      "change24h_pct": 0.9762,
+      "range24h_pct": 2.9078,
+      "turnover24h": 904169.95
+    },
+    {
+      "symbol": "FLUIDUSDT",
+      "category": "low_liquidity",
+      "last_price": 1.668,
+      "change24h_pct": -2.7972,
+      "range24h_pct": 3.8369,
+      "turnover24h": 901934.67
+    },
+    {
+      "symbol": "AIXBTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.027393,
+      "change24h_pct": -3.8437,
+      "range24h_pct": 5.6693,
+      "turnover24h": 889272.59
+    },
+    {
+      "symbol": "SOMIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.17619,
+      "change24h_pct": 3.0953,
+      "range24h_pct": 5.8119,
+      "turnover24h": 883626.8
+    },
+    {
+      "symbol": "1000000MOGUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.15108,
+      "change24h_pct": -3.5803,
+      "range24h_pct": 5.9505,
+      "turnover24h": 882858.94
+    },
+    {
+      "symbol": "2ZUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.08508,
+      "change24h_pct": 2.0266,
+      "range24h_pct": 4.8543,
+      "turnover24h": 881633.53
+    },
+    {
+      "symbol": "TACUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.008765,
+      "change24h_pct": 9.3574,
+      "range24h_pct": 13.4398,
+      "turnover24h": 873293.97
+    },
+    {
+      "symbol": "USDCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.9997,
+      "change24h_pct": -0.01,
+      "range24h_pct": 0.01,
+      "turnover24h": 871872.95
+    },
+    {
+      "symbol": "CHILLGUYUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.012453,
+      "change24h_pct": -2.9686,
+      "range24h_pct": 6.9702,
+      "turnover24h": 871693.54
+    },
+    {
+      "symbol": "KSMUSDT",
+      "category": "low_liquidity",
+      "last_price": 4.719,
+      "change24h_pct": -3.3189,
+      "range24h_pct": 4.7256,
+      "turnover24h": 862111.44
+    },
+    {
+      "symbol": "TRBUSDT",
+      "category": "low_liquidity",
+      "last_price": 18.112,
+      "change24h_pct": -4.7939,
+      "range24h_pct": 5.6758,
+      "turnover24h": 859997.12
+    },
+    {
+      "symbol": "BRETTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.006747,
+      "change24h_pct": -2.4153,
+      "range24h_pct": 4.5057,
+      "turnover24h": 852604.95
+    },
+    {
+      "symbol": "CLANKERUSDT",
+      "category": "low_liquidity",
+      "last_price": 24.64,
+      "change24h_pct": -0.1135,
+      "range24h_pct": 5.0933,
+      "turnover24h": 846714.47
+    },
+    {
+      "symbol": "FIGHTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.003474,
+      "change24h_pct": -15.6386,
+      "range24h_pct": 20.4663,
+      "turnover24h": 832703.96
+    },
+    {
+      "symbol": "LUNA2USDT",
+      "category": "low_liquidity",
+      "last_price": 0.06017,
+      "change24h_pct": -4.2793,
+      "range24h_pct": 5.8833,
+      "turnover24h": 826894.53
+    },
+    {
+      "symbol": "SSVUSDT",
+      "category": "low_liquidity",
+      "last_price": 2.828,
+      "change24h_pct": 1.5439,
+      "range24h_pct": 7.5318,
+      "turnover24h": 823656.65
+    },
+    {
+      "symbol": "SNXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.3004,
+      "change24h_pct": -1.2491,
+      "range24h_pct": 3.7617,
+      "turnover24h": 821629.61
+    },
+    {
+      "symbol": "EDUUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04461,
+      "change24h_pct": -4.9232,
+      "range24h_pct": 6.7025,
+      "turnover24h": 819411.61
+    },
+    {
+      "symbol": "IOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.12196,
+      "change24h_pct": -5.2296,
+      "range24h_pct": 16.2348,
+      "turnover24h": 815987.41
+    },
+    {
+      "symbol": "XANUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.008508,
+      "change24h_pct": 0.9971,
+      "range24h_pct": 7.5458,
+      "turnover24h": 809222.12
+    },
+    {
+      "symbol": "SOPHUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.008953,
+      "change24h_pct": -1.7449,
+      "range24h_pct": 6.6011,
+      "turnover24h": 799444.27
+    },
+    {
+      "symbol": "MEWUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0006017,
+      "change24h_pct": -1.7793,
+      "range24h_pct": 3.6729,
+      "turnover24h": 799190.95
+    },
+    {
+      "symbol": "PEOPLEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.007744,
+      "change24h_pct": -3.4775,
+      "range24h_pct": 4.9587,
+      "turnover24h": 781894.87
+    },
+    {
+      "symbol": "BTRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03329,
+      "change24h_pct": -6.8029,
+      "range24h_pct": 8.1706,
+      "turnover24h": 780977.21
+    },
+    {
+      "symbol": "AKTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.4785,
+      "change24h_pct": -0.8084,
+      "range24h_pct": 3.3856,
+      "turnover24h": 762340.97
+    },
+    {
+      "symbol": "XDCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.02989,
+      "change24h_pct": -2.5114,
+      "range24h_pct": 4.2824,
+      "turnover24h": 757661.26
+    },
+    {
+      "symbol": "DUSKUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.13219,
+      "change24h_pct": -4.7073,
+      "range24h_pct": 9.0854,
+      "turnover24h": 749993.57
+    },
+    {
+      "symbol": "TRUSTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.06985,
+      "change24h_pct": -2.1845,
+      "range24h_pct": 3.6936,
+      "turnover24h": 743017.59
+    },
+    {
+      "symbol": "WALUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.07349,
+      "change24h_pct": 2.654,
+      "range24h_pct": 4.6401,
+      "turnover24h": 710702.8
+    },
+    {
+      "symbol": "MINAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.06172,
+      "change24h_pct": 1.0147,
+      "range24h_pct": 3.2566,
+      "turnover24h": 708505.84
+    },
+    {
+      "symbol": "KAVAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.06176,
+      "change24h_pct": 2.3194,
+      "range24h_pct": 4.5499,
+      "turnover24h": 698598.18
+    },
+    {
+      "symbol": "GPSUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.008446,
+      "change24h_pct": -3.0866,
+      "range24h_pct": 8.5247,
+      "turnover24h": 693023.74
+    },
+    {
+      "symbol": "SUSHIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.22146,
+      "change24h_pct": -0.5925,
+      "range24h_pct": 6.9493,
+      "turnover24h": 689527.62
+    },
+    {
+      "symbol": "CHRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.02202,
+      "change24h_pct": 1.3345,
+      "range24h_pct": 14.8501,
+      "turnover24h": 687138.28
+    },
+    {
+      "symbol": "XTZUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.3661,
+      "change24h_pct": -2.1384,
+      "range24h_pct": 2.8408,
+      "turnover24h": 679012.25
+    },
+    {
+      "symbol": "DOODUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.003217,
+      "change24h_pct": -0.248,
+      "range24h_pct": 4.4762,
+      "turnover24h": 663204.55
+    },
+    {
+      "symbol": "EVAAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.5455,
+      "change24h_pct": -12.2708,
+      "range24h_pct": 17.4702,
+      "turnover24h": 653185.73
+    },
+    {
+      "symbol": "PYRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.2765,
+      "change24h_pct": -0.1083,
+      "range24h_pct": 11.6094,
+      "turnover24h": 653085.73
+    },
+    {
+      "symbol": "1000TOSHIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.17891,
+      "change24h_pct": -2.0744,
+      "range24h_pct": 4.656,
+      "turnover24h": 644995.7
+    },
+    {
+      "symbol": "TNSRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03884,
+      "change24h_pct": -3.8613,
+      "range24h_pct": 9.3203,
+      "turnover24h": 643967.03
+    },
+    {
+      "symbol": "FHEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.01763,
+      "change24h_pct": -9.9131,
+      "range24h_pct": 13.2728,
+      "turnover24h": 639533.28
+    },
+    {
+      "symbol": "ACTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0139,
+      "change24h_pct": -2.6406,
+      "range24h_pct": 4.1942,
+      "turnover24h": 639317.93
+    },
+    {
+      "symbol": "KAIAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04832,
+      "change24h_pct": 0.3113,
+      "range24h_pct": 2.649,
+      "turnover24h": 634055.39
+    },
+    {
+      "symbol": "ALLOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.11665,
+      "change24h_pct": -4.0233,
+      "range24h_pct": 9.3956,
+      "turnover24h": 633487.48
+    },
+    {
+      "symbol": "LIGHTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.1539,
+      "change24h_pct": -2.9022,
+      "range24h_pct": 5.5231,
+      "turnover24h": 629716.45
+    },
+    {
+      "symbol": "RECALLUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04951,
+      "change24h_pct": -4.9164,
+      "range24h_pct": 12.4217,
+      "turnover24h": 629478.15
+    },
+    {
+      "symbol": "HANAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.038995,
+      "change24h_pct": 0.544,
+      "range24h_pct": 5.4058,
+      "turnover24h": 622843.19
+    },
+    {
+      "symbol": "4USDT",
+      "category": "low_liquidity",
+      "last_price": 0.010577,
+      "change24h_pct": -5.8734,
+      "range24h_pct": 7.9229,
+      "turnover24h": 620766.71
+    },
+    {
+      "symbol": "METISUSDT",
+      "category": "low_liquidity",
+      "last_price": 3.529,
+      "change24h_pct": -2.4059,
+      "range24h_pct": 4.5339,
+      "turnover24h": 615049.39
+    },
+    {
+      "symbol": "CTCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.1464,
+      "change24h_pct": 0.041,
+      "range24h_pct": 2.8484,
+      "turnover24h": 606783.34
+    },
+    {
+      "symbol": "ACHUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.006472,
+      "change24h_pct": 3.8844,
+      "range24h_pct": 6.7213,
+      "turnover24h": 603532.3
+    },
+    {
+      "symbol": "DEEPUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03003,
+      "change24h_pct": -3.2538,
+      "range24h_pct": 4.5288,
+      "turnover24h": 594983.48
+    },
+    {
+      "symbol": "C98USDT",
+      "category": "low_liquidity",
+      "last_price": 0.021355,
+      "change24h_pct": -0.5263,
+      "range24h_pct": 8.4804,
+      "turnover24h": 592528.94
+    },
+    {
+      "symbol": "BLUAIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.011596,
+      "change24h_pct": 10.417,
+      "range24h_pct": 11.7713,
+      "turnover24h": 592505.63
+    },
+    {
+      "symbol": "1000TURBOUSDT",
+      "category": "low_liquidity",
+      "last_price": 1.147,
+      "change24h_pct": -2.3663,
+      "range24h_pct": 4.49,
+      "turnover24h": 591615.25
+    },
+    {
+      "symbol": "AIOZUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0598,
+      "change24h_pct": -5.6782,
+      "range24h_pct": 8.4783,
+      "turnover24h": 587842.13
+    },
+    {
+      "symbol": "FLUXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.06973,
+      "change24h_pct": -7.397,
+      "range24h_pct": 13.4806,
+      "turnover24h": 579369.58
+    },
+    {
+      "symbol": "WOOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.019522,
+      "change24h_pct": 3.1382,
+      "range24h_pct": 6.4389,
+      "turnover24h": 577906.95
+    },
+    {
+      "symbol": "TAIKOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.12033,
+      "change24h_pct": 0.1331,
+      "range24h_pct": 4.6954,
+      "turnover24h": 577299.34
+    },
+    {
+      "symbol": "SOLVUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.004102,
+      "change24h_pct": 0.6131,
+      "range24h_pct": 10.5558,
+      "turnover24h": 561734.57
+    },
+    {
+      "symbol": "CROUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.06989,
+      "change24h_pct": 0.7496,
+      "range24h_pct": 1.9173,
+      "turnover24h": 561547.72
+    },
+    {
+      "symbol": "NEOUSDT",
+      "category": "low_liquidity",
+      "last_price": 2.847,
+      "change24h_pct": -1.1801,
+      "range24h_pct": 3.091,
+      "turnover24h": 545402.03
+    },
+    {
+      "symbol": "OLUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.009614,
+      "change24h_pct": 16.364,
+      "range24h_pct": 20.8966,
+      "turnover24h": 533591.01
+    },
+    {
+      "symbol": "ZILUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.004071,
+      "change24h_pct": -1.4285,
+      "range24h_pct": 3.1442,
+      "turnover24h": 522718.01
+    },
+    {
+      "symbol": "YBUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.11915,
+      "change24h_pct": -5.0597,
+      "range24h_pct": 6.7478,
+      "turnover24h": 516712.81
+    },
+    {
+      "symbol": "APEXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.301,
+      "change24h_pct": 0.8037,
+      "range24h_pct": 2.7907,
+      "turnover24h": 502248.05
+    },
+    {
+      "symbol": "SPACEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.006261,
+      "change24h_pct": -5.8212,
+      "range24h_pct": 9.1519,
+      "turnover24h": 496918.04
+    },
+    {
+      "symbol": "LUMIAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.1456,
+      "change24h_pct": 8.876,
+      "range24h_pct": 11.3393,
+      "turnover24h": 484666.29
+    },
+    {
+      "symbol": "NAORISUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.066992,
+      "change24h_pct": -1.5966,
+      "range24h_pct": 6.6217,
+      "turnover24h": 481912.91
+    },
+    {
+      "symbol": "EPICUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.3009,
+      "change24h_pct": -0.3642,
+      "range24h_pct": 10.1363,
+      "turnover24h": 474264.09
+    },
+    {
+      "symbol": "10000SATSUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0001429,
+      "change24h_pct": -2.9211,
+      "range24h_pct": 7.6977,
+      "turnover24h": 473848.51
+    },
+    {
+      "symbol": "CAKEUSDT",
+      "category": "low_liquidity",
+      "last_price": 1.4925,
+      "change24h_pct": -0.8042,
+      "range24h_pct": 2.0503,
+      "turnover24h": 472193.86
+    },
+    {
+      "symbol": "TRUTHUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.009379,
+      "change24h_pct": 0.1708,
+      "range24h_pct": 4.2648,
+      "turnover24h": 467348.95
+    },
+    {
+      "symbol": "SOLAYERUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.08638,
+      "change24h_pct": -0.7582,
+      "range24h_pct": 3.4962,
+      "turnover24h": 465990.93
+    },
+    {
+      "symbol": "SYRUPUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.23913,
+      "change24h_pct": 1.7574,
+      "range24h_pct": 4.5749,
+      "turnover24h": 459554.93
+    },
+    {
+      "symbol": "BRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.11652,
+      "change24h_pct": 10.2782,
+      "range24h_pct": 12.5901,
+      "turnover24h": 459344.14
+    },
+    {
+      "symbol": "NXPCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.3014,
+      "change24h_pct": 0.668,
+      "range24h_pct": 2.9861,
+      "turnover24h": 457903.05
+    },
+    {
+      "symbol": "ESUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.1467,
+      "change24h_pct": 0.5069,
+      "range24h_pct": 8.1459,
+      "turnover24h": 456462.73
+    },
+    {
+      "symbol": "MEMEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0005607,
+      "change24h_pct": -3.4607,
+      "range24h_pct": 6.3849,
+      "turnover24h": 453241.97
+    },
+    {
+      "symbol": "INTCUSDT",
+      "category": "low_liquidity",
+      "last_price": 82.7,
+      "change24h_pct": 1.1992,
+      "range24h_pct": 3.1802,
+      "turnover24h": 447261.02
+    },
+    {
+      "symbol": "FIOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.000968,
+      "change24h_pct": -7.8095,
+      "range24h_pct": 14.9793,
+      "turnover24h": 445704.07
+    },
+    {
+      "symbol": "ZRXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.11122,
+      "change24h_pct": -3.5636,
+      "range24h_pct": 4.6664,
+      "turnover24h": 444113.25
+    },
+    {
+      "symbol": "SWARMSUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.018538,
+      "change24h_pct": 4.1636,
+      "range24h_pct": 6.1927,
+      "turnover24h": 442896.55
+    },
+    {
+      "symbol": "GOATUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.01643,
+      "change24h_pct": -3.0678,
+      "range24h_pct": 5.0517,
+      "turnover24h": 437498.16
+    },
+    {
+      "symbol": "ALCHUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.07933,
+      "change24h_pct": -3.3621,
+      "range24h_pct": 5.6851,
+      "turnover24h": 436174.58
+    },
+    {
+      "symbol": "BANKUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03358,
+      "change24h_pct": -9.0958,
+      "range24h_pct": 12.6563,
+      "turnover24h": 424437.67
+    },
+    {
+      "symbol": "REZUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.003939,
+      "change24h_pct": 1.5467,
+      "range24h_pct": 10.231,
+      "turnover24h": 422280.44
+    },
+    {
+      "symbol": "PTBUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0008115,
+      "change24h_pct": -7.1722,
+      "range24h_pct": 11.6821,
+      "turnover24h": 415594.64
+    },
+    {
+      "symbol": "NILUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0409,
+      "change24h_pct": -1.136,
+      "range24h_pct": 7.6528,
+      "turnover24h": 409907.04
+    },
+    {
+      "symbol": "HMSTRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0001549,
+      "change24h_pct": -1.5883,
+      "range24h_pct": 5.2292,
+      "turnover24h": 400896.85
+    },
+    {
+      "symbol": "ICXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03793,
+      "change24h_pct": 0.0263,
+      "range24h_pct": 4.5874,
+      "turnover24h": 398299.55
+    },
+    {
+      "symbol": "BLASTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.000513,
+      "change24h_pct": 0.3521,
+      "range24h_pct": 4.269,
+      "turnover24h": 396271.52
+    },
+    {
+      "symbol": "IOSTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0010801,
+      "change24h_pct": -1.7912,
+      "range24h_pct": 3.7404,
+      "turnover24h": 394495.13
+    },
+    {
+      "symbol": "BROCCOLIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.014517,
+      "change24h_pct": -1.7262,
+      "range24h_pct": 3.2858,
+      "turnover24h": 387252.47
+    },
+    {
+      "symbol": "BSUUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04582,
+      "change24h_pct": 0.1311,
+      "range24h_pct": 12.9856,
+      "turnover24h": 375014.18
+    },
+    {
+      "symbol": "BABYUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.015645,
+      "change24h_pct": -1.8322,
+      "range24h_pct": 2.6462,
+      "turnover24h": 372298.75
+    },
+    {
+      "symbol": "NMRUSDT",
+      "category": "low_liquidity",
+      "last_price": 8.963,
+      "change24h_pct": -0.3003,
+      "range24h_pct": 5.0206,
+      "turnover24h": 365304.87
+    },
+    {
+      "symbol": "VELVETUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.10302,
+      "change24h_pct": 12.2222,
+      "range24h_pct": 14.6865,
+      "turnover24h": 363181.83
+    },
+    {
+      "symbol": "BATUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.10299,
+      "change24h_pct": -1.3411,
+      "range24h_pct": 3.6703,
+      "turnover24h": 360506.94
+    },
+    {
+      "symbol": "RLCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.461,
+      "change24h_pct": 2.7641,
+      "range24h_pct": 9.0239,
+      "turnover24h": 358725.32
+    },
+    {
+      "symbol": "1INCHUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.09484,
+      "change24h_pct": -1.0846,
+      "range24h_pct": 2.5411,
+      "turnover24h": 358365.53
+    },
+    {
+      "symbol": "SQDUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03097,
+      "change24h_pct": -4.1473,
+      "range24h_pct": 4.7465,
+      "turnover24h": 355299.26
+    },
+    {
+      "symbol": "XCNUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.004696,
+      "change24h_pct": -1.4066,
+      "range24h_pct": 2.4489,
+      "turnover24h": 341968.49
+    },
+    {
+      "symbol": "PUFFERUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.02418,
+      "change24h_pct": -0.9422,
+      "range24h_pct": 4.4665,
+      "turnover24h": 340656.95
+    },
+    {
+      "symbol": "XNYUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.006744,
+      "change24h_pct": 4.9159,
+      "range24h_pct": 13.9383,
+      "turnover24h": 335191.75
+    },
+    {
+      "symbol": "ANKRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.005066,
+      "change24h_pct": -1.8217,
+      "range24h_pct": 2.4477,
+      "turnover24h": 332559.58
+    },
+    {
+      "symbol": "VANRYUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.005367,
+      "change24h_pct": -0.2787,
+      "range24h_pct": 6.1114,
+      "turnover24h": 327689.12
+    },
+    {
+      "symbol": "DOGUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0008202,
+      "change24h_pct": 0.4162,
+      "range24h_pct": 5.3402,
+      "turnover24h": 325594.19
+    },
+    {
+      "symbol": "QNTUSDT",
+      "category": "low_liquidity",
+      "last_price": 69.92,
+      "change24h_pct": -2.4553,
+      "range24h_pct": 3.504,
+      "turnover24h": 317509.0
+    },
+    {
+      "symbol": "WAVESUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.4166,
+      "change24h_pct": -1.2796,
+      "range24h_pct": 2.4964,
+      "turnover24h": 309276.82
+    },
+    {
+      "symbol": "PROVEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.2531,
+      "change24h_pct": -0.1577,
+      "range24h_pct": 3.2398,
+      "turnover24h": 309103.07
+    },
+    {
+      "symbol": "ONGUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0763,
+      "change24h_pct": -3.6129,
+      "range24h_pct": 4.6658,
+      "turnover24h": 308539.82
+    },
+    {
+      "symbol": "YFIUSDT",
+      "category": "low_liquidity",
+      "last_price": 2739.0,
+      "change24h_pct": 1.1074,
+      "range24h_pct": 3.5414,
+      "turnover24h": 305916.88
+    },
+    {
+      "symbol": "BSVUSDT",
+      "category": "low_liquidity",
+      "last_price": 15.741,
+      "change24h_pct": -1.1864,
+      "range24h_pct": 3.0303,
+      "turnover24h": 303744.84
+    },
+    {
+      "symbol": "B3USDT",
+      "category": "low_liquidity",
+      "last_price": 0.0002805,
+      "change24h_pct": -2.6041,
+      "range24h_pct": 4.385,
+      "turnover24h": 301728.63
+    },
+    {
+      "symbol": "USUALUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.014421,
+      "change24h_pct": -3.3445,
+      "range24h_pct": 4.0219,
+      "turnover24h": 298206.78
+    },
+    {
+      "symbol": "ORBSUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.008637,
+      "change24h_pct": -1.8968,
+      "range24h_pct": 3.3461,
+      "turnover24h": 295777.18
+    },
+    {
+      "symbol": "TLMUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0018854,
+      "change24h_pct": -0.0847,
+      "range24h_pct": 9.6001,
+      "turnover24h": 283718.71
+    },
+    {
+      "symbol": "ETHBTCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.029881,
+      "change24h_pct": 0.1575,
+      "range24h_pct": 0.5488,
+      "turnover24h": 278394.4
+    },
+    {
+      "symbol": "LSKUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.12765,
+      "change24h_pct": -2.0262,
+      "range24h_pct": 2.6557,
+      "turnover24h": 277267.77
+    },
+    {
+      "symbol": "BEAMUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0019919,
+      "change24h_pct": -0.6682,
+      "range24h_pct": 2.4449,
+      "turnover24h": 270199.94
+    },
+    {
+      "symbol": "MANTAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.06387,
+      "change24h_pct": -2.6371,
+      "range24h_pct": 5.1824,
+      "turnover24h": 268880.7
+    },
+    {
+      "symbol": "STORJUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.10218,
+      "change24h_pct": 1.3992,
+      "range24h_pct": 3.9636,
+      "turnover24h": 268558.87
+    },
+    {
+      "symbol": "SUNUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.018538,
+      "change24h_pct": -1.278,
+      "range24h_pct": 2.0391,
+      "turnover24h": 265326.01
+    },
+    {
+      "symbol": "TOWNSUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.003237,
+      "change24h_pct": -3.4307,
+      "range24h_pct": 5.6843,
+      "turnover24h": 263479.3
+    },
+    {
+      "symbol": "MBOXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.012946,
+      "change24h_pct": -2.5224,
+      "range24h_pct": 11.015,
+      "turnover24h": 262527.44
+    },
+    {
+      "symbol": "REQUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.07516,
+      "change24h_pct": -2.4149,
+      "range24h_pct": 6.7057,
+      "turnover24h": 261308.0
+    },
+    {
+      "symbol": "WAXPUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.006783,
+      "change24h_pct": -0.4841,
+      "range24h_pct": 3.4793,
+      "turnover24h": 260232.12
+    },
+    {
+      "symbol": "XPINUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0012408,
+      "change24h_pct": -6.1422,
+      "range24h_pct": 8.1319,
+      "turnover24h": 256553.68
+    },
+    {
+      "symbol": "MAVUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.015959,
+      "change24h_pct": -0.8141,
+      "range24h_pct": 4.9189,
+      "turnover24h": 252834.84
+    },
+    {
+      "symbol": "DBRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.013601,
+      "change24h_pct": -1.9535,
+      "range24h_pct": 6.2422,
+      "turnover24h": 252236.35
+    },
+    {
+      "symbol": "XIONUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.15284,
+      "change24h_pct": -2.4134,
+      "range24h_pct": 4.1481,
+      "turnover24h": 249676.21
+    },
+    {
+      "symbol": "COWUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.18734,
+      "change24h_pct": -1.514,
+      "range24h_pct": 3.112,
+      "turnover24h": 249350.57
+    },
+    {
+      "symbol": "SHELLUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03346,
+      "change24h_pct": -3.4343,
+      "range24h_pct": 6.5451,
+      "turnover24h": 245170.66
+    },
+    {
+      "symbol": "EDENUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03678,
+      "change24h_pct": -3.7676,
+      "range24h_pct": 6.9875,
+      "turnover24h": 242846.06
+    },
+    {
+      "symbol": "STGUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.20094,
+      "change24h_pct": -1.2045,
+      "range24h_pct": 3.1651,
+      "turnover24h": 238250.96
+    },
+    {
+      "symbol": "BANANAUSDT",
+      "category": "low_liquidity",
+      "last_price": 3.885,
+      "change24h_pct": -0.563,
+      "range24h_pct": 3.3719,
+      "turnover24h": 238114.53
+    },
+    {
+      "symbol": "CGPTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.025884,
+      "change24h_pct": 6.6897,
+      "range24h_pct": 7.6147,
+      "turnover24h": 237919.27
+    },
+    {
+      "symbol": "1000TAGUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.6576,
+      "change24h_pct": -3.9859,
+      "range24h_pct": 10.6904,
+      "turnover24h": 237053.49
+    },
+    {
+      "symbol": "LRCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.01678,
+      "change24h_pct": -2.7809,
+      "range24h_pct": 3.8141,
+      "turnover24h": 236788.37
+    },
+    {
+      "symbol": "FOGOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.01841,
+      "change24h_pct": -0.4864,
+      "range24h_pct": 4.1282,
+      "turnover24h": 236415.8
+    },
+    {
+      "symbol": "1000000BABYDOGEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0004143,
+      "change24h_pct": -2.1954,
+      "range24h_pct": 3.5964,
+      "turnover24h": 230914.33
+    },
+    {
+      "symbol": "KNCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.14249,
+      "change24h_pct": -1.7174,
+      "range24h_pct": 2.6669,
+      "turnover24h": 226417.25
+    },
+    {
+      "symbol": "HFTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.015065,
+      "change24h_pct": -2.3655,
+      "range24h_pct": 6.306,
+      "turnover24h": 226010.85
+    },
+    {
+      "symbol": "PEAQUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.015797,
+      "change24h_pct": -1.4781,
+      "range24h_pct": 3.0639,
+      "turnover24h": 225479.33
+    },
+    {
+      "symbol": "FLRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.007808,
+      "change24h_pct": -0.3573,
+      "range24h_pct": 2.0876,
+      "turnover24h": 216443.63
+    },
+    {
+      "symbol": "THEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.10162,
+      "change24h_pct": -3.1729,
+      "range24h_pct": 5.373,
+      "turnover24h": 215927.32
+    },
+    {
+      "symbol": "SXTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.01696,
+      "change24h_pct": -2.6406,
+      "range24h_pct": 4.717,
+      "turnover24h": 202398.08
+    },
+    {
+      "symbol": "AIOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.09393,
+      "change24h_pct": 11.715,
+      "range24h_pct": 13.6059,
+      "turnover24h": 201841.7
+    },
+    {
+      "symbol": "COOKIEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.016177,
+      "change24h_pct": -2.5599,
+      "range24h_pct": 5.9962,
+      "turnover24h": 201180.58
+    },
+    {
+      "symbol": "OKBUSDT",
+      "category": "low_liquidity",
+      "last_price": 84.15,
+      "change24h_pct": 0.6097,
+      "range24h_pct": 1.735,
+      "turnover24h": 199129.76
+    },
+    {
+      "symbol": "XVGUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.003358,
+      "change24h_pct": -3.4502,
+      "range24h_pct": 4.5563,
+      "turnover24h": 192363.69
+    },
+    {
+      "symbol": "FORMUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.25543,
+      "change24h_pct": -2.5039,
+      "range24h_pct": 3.9933,
+      "turnover24h": 190461.71
+    },
+    {
+      "symbol": "GMXUSDT",
+      "category": "low_liquidity",
+      "last_price": 6.914,
+      "change24h_pct": 0.1448,
+      "range24h_pct": 2.4877,
+      "turnover24h": 187868.5
+    },
+    {
+      "symbol": "BOBBOBUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.005768,
+      "change24h_pct": -5.3184,
+      "range24h_pct": 7.8883,
+      "turnover24h": 187634.64
+    },
+    {
+      "symbol": "ROAMUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.016088,
+      "change24h_pct": -4.2836,
+      "range24h_pct": 7.8257,
+      "turnover24h": 184672.4
+    },
+    {
+      "symbol": "USDEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.9983,
+      "change24h_pct": -0.05,
+      "range24h_pct": 0.0601,
+      "turnover24h": 183202.65
+    },
+    {
+      "symbol": "QTUMUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.8921,
+      "change24h_pct": -1.8267,
+      "range24h_pct": 3.2283,
+      "turnover24h": 183190.33
+    },
+    {
+      "symbol": "SCRTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.10894,
+      "change24h_pct": -1.8116,
+      "range24h_pct": 4.6815,
+      "turnover24h": 181622.21
+    },
+    {
+      "symbol": "BICOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.02591,
+      "change24h_pct": -2.5206,
+      "range24h_pct": 6.484,
+      "turnover24h": 181431.92
+    },
+    {
+      "symbol": "TSMUSDT",
+      "category": "low_liquidity",
+      "last_price": 403.97,
+      "change24h_pct": -0.2025,
+      "range24h_pct": 1.9185,
+      "turnover24h": 179316.77
+    },
+    {
+      "symbol": "AERGOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.05603,
+      "change24h_pct": 1.2102,
+      "range24h_pct": 2.5701,
+      "turnover24h": 176950.72
+    },
+    {
+      "symbol": "HOMEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.015997,
+      "change24h_pct": -1.3566,
+      "range24h_pct": 4.232,
+      "turnover24h": 176688.8
+    },
+    {
+      "symbol": "FIDAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.016816,
+      "change24h_pct": 0.388,
+      "range24h_pct": 5.3283,
+      "turnover24h": 176077.06
+    },
+    {
+      "symbol": "GASUSDT",
+      "category": "low_liquidity",
+      "last_price": 1.6427,
+      "change24h_pct": -0.9944,
+      "range24h_pct": 2.8611,
+      "turnover24h": 172111.84
+    },
+    {
+      "symbol": "GIGAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.001793,
+      "change24h_pct": -4.5769,
+      "range24h_pct": 6.7819,
+      "turnover24h": 167841.41
+    },
+    {
+      "symbol": "ATUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.16493,
+      "change24h_pct": 0.8006,
+      "range24h_pct": 2.4192,
+      "turnover24h": 165595.57
+    },
+    {
+      "symbol": "POLYXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0508,
+      "change24h_pct": -0.059,
+      "range24h_pct": 3.5039,
+      "turnover24h": 164923.26
+    },
+    {
+      "symbol": "GLMUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.13291,
+      "change24h_pct": 0.5522,
+      "range24h_pct": 3.2955,
+      "turnover24h": 162615.23
+    },
+    {
+      "symbol": "ACUUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.09683,
+      "change24h_pct": -1.7552,
+      "range24h_pct": 6.2894,
+      "turnover24h": 162030.53
+    },
+    {
+      "symbol": "HNTUSDT",
+      "category": "low_liquidity",
+      "last_price": 1.011,
+      "change24h_pct": -0.4137,
+      "range24h_pct": 3.6103,
+      "turnover24h": 159880.19
+    },
+    {
+      "symbol": "POWRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.06447,
+      "change24h_pct": -0.2784,
+      "range24h_pct": 2.156,
+      "turnover24h": 156879.02
+    },
+    {
+      "symbol": "COTIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.013933,
+      "change24h_pct": -3.8041,
+      "range24h_pct": 7.292,
+      "turnover24h": 156137.32
+    },
+    {
+      "symbol": "DEGENUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0006434,
+      "change24h_pct": -4.384,
+      "range24h_pct": 5.502,
+      "turnover24h": 151439.01
+    },
+    {
+      "symbol": "RSRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0017354,
+      "change24h_pct": -3.288,
+      "range24h_pct": 4.8116,
+      "turnover24h": 151434.78
+    },
+    {
+      "symbol": "STBLUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03274,
+      "change24h_pct": -4.687,
+      "range24h_pct": 10.0794,
+      "turnover24h": 151297.6
+    },
+    {
+      "symbol": "USTCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.005329,
+      "change24h_pct": -5.4135,
+      "range24h_pct": 6.3989,
+      "turnover24h": 150759.94
+    },
+    {
+      "symbol": "RPLUSDT",
+      "category": "low_liquidity",
+      "last_price": 1.8644,
+      "change24h_pct": -0.6818,
+      "range24h_pct": 3.4756,
+      "turnover24h": 150424.27
+    },
+    {
+      "symbol": "ASTRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.008126,
+      "change24h_pct": -1.9072,
+      "range24h_pct": 2.6951,
+      "turnover24h": 149572.35
+    },
+    {
+      "symbol": "10000QUBICUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.007439,
+      "change24h_pct": -0.4149,
+      "range24h_pct": 3.6295,
+      "turnover24h": 146957.62
+    },
+    {
+      "symbol": "KMNOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.01931,
+      "change24h_pct": -2.5239,
+      "range24h_pct": 4.0394,
+      "turnover24h": 145789.72
+    },
+    {
+      "symbol": "CVCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03113,
+      "change24h_pct": 0.614,
+      "range24h_pct": 2.9553,
+      "turnover24h": 145391.88
+    },
+    {
+      "symbol": "SCRUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04629,
+      "change24h_pct": 1.3797,
+      "range24h_pct": 6.7185,
+      "turnover24h": 140814.41
+    },
+    {
+      "symbol": "BOBAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.02422,
+      "change24h_pct": 2.1079,
+      "range24h_pct": 9.2898,
+      "turnover24h": 140675.12
+    },
+    {
+      "symbol": "OGUSDT",
+      "category": "low_liquidity",
+      "last_price": 3.15,
+      "change24h_pct": 1.2536,
+      "range24h_pct": 6.5079,
+      "turnover24h": 138939.65
+    },
+    {
+      "symbol": "ALPINEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.4835,
+      "change24h_pct": 1.8538,
+      "range24h_pct": 5.605,
+      "turnover24h": 138740.6
+    },
+    {
+      "symbol": "AVAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.2471,
+      "change24h_pct": -2.061,
+      "range24h_pct": 4.8159,
+      "turnover24h": 136869.67
+    },
+    {
+      "symbol": "STEEMUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.05795,
+      "change24h_pct": -0.7875,
+      "range24h_pct": 1.7256,
+      "turnover24h": 134257.46
+    },
+    {
+      "symbol": "ASPUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.026,
+      "change24h_pct": 1.4832,
+      "range24h_pct": 4.6154,
+      "turnover24h": 132177.27
+    },
+    {
+      "symbol": "PROMPTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0368,
+      "change24h_pct": -1.5779,
+      "range24h_pct": 6.4946,
+      "turnover24h": 129441.14
+    },
+    {
+      "symbol": "B2USDT",
+      "category": "low_liquidity",
+      "last_price": 0.6551,
+      "change24h_pct": 2.8414,
+      "range24h_pct": 5.6938,
+      "turnover24h": 128238.41
+    },
+    {
+      "symbol": "AVAAIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.008346,
+      "change24h_pct": 0.2402,
+      "range24h_pct": 8.1836,
+      "turnover24h": 127540.85
+    },
+    {
+      "symbol": "CKBUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0015082,
+      "change24h_pct": -0.521,
+      "range24h_pct": 2.4997,
+      "turnover24h": 127540.03
+    },
+    {
+      "symbol": "BANDUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.221,
+      "change24h_pct": -0.9412,
+      "range24h_pct": 6.7873,
+      "turnover24h": 127151.57
+    },
+    {
+      "symbol": "SCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.000949,
+      "change24h_pct": 0.1054,
+      "range24h_pct": 2.7503,
+      "turnover24h": 126407.56
+    },
+    {
+      "symbol": "BMTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.01668,
+      "change24h_pct": 0.4153,
+      "range24h_pct": 7.2062,
+      "turnover24h": 124305.77
+    },
+    {
+      "symbol": "1000000CHEEMSUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.5793,
+      "change24h_pct": -6.2317,
+      "range24h_pct": 10.6335,
+      "turnover24h": 123913.33
+    },
+    {
+      "symbol": "ARKUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.1707,
+      "change24h_pct": -1.2381,
+      "range24h_pct": 2.7358,
+      "turnover24h": 121424.13
+    },
+    {
+      "symbol": "MUBARAKUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.013482,
+      "change24h_pct": -4.2403,
+      "range24h_pct": 6.1193,
+      "turnover24h": 120561.59
+    },
+    {
+      "symbol": "ARPAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.009888,
+      "change24h_pct": -0.7926,
+      "range24h_pct": 3.6307,
+      "turnover24h": 119288.95
+    },
+    {
+      "symbol": "TUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.006156,
+      "change24h_pct": -0.6936,
+      "range24h_pct": 2.6641,
+      "turnover24h": 118541.9
+    },
+    {
+      "symbol": "TAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04793,
+      "change24h_pct": 0.5665,
+      "range24h_pct": 3.0044,
+      "turnover24h": 113900.29
+    },
+    {
+      "symbol": "DOLOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03316,
+      "change24h_pct": -2.2117,
+      "range24h_pct": 4.1616,
+      "turnover24h": 112710.49
+    },
+    {
+      "symbol": "HOODUSDT",
+      "category": "low_liquidity",
+      "last_price": 84.51,
+      "change24h_pct": 0.1778,
+      "range24h_pct": 0.8165,
+      "turnover24h": 111345.24
+    },
+    {
+      "symbol": "MTLUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.2984,
+      "change24h_pct": 0.5729,
+      "range24h_pct": 2.8485,
+      "turnover24h": 110840.94
+    },
+    {
+      "symbol": "CLOUDUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.02196,
+      "change24h_pct": 4.323,
+      "range24h_pct": 6.2386,
+      "turnover24h": 107552.3
+    },
+    {
+      "symbol": "CVXUSDT",
+      "category": "low_liquidity",
+      "last_price": 1.7748,
+      "change24h_pct": -0.1687,
+      "range24h_pct": 1.7579,
+      "turnover24h": 107274.77
+    },
+    {
+      "symbol": "TURTLEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04771,
+      "change24h_pct": 1.0163,
+      "range24h_pct": 5.9736,
+      "turnover24h": 106913.46
+    },
+    {
+      "symbol": "OGNUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.023264,
+      "change24h_pct": -2.3751,
+      "range24h_pct": 3.1895,
+      "turnover24h": 106050.13
+    },
+    {
+      "symbol": "AGIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.010729,
+      "change24h_pct": -1.1152,
+      "range24h_pct": 2.3395,
+      "turnover24h": 100480.96
+    },
+    {
+      "symbol": "RDNTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.001859,
+      "change24h_pct": -4.5197,
+      "range24h_pct": 9.1447,
+      "turnover24h": 99868.32
+    },
+    {
+      "symbol": "VELOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.003086,
+      "change24h_pct": -2.2799,
+      "range24h_pct": 2.722,
+      "turnover24h": 98649.78
+    },
+    {
+      "symbol": "TSLAUSDT",
+      "category": "low_liquidity",
+      "last_price": 374.86,
+      "change24h_pct": -0.3031,
+      "range24h_pct": 1.011,
+      "turnover24h": 97504.8
+    },
+    {
+      "symbol": "SNTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.009906,
+      "change24h_pct": 0.8039,
+      "range24h_pct": 2.8468,
+      "turnover24h": 97498.09
+    },
+    {
+      "symbol": "TUTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.011042,
+      "change24h_pct": -2.1533,
+      "range24h_pct": 5.7417,
+      "turnover24h": 96714.44
+    },
+    {
+      "symbol": "MITOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.03859,
+      "change24h_pct": -0.1552,
+      "range24h_pct": 4.6126,
+      "turnover24h": 94406.78
+    },
+    {
+      "symbol": "USUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.004252,
+      "change24h_pct": -8.025,
+      "range24h_pct": 10.3951,
+      "turnover24h": 92240.02
+    },
+    {
+      "symbol": "LQTYUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.3003,
+      "change24h_pct": -2.9097,
+      "range24h_pct": 5.1948,
+      "turnover24h": 90377.48
+    },
+    {
+      "symbol": "IOTXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.004756,
+      "change24h_pct": -2.5409,
+      "range24h_pct": 3.6585,
+      "turnover24h": 90154.25
+    },
+    {
+      "symbol": "SOSOUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.4132,
+      "change24h_pct": -0.9825,
+      "range24h_pct": 2.0571,
+      "turnover24h": 89156.89
+    },
+    {
+      "symbol": "TSTBSCUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.011476,
+      "change24h_pct": 1.0745,
+      "range24h_pct": 5.42,
+      "turnover24h": 85657.21
+    },
+    {
+      "symbol": "1000BTTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0003226,
+      "change24h_pct": -0.2165,
+      "range24h_pct": 1.1779,
+      "turnover24h": 85615.86
+    },
+    {
+      "symbol": "BELUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.10895,
+      "change24h_pct": -1.0804,
+      "range24h_pct": 4.7728,
+      "turnover24h": 79525.22
+    },
+    {
+      "symbol": "CATIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04671,
+      "change24h_pct": -2.6875,
+      "range24h_pct": 4.5172,
+      "turnover24h": 78571.57
+    },
+    {
+      "symbol": "MLNUSDT",
+      "category": "low_liquidity",
+      "last_price": 3.146,
+      "change24h_pct": 0.672,
+      "range24h_pct": 4.8633,
+      "turnover24h": 74148.94
+    },
+    {
+      "symbol": "OXTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.009468,
+      "change24h_pct": -1.375,
+      "range24h_pct": 3.1474,
+      "turnover24h": 72142.84
+    },
+    {
+      "symbol": "ASRUSDT",
+      "category": "low_liquidity",
+      "last_price": 1.2895,
+      "change24h_pct": -0.1548,
+      "range24h_pct": 3.0477,
+      "turnover24h": 71618.49
+    },
+    {
+      "symbol": "1000XECUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.007051,
+      "change24h_pct": -1.6596,
+      "range24h_pct": 3.73,
+      "turnover24h": 71218.98
+    },
+    {
+      "symbol": "HPOS10IUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.021662,
+      "change24h_pct": -2.128,
+      "range24h_pct": 5.0642,
+      "turnover24h": 67371.25
+    },
+    {
+      "symbol": "XVSUSDT",
+      "category": "low_liquidity",
+      "last_price": 2.611,
+      "change24h_pct": -1.3227,
+      "range24h_pct": 2.6427,
+      "turnover24h": 62658.73
+    },
+    {
+      "symbol": "USD1USDT",
+      "category": "low_liquidity",
+      "last_price": 0.9994,
+      "change24h_pct": 0.0,
+      "range24h_pct": 0.01,
+      "turnover24h": 61023.34
+    },
+    {
+      "symbol": "PUNDIXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.1498,
+      "change24h_pct": -0.4452,
+      "range24h_pct": 2.1495,
+      "turnover24h": 60648.58
+    },
+    {
+      "symbol": "DIAUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.19615,
+      "change24h_pct": -6.3589,
+      "range24h_pct": 7.2598,
+      "turnover24h": 58456.59
+    },
+    {
+      "symbol": "1000CATUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.0018275,
+      "change24h_pct": -4.2642,
+      "range24h_pct": 5.5486,
+      "turnover24h": 58119.57
+    },
+    {
+      "symbol": "HIVEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.06171,
+      "change24h_pct": 0.0162,
+      "range24h_pct": 1.9446,
+      "turnover24h": 53908.62
+    },
+    {
+      "symbol": "HEIUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.08299,
+      "change24h_pct": -1.7171,
+      "range24h_pct": 6.4586,
+      "turnover24h": 49391.57
+    },
+    {
+      "symbol": "ACXUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.04308,
+      "change24h_pct": -1.5314,
+      "range24h_pct": 3.0873,
+      "turnover24h": 40629.24
+    },
+    {
+      "symbol": "VELODROMEUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.015999,
+      "change24h_pct": -2.8361,
+      "range24h_pct": 4.9003,
+      "turnover24h": 32202.16
+    },
+    {
+      "symbol": "SYNUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.05388,
+      "change24h_pct": -1.965,
+      "range24h_pct": 6.0505,
+      "turnover24h": 31555.39
+    },
+    {
+      "symbol": "GNOUSDT",
+      "category": "low_liquidity",
+      "last_price": 121.39,
+      "change24h_pct": -0.3284,
+      "range24h_pct": 1.5652,
+      "turnover24h": 29962.3
+    },
+    {
+      "symbol": "RLUSDUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.9992,
+      "change24h_pct": -0.02,
+      "range24h_pct": 0.02,
+      "turnover24h": 18534.72
+    },
+    {
+      "symbol": "BNTUSDT",
+      "category": "low_liquidity",
+      "last_price": 0.3147,
+      "change24h_pct": -0.8818,
+      "range24h_pct": 2.1926,
+      "turnover24h": 14200.05
+    }
+  ]
+}
