@@ -283,6 +283,17 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
     not_overextended = vwap_distance_pct <= float(settings.get("max_vwap_distance_pct", 2.0))
     confirmed_rule = cluster.rule
 
+    explosion_alert = _evaluate_momentum_explosion(
+        state=state,
+        cluster=cluster,
+        confirmed_rule=confirmed_rule,
+        bid_ask_ratio=bid_ask_ratio,
+        weekly_vwap=weekly_vwap,
+        vwap_distance_pct=vwap_distance_pct,
+    )
+    if explosion_alert is not None:
+        return explosion_alert
+
     if (
         bid_ask_ratio >= float(settings.get("min_bid_ask_ratio", 1.6))
         and ask_drop_pct >= float(settings.get("sell_wall_drop_pct", 45.0))
@@ -306,6 +317,55 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
                 "price": state.price or 0.0,
                 "bid_ask_ratio_2pct": round(bid_ask_ratio, 2),
                 "ask_drop_pct": round(ask_drop_pct, 2),
+                "weekly_vwap": round(weekly_vwap, 8),
+                "distance_to_vwap_pct": round(vwap_distance_pct, 2),
+            },
+        ))
+    return None
+
+
+def _evaluate_momentum_explosion(
+    state: SymbolState,
+    cluster: ClusterConfig,
+    confirmed_rule: str,
+    bid_ask_ratio: float,
+    weekly_vwap: float,
+    vwap_distance_pct: float,
+) -> Alert | None:
+    settings = cluster.settings
+    if not bool(settings.get("momentum_explosion_enabled", False)):
+        return None
+    if not state.can_alert(confirmed_rule, float(settings.get("cooldown_minutes", 30))):
+        return None
+    if state.change_24h_pct is None or state.range_24h_pct is None or state.turnover_24h is None:
+        return None
+
+    if (
+        state.change_24h_pct >= float(settings.get("explosion_min_change_24h_pct", 10.0))
+        and state.range_24h_pct >= float(settings.get("explosion_min_range_24h_pct", 8.0))
+        and state.turnover_24h >= float(settings.get("explosion_min_turnover_24h", 250_000.0))
+        and bid_ask_ratio >= float(settings.get("explosion_min_bid_ask_ratio", 0.95))
+        and vwap_distance_pct <= float(settings.get("explosion_max_vwap_distance_pct", 18.0))
+    ):
+        state.mark_alert(confirmed_rule)
+        return _activate_entry(state, cluster, Alert(
+            symbol=state.symbol,
+            cluster_id=cluster.id,
+            cluster_name=cluster.name,
+            rule=cluster.rule,
+            price=state.price or 0.0,
+            title=f"Explosao de momentum em {state.symbol}",
+            message=(
+                f"{state.symbol} acelerou forte nas ultimas 24h com volume suficiente para monitoramento. "
+                "Entrada agressiva somente se o grafico confirmar continuidade e nao devolver o movimento."
+            ),
+            metrics={
+                "price": state.price or 0.0,
+                "explosion_signal": "sim",
+                "change_24h_pct": round(state.change_24h_pct, 2),
+                "range_24h_pct": round(state.range_24h_pct, 2),
+                "turnover_24h_usd": round(state.turnover_24h, 2),
+                "bid_ask_ratio_2pct": round(bid_ask_ratio, 2),
                 "weekly_vwap": round(weekly_vwap, 8),
                 "distance_to_vwap_pct": round(vwap_distance_pct, 2),
             },
@@ -466,7 +526,13 @@ def _quality_gate_entry_alert(
     market_state: MarketState | None,
 ) -> Alert | None:
     score, notes, regime = _entry_quality_score(state, cluster, alert, market_state)
-    min_score = float(cluster.settings.get("quality_min_score", _default_quality_min_score(cluster)))
+    is_explosion = alert.metrics.get("explosion_signal") == "sim"
+    min_score = float(
+        cluster.settings.get(
+            "explosion_quality_min_score" if is_explosion else "quality_min_score",
+            45.0 if is_explosion else _default_quality_min_score(cluster),
+        )
+    )
     min_turnover = float(cluster.settings.get("min_turnover_24h", _default_min_turnover(cluster)))
 
     if _is_stable_pair(state.symbol):
@@ -475,7 +541,7 @@ def _quality_gate_entry_alert(
     if state.turnover_24h is not None and state.turnover_24h < min_turnover:
         state.deactivate_signal(cluster.rule)
         return None
-    if regime == "risk_off" and not cluster.id.startswith("bybit_reversal") and score < 90:
+    if regime == "risk_off" and not is_explosion and not cluster.id.startswith("bybit_reversal") and score < 90:
         state.deactivate_signal(cluster.rule)
         return None
     if score < min_score:
@@ -609,6 +675,8 @@ def _rule_specific_quality(alert: Alert) -> float:
         score += min(16.0, volume_vs_avg * 5.0)
     if alert.rule == "support_absorption_reversal":
         score += 14.0
+    if alert.metrics.get("explosion_signal") == "sim":
+        score += 45.0
     return score
 
 

@@ -233,6 +233,7 @@ def _friendly_metrics(alert: Alert) -> dict[str, str]:
         "change_24h_pct": "variação 24h",
         "range_24h_pct": "range 24h",
         "turnover_24h_usd": "volume financeiro 24h",
+        "explosion_signal": "explosão detectada",
     }
     friendly = {}
     for key, value in alert.metrics.items():
