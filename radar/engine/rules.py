@@ -1,9 +1,28 @@
 from __future__ import annotations
 
+import json
+import time
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
 
 from radar.config import ClusterConfig
 from radar.engine.state import Candle, MarketState, SymbolState
+
+_THRESH_CACHE: dict[str, Any] | None = None
+
+
+def _radar_thresholds() -> dict[str, Any]:
+    """Defaults + config/radar_thresholds.json (liquidez, blocklist, hold de saida)."""
+    global _THRESH_CACHE
+    if _THRESH_CACHE is not None:
+        return _THRESH_CACHE
+    path = Path(__file__).resolve().parent.parent.parent / "config" / "radar_thresholds.json"
+    try:
+        _THRESH_CACHE = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        _THRESH_CACHE = {}
+    return _THRESH_CACHE
 
 
 @dataclass(frozen=True)
@@ -126,6 +145,11 @@ def _activate_entry(state: SymbolState, cluster: ClusterConfig, alert: Alert) ->
 
 def _evaluate_cvd_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     settings = cluster.settings
+    th = _radar_thresholds()
+    active_sig = state.active_signals[cluster.rule]
+    min_hold = float(settings.get("min_hold_seconds_cvd_exit", th.get("min_hold_seconds_cvd_exit", 25)))
+    if time.time() - float(active_sig.get("started_at", 0)) < min_hold:
+        return None
     candles_15m = _confirmed_candles(list(state.candles.get("15", [])))
     ma_length = int(settings.get("volume_ma_length", 20))
     if len(candles_15m) < ma_length + 1:
@@ -157,6 +181,11 @@ def _evaluate_cvd_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | No
 
 def _evaluate_orderbook_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     settings = cluster.settings
+    th = _radar_thresholds()
+    active = state.active_signals[cluster.rule]
+    min_hold = float(settings.get("min_hold_seconds_reactive_exit", th.get("min_hold_seconds_reactive_exit", 36)))
+    if time.time() - float(active.get("started_at", 0)) < min_hold:
+        return None
     candles_1h = _confirmed_candles(list(state.candles.get("60", [])))
     if len(candles_1h) < 24:
         return None
@@ -167,15 +196,24 @@ def _evaluate_orderbook_exit(state: SymbolState, cluster: ClusterConfig) -> Aler
     vwap_loss_pct = float(settings.get("exit_vwap_loss_pct", 0.35))
     lost_vwap = state.price is not None and weekly_vwap > 0 and state.price < weekly_vwap * (1.0 - vwap_loss_pct / 100.0)
     book_flipped = bid_ask_ratio > 0 and bid_ask_ratio <= float(settings.get("exit_bid_ask_ratio", 0.85))
-    active = state.active_signals[cluster.rule]
-    weak_reads = int(active.get("exit_weak_reads", 0))
-    weak_reads = weak_reads + 1 if book_flipped else 0
-    active["exit_weak_reads"] = weak_reads
-    lost_vwap_reads = int(active.get("exit_lost_vwap_reads", 0))
-    lost_vwap_reads = lost_vwap_reads + 1 if lost_vwap else 0
-    active["exit_lost_vwap_reads"] = lost_vwap_reads
+    w_decay = float(th.get("weak_book_decay", 0.5))
+    v_decay = float(th.get("lost_vwap_decay", 0.5))
+    weak_score = float(active.get("exit_weak_book_score", 0.0))
+    if book_flipped:
+        weak_score += 1.0
+    else:
+        weak_score = max(0.0, weak_score - w_decay)
+    active["exit_weak_book_score"] = weak_score
+    vwap_score = float(active.get("exit_lost_vwap_score", 0.0))
+    if lost_vwap:
+        vwap_score += 1.0
+    else:
+        vwap_score = max(0.0, vwap_score - v_decay)
+    active["exit_lost_vwap_score"] = vwap_score
+    thr_vwap = float(settings.get("exit_lost_vwap_score_threshold", th.get("exit_lost_vwap_score_threshold", 2.5)))
+    thr_weak = float(settings.get("exit_weak_book_score_threshold", th.get("exit_weak_book_score_threshold", 3.0)))
 
-    if lost_vwap_reads >= int(settings.get("exit_lost_vwap_reads", 2)) or weak_reads >= int(settings.get("exit_weak_reads", 3)):
+    if vwap_score >= thr_vwap or weak_score >= thr_weak:
         reason = "O rompimento perdeu sustentacao: o preco perdeu a VWAP ou o book virou contra a compra."
         return _exit_alert(
             state,
@@ -185,8 +223,8 @@ def _evaluate_orderbook_exit(state: SymbolState, cluster: ClusterConfig) -> Aler
                 "bid_ask_ratio_2pct": round(bid_ask_ratio, 2),
                 "weekly_vwap": round(weekly_vwap, 8),
                 "lost_vwap": "sim" if lost_vwap else "nao",
-                "lost_vwap_reads": lost_vwap_reads,
-                "weak_book_reads": weak_reads,
+                "lost_vwap_score": round(vwap_score, 2),
+                "weak_book_score": round(weak_score, 2),
             },
         )
     return None
@@ -219,6 +257,11 @@ def _evaluate_support_exit(state: SymbolState, cluster: ClusterConfig) -> Alert 
 
 def _evaluate_microcap_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
     settings = cluster.settings
+    th = _radar_thresholds()
+    active_sig = state.active_signals[cluster.rule]
+    min_hold = float(settings.get("min_hold_seconds_microcap_exit", th.get("min_hold_seconds_microcap_exit", 15)))
+    if time.time() - float(active_sig.get("started_at", 0)) < min_hold:
+        return None
     book = state.orderbook
     if state.price is None or not book.bids or not book.asks:
         return None
@@ -644,6 +687,9 @@ def _quality_gate_entry_alert(
     alert: Alert,
     market_state: MarketState | None,
 ) -> Alert | None:
+    th = _radar_thresholds()
+    if state.symbol in set(th.get("symbol_blocklist") or []):
+        return None
     score, notes, regime = _entry_quality_score(state, cluster, alert, market_state)
     is_explosion = alert.metrics.get("explosion_signal") == "sim"
     is_wave_surf = alert.metrics.get("wave_surf_signal") == "sim"
@@ -653,8 +699,17 @@ def _quality_gate_entry_alert(
             25.0 if is_wave_surf else 45.0 if is_explosion else _default_quality_min_score(cluster),
         )
     )
+    if cluster.rule == "cvd_rvol_compression":
+        min_score = max(0.0, min_score - float(th.get("cvd_quality_min_score_relief", 0.0)))
     min_turnover_key = "wave_surf_min_turnover_24h" if is_wave_surf else "min_turnover_24h"
     min_turnover = float(cluster.settings.get(min_turnover_key, _default_min_turnover(cluster)))
+    if cluster.exchange == "bybit_linear":
+        if cluster.id.startswith("bybit_low_liquidity"):
+            floor = float(th.get("min_turnover_floor_bybit_low_liquidity_usd", 0.0) or 0.0)
+        else:
+            floor = float(th.get("min_turnover_floor_bybit_usd", 0.0) or 0.0)
+        if floor > 0:
+            min_turnover = max(min_turnover, floor)
 
     if _is_stable_pair(state.symbol):
         state.deactivate_signal(cluster.rule)

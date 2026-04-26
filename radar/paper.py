@@ -8,6 +8,21 @@ from typing import Any
 
 from radar.engine.rules import Alert
 
+_BLOCKLIST_CACHE: set[str] | None = None
+
+
+def _paper_symbol_blocklist() -> set[str]:
+    global _BLOCKLIST_CACHE
+    if _BLOCKLIST_CACHE is not None:
+        return _BLOCKLIST_CACHE
+    path = Path(__file__).resolve().parent.parent / "config" / "radar_thresholds.json"
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+        _BLOCKLIST_CACHE = set(str(x) for x in (raw.get("symbol_blocklist") or []))
+    except (OSError, json.JSONDecodeError):
+        _BLOCKLIST_CACHE = set()
+    return _BLOCKLIST_CACHE
+
 
 class PaperPortfolio:
     def __init__(self, initial_cash: float = 1000.0, position_fraction: float = 0.10, audit_path: str | None = None) -> None:
@@ -45,6 +60,8 @@ class PaperPortfolio:
         return self.buy(alert.symbol, alert.price, f"entrada: {alert.rule}", alert.metrics)
 
     def buy(self, symbol: str, price: float, reason: str, metrics: dict[str, float | str] | None = None) -> bool:
+        if symbol in _paper_symbol_blocklist():
+            return False
         if price <= 0 or symbol in self.positions or self.cash <= 0:
             return False
 
@@ -69,7 +86,20 @@ class PaperPortfolio:
             if key in metrics:
                 position[key] = metrics[key]
         self.positions[symbol] = position
-        self._record_trade("BUY", symbol, price, qty, amount_usd, 0.0, reason, {"entry_metrics": metrics})
+        self._record_trade(
+            "BUY",
+            symbol,
+            price,
+            qty,
+            amount_usd,
+            0.0,
+            reason,
+            {
+                "entry_metrics": metrics,
+                "entry_strategy_version": self.strategy_version,
+                "position_strategy_version": self.strategy_version,
+            },
+        )
         return True
 
     def sell(self, symbol: str, price: float, reason: str, metrics: dict[str, float | str] | None = None) -> bool:
@@ -85,6 +115,7 @@ class PaperPortfolio:
         avg_price = float(position["avg_price"])
         pnl_usd = proceeds - invested
         pnl_pct = 100.0 * pnl_usd / invested if invested > 0 else 0.0
+        pnl_bps = 10000.0 * pnl_usd / invested if invested > 0 else 0.0
         opened_at = _as_float(position.get("opened_at"))
         closed_at = time.time()
         peak_price = _as_float(position.get("peak_price")) or max(avg_price, price)
@@ -102,6 +133,7 @@ class PaperPortfolio:
                 "entry_price": round(avg_price, 8),
                 "exit_price": round(price, 8),
                 "pnl_pct": round(pnl_pct, 2),
+                "pnl_bps": round(pnl_bps, 4),
                 "opened_at": opened_at,
                 "closed_at": closed_at,
                 "duration_seconds": round(closed_at - opened_at, 2) if opened_at is not None else None,
@@ -168,18 +200,22 @@ class PaperPortfolio:
         extra: dict[str, Any] | None = None,
     ) -> None:
         extra = extra or {}
+        pnl_decimals = 4 if side == "SELL" else 2
         record = {
             "ts": time.time(),
             "side": side,
             "symbol": symbol,
             "strategy_version": self.strategy_version,
+            "entry_strategy_version": (extra or {}).get("entry_strategy_version") or (extra or {}).get("position_strategy_version") or self.strategy_version,
             "price": round(price, 8),
             "qty": round(qty, 8),
             "notional_usd": round(notional_usd, 2),
-            "pnl_usd": round(pnl_usd, 2),
+            "pnl_usd": round(pnl_usd, pnl_decimals),
             "reason": reason,
-            **extra,
+            **{k: v for k, v in (extra or {}).items() if k not in ("entry_strategy_version", "position_strategy_version")},
         }
+        if "entry_strategy_version" not in record:
+            record["entry_strategy_version"] = self.strategy_version
         self.trades.insert(0, record)
         self.trades = self.trades[:2000]
         self._append_audit_record(record)

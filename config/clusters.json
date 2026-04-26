@@ -47,7 +47,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 70,
-        "min_turnover_24h": 2000000
+        "min_turnover_24h": 2600000
       }
     },
     {
@@ -81,7 +81,7 @@
         "exit_vwap_loss_pct": 0.35,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 74,
-        "min_turnover_24h": 5000000
+        "min_turnover_24h": 6500000
       }
     },
     {
@@ -141,7 +141,7 @@
         "exit_price_drop_pct": 2.0,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 72,
-        "min_turnover_24h": 1000000
+        "min_turnover_24h": 2000000
       }
     },
     {
@@ -201,7 +201,7 @@
         "exit_price_drop_pct": 2.0,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 72,
-        "min_turnover_24h": 1000000
+        "min_turnover_24h": 2000000
       }
     },
     {
@@ -261,7 +261,7 @@
         "exit_price_drop_pct": 2.0,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 72,
-        "min_turnover_24h": 1000000
+        "min_turnover_24h": 2000000
       }
     },
     {
@@ -309,7 +309,7 @@
         "exit_price_drop_pct": 2.0,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 72,
-        "min_turnover_24h": 1000000
+        "min_turnover_24h": 2000000
       }
     },
     {
@@ -372,7 +372,7 @@
         "exit_support_break_pct": 1.0,
         "exit_cooldown_minutes": 30,
         "quality_min_score": 74,
-        "min_turnover_24h": 1000000
+        "min_turnover_24h": 2000000
       }
     },
     {
@@ -404,7 +404,7 @@
         "exit_support_break_pct": 1.0,
         "exit_cooldown_minutes": 30,
         "quality_min_score": 74,
-        "min_turnover_24h": 1000000
+        "min_turnover_24h": 2000000
       }
     },
     {
@@ -465,7 +465,7 @@
         "exit_vwap_loss_pct": 0.45,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 78,
-        "min_turnover_24h": 1000000,
+        "min_turnover_24h": 2000000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 8.0,
         "explosion_min_range_24h_pct": 7.0,
@@ -533,7 +533,7 @@
         "exit_vwap_loss_pct": 0.45,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 78,
-        "min_turnover_24h": 1000000,
+        "min_turnover_24h": 2000000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 8.0,
         "explosion_min_range_24h_pct": 7.0,
@@ -596,7 +596,7 @@
         "exit_vwap_loss_pct": 0.45,
         "exit_cooldown_minutes": 10,
         "quality_min_score": 78,
-        "min_turnover_24h": 1000000,
+        "min_turnover_24h": 2000000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 8.0,
         "explosion_min_range_24h_pct": 7.0,
@@ -664,7 +664,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 15,
         "quality_min_score": 86,
-        "min_turnover_24h": 75000,
+        "min_turnover_24h": 150000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 10.0,
         "explosion_min_range_24h_pct": 8.0,
@@ -732,7 +732,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 15,
         "quality_min_score": 86,
-        "min_turnover_24h": 75000,
+        "min_turnover_24h": 150000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 10.0,
         "explosion_min_range_24h_pct": 8.0,
@@ -800,7 +800,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 15,
         "quality_min_score": 86,
-        "min_turnover_24h": 75000,
+        "min_turnover_24h": 150000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 10.0,
         "explosion_min_range_24h_pct": 8.0,
@@ -868,7 +868,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 15,
         "quality_min_score": 86,
-        "min_turnover_24h": 75000,
+        "min_turnover_24h": 150000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 10.0,
         "explosion_min_range_24h_pct": 8.0,
@@ -936,7 +936,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 15,
         "quality_min_score": 86,
-        "min_turnover_24h": 75000,
+        "min_turnover_24h": 150000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 10.0,
         "explosion_min_range_24h_pct": 8.0,
@@ -1004,7 +1004,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 15,
         "quality_min_score": 86,
-        "min_turnover_24h": 75000,
+        "min_turnover_24h": 150000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 10.0,
         "explosion_min_range_24h_pct": 8.0,
@@ -1072,7 +1072,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 15,
         "quality_min_score": 86,
-        "min_turnover_24h": 75000,
+        "min_turnover_24h": 150000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 10.0,
         "explosion_min_range_24h_pct": 8.0,
@@ -1110,7 +1110,7 @@
         "exit_vwap_loss_pct": 0.5,
         "exit_cooldown_minutes": 15,
         "quality_min_score": 86,
-        "min_turnover_24h": 75000,
+        "min_turnover_24h": 150000,
         "momentum_explosion_enabled": true,
         "explosion_min_change_24h_pct": 10.0,
         "explosion_min_range_24h_pct": 8.0,

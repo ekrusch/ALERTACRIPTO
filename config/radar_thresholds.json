@@ -1,0 +1,29 @@
+{
+  "min_turnover_floor_bybit_usd": 3000000,
+  "min_turnover_floor_bybit_low_liquidity_usd": 200000,
+  "min_hold_seconds_reactive_exit": 36,
+  "min_hold_seconds_cvd_exit": 25,
+  "min_hold_seconds_microcap_exit": 15,
+  "cvd_quality_min_score_relief": 2.0,
+  "weak_book_decay": 0.5,
+  "lost_vwap_decay": 0.5,
+  "exit_lost_vwap_score_threshold": 2.5,
+  "exit_weak_book_score_threshold": 3.0,
+  "symbol_blocklist": [
+    "BLUAIUSDT",
+    "PARTIUSDT",
+    "TRIAUSDT",
+    "RAYDIUMUSDT",
+    "ATHUSDT",
+    "ZKPUSDT",
+    "NEWTUSDT",
+    "ALGOUSDT",
+    "HUSDT",
+    "LYNUSDT",
+    "WCTUSDT",
+    "1000LUNCUSDT",
+    "BSBUSDT",
+    "BUSDT",
+    "BRUSDT"
+  ]
+}
