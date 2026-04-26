@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -11,7 +12,20 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 
-STATUS_FILE = Path("storage/status.json")
+def _app_root() -> Path:
+    return Path(__file__).resolve().parent
+
+
+def status_file_path() -> Path:
+    """Sempre relativo à pasta do projeto (não ao CWD do Streamlit). Mesma env do radar: RADAR_STATUS_FILE."""
+    env = os.environ.get("RADAR_STATUS_FILE")
+    if not env:
+        return _app_root() / "storage" / "status.json"
+    p = Path(env)
+    return p if p.is_absolute() else _app_root() / p
+
+
+STATUS_FILE = status_file_path()
 DISPLAY_TZ = ZoneInfo("America/Sao_Paulo")
 
 
@@ -157,7 +171,7 @@ def _render_symbols_table(rows: list[dict]) -> None:
             f"<td>{html.escape(str(item.get('symbol', '')))}</td>"
             f"<td>{html.escape(str(item.get('cluster', '')))}</td>"
             f"<td>{html.escape(_fmt_price(item.get('price')))}</td>"
-            f"<td>{html.escape(str(item.get('opportunity_score', 'aguardando')))}</td>"
+            f"<td>{html.escape(str(item.get('opportunity_score') if item.get('opportunity_score') is not None else 'aguardando'))}</td>"
             f"<td>{_pct_html(item.get('change_24h_pct'))}</td>"
             f"<td>{_pct_html(item.get('range_24h_pct'))}</td>"
             f"<td>{html.escape(_fmt_compact_usd(item.get('turnover_24h')))}</td>"
@@ -421,11 +435,19 @@ def _render_performance_box(paper: dict, history: list[dict], now: float | None)
 st.set_page_config(page_title="Radar de Anomalias Cripto", layout="wide")
 st.title("Radar de Anomalias Cripto")
 st.caption("Acompanhamento atualiza a cada 10 segundos. Tabelas grandes ficam estaveis para evitar piscar.")
+with st.sidebar:
+    st.caption("Fonte do status")
+    st.code(str(STATUS_FILE.resolve()), language="text")
+    st.caption("Se o painel mostrar só *aguardando*, confira o caminho acima e se o arquivo veio do radar (ou `sync_status`).")
 
 
 def _load_status() -> dict:
     if not STATUS_FILE.exists():
-        st.warning("O radar ainda nao gerou status. Rode: python -m radar.main")
+        st.warning(
+            f"Nao encontrou status em **{STATUS_FILE}**. "
+            "Gere localmente com `python -m radar.main` ou copie do servidor: "
+            "`scripts/sync_status.ps1` (Windows) / `scripts/sync_status.sh`."
+        )
         st.stop()
     with STATUS_FILE.open("r", encoding="utf-8") as file:
         return json.load(file)
@@ -511,6 +533,12 @@ def _render_reference_tables() -> None:
 
     st.subheader("Moedas Monitoradas")
     if symbols:
+        with_prices = sum(1 for item in symbols if isinstance(item.get("price"), (int, float)))
+        if with_prices == 0:
+            st.warning(
+                "Ha simbolos no status, mas **nenhum preco** ainda (tudo *aguardando*). "
+                "O radar no servidor pode estar reconectando, ou este `status.json` esta desatualizado — rode o script de sync."
+            )
         grouped_symbols: dict[str, list[dict]] = {}
         for item in symbols:
             grouped_symbols.setdefault(_exchange_from_cluster(item.get("cluster")), []).append(item)
@@ -522,7 +550,10 @@ def _render_reference_tables() -> None:
             st.markdown(f"#### {exchange}")
             _render_symbols_table(rows)
     else:
-        st.info("Aguardando os primeiros dados do WebSocket.")
+        st.info(
+            "Nenhuma linha em `symbols` neste arquivo — o Streamlit nao esta lendo o mesmo status do radar em execucao. "
+            "Confira o caminho na barra lateral; use `RADAR_STATUS_FILE` ou copie `storage/status.json` do Hetzner."
+        )
 
     left_col, right_col = st.columns(2)
 

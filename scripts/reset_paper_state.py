@@ -62,6 +62,14 @@ def main() -> None:
     data["paper_history"] = []
     data["alerts"] = []
     data["updated_at"] = time.time()
+    # Forma minima para o Streamlit nao perder o layout se o arquivo nao existia
+    for key, default in (
+        ("symbols", []),
+        ("workers", {}),
+        ("opportunities", []),
+    ):
+        if key not in data:
+            data[key] = default  # type: ignore[assignment]
 
     status_path.parent.mkdir(parents=True, exist_ok=True)
     status_path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
