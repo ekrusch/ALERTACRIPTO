@@ -993,14 +993,14 @@ def _default_quality_min_score(cluster: ClusterConfig) -> float:
 
 def _default_min_turnover(cluster: ClusterConfig) -> float:
     if cluster.id.startswith("bybit_low_liquidity"):
-        return 75_000.0
+        return 500_000.0
     if cluster.exchange == "bybit_linear":
-        return 300_000.0
+        return 500_000.0
     return 0.0
 
 
 def _trailing_stop_pct(cluster: ClusterConfig) -> float:
-    default = 0.5 if cluster.exchange == "bybit_linear" else 0.0
+    default = 0.65 if cluster.exchange == "bybit_linear" else 0.0
     return float(cluster.settings.get("trailing_stop_pct", default))
 
 
