@@ -79,6 +79,10 @@ def _evaluate_exit_signal(state: SymbolState, cluster: ClusterConfig) -> Alert |
     if cluster.rule not in state.active_signals:
         return None
 
+    hard_entry_alert = _evaluate_entry_hard_stop_loss(state, cluster)
+    if hard_entry_alert is not None:
+        return hard_entry_alert
+
     trailing_stop_alert = _evaluate_trailing_stop_exit(state, cluster)
     if trailing_stop_alert is not None:
         return trailing_stop_alert
@@ -116,6 +120,36 @@ def _exit_alert(
         title=f"Saida/risco em {state.symbol}",
         message=reason,
         metrics={"alert_level": "SAIDA", "price": round(state.price or 0.0, 8), **metrics},
+    )
+
+
+def _evaluate_entry_hard_stop_loss(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
+    """Corta perda: saida se preco <= entrada * (1 - loss_pct/100). Avaliado antes do trailing movel."""
+    th = _radar_thresholds()
+    if not th.get("entry_hard_stop_loss_enabled", True):
+        return None
+    active = state.active_signals[cluster.rule]
+    if state.price is None or state.price <= 0:
+        return None
+    entry = float(active.get("price", state.price) or state.price)
+    if entry <= 0:
+        return None
+    loss_pct = float(th.get("entry_hard_stop_loss_pct", 0.5) or 0.5)
+    floor = entry * (1.0 - loss_pct / 100.0)
+    if state.price > floor:
+        return None
+    pnl_from_entry = 100.0 * (state.price - entry) / entry
+    return _exit_alert(
+        state,
+        cluster,
+        f"Stop de perda fixo: {loss_pct:.2f}% abaixo do preco de entrada. Limite de perda atingido.",
+        {
+            "entry_price": round(entry, 8),
+            "entry_hard_stop_price": round(floor, 8),
+            "entry_hard_stop_loss_pct": round(loss_pct, 2),
+            "pnl_from_entry_pct": round(pnl_from_entry, 2),
+            "stop_type": "perda_em_entrada",
+        },
     )
 
 

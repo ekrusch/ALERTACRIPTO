@@ -167,6 +167,12 @@ class PaperPortfolio:
             pnl_usd = value - invested
             pnl_pct = 100.0 * pnl_usd / invested if invested > 0 else 0.0
             position["last_price"] = price
+            if thp.get("entry_hard_stop_loss_enabled", True):
+                inv_avg = float(position.get("avg_price", 0) or 0)
+                hloss = float(thp.get("entry_hard_stop_loss_pct", 0.5) or 0.5)
+                if inv_avg > 0:
+                    position["entry_hard_stop_price"] = round(inv_avg * (1.0 - hloss / 100.0), 8)
+                position["entry_hard_stop_loss_pct"] = hloss
             position["value_usd"] = value
             position["pnl_usd"] = pnl_usd
             position["pnl_pct"] = pnl_pct
