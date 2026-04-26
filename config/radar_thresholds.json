@@ -16,6 +16,11 @@
   "impulse_confirm_skip_if_explosion": false,
   "impulse_confirm_skip_if_wave_surf": false,
   "impulse_confirm_cvd_ratio_floor_factor": 0.55,
+  "explosion_min_vwap_distance_pct": 0.0,
+  "wave_surf_min_vwap_distance_pct": 0.0,
+  "entry_min_vwap_distance_pct": 0.0,
+  "wave_surf_min_quality_default": 78.0,
+  "explosion_min_quality_default": 72.0,
   "symbol_blocklist": [
     "ALGOUSDT",
     "AEROUSDT",

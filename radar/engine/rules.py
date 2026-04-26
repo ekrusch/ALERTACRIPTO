@@ -365,36 +365,61 @@ def _evaluate_wave_surf_entry(state: SymbolState, cluster: ClusterConfig) -> Ale
     if cluster.id.startswith("bybit_hot_momentum"):
         min_change = float(cluster.settings.get("wave_surf_min_change_24h_pct", 8.0))
 
-    if (
+    if not (
         state.change_24h_pct >= min_change
         and state.range_24h_pct >= min_range
         and state.turnover_24h >= min_turnover
     ):
-        stop_pct = _trailing_stop_pct(cluster)
-        return Alert(
-            symbol=state.symbol,
-            cluster_id=cluster.id,
-            cluster_name=cluster.name,
-            rule=cluster.rule,
-            price=state.price,
-            title=f"Onda forte em andamento em {state.symbol}",
-            message=(
-                f"{state.symbol} esta surfando uma onda forte agora: variacao 24h alta, range aberto e volume suficiente. "
-                f"Entrada agressiva com stop movel de {stop_pct:.2f}% do topo monitorado."
-            ),
-            metrics={
-                "price": round(state.price, 8),
-                "wave_surf_signal": "sim",
-                "explosion_signal": "sim",
-                "change_24h_pct": round(state.change_24h_pct, 2),
-                "range_24h_pct": round(state.range_24h_pct, 2),
-                "turnover_24h_usd": round(state.turnover_24h, 2),
-                "peak_price": round(state.price, 8),
-                "trailing_stop_pct": round(stop_pct, 2),
-                "trailing_stop_price": round(state.price * (1.0 - stop_pct / 100.0), 8),
-            },
+        return None
+
+    th = _radar_thresholds()
+    weekly_vwap: float = 0.0
+    vwap_distance_pct: float = 0.0
+    if cluster.rule == "orderbook_imbalance_vwap":
+        candles_1h = _confirmed_candles(list(state.candles.get("60", [])))
+        if len(candles_1h) < 24:
+            return None
+        lookback = int(cluster.settings.get("vwap_lookback_hours", 168))
+        weekly_vwap = _vwap(candles_1h[-lookback:])
+        if weekly_vwap <= 0 or state.price is None:
+            return None
+        vwap_distance_pct = 100.0 * (state.price - weekly_vwap) / weekly_vwap
+        min_d = float(
+            cluster.settings.get("wave_surf_min_vwap_distance_pct", th.get("wave_surf_min_vwap_distance_pct", 0.0) or 0.0)
         )
-    return None
+        max_d = float(cluster.settings.get("max_vwap_distance_pct", 6.0))
+        if vwap_distance_pct < min_d or vwap_distance_pct > max_d:
+            return None
+
+    stop_pct = _trailing_stop_pct(cluster)
+    out_metrics: dict[str, float | str] = {
+        "price": round(state.price, 8),
+        "wave_surf_signal": "sim",
+        "explosion_signal": "sim",
+        "change_24h_pct": round(state.change_24h_pct, 2),
+        "range_24h_pct": round(state.range_24h_pct, 2),
+        "turnover_24h_usd": round(state.turnover_24h, 2),
+        "peak_price": round(state.price, 8),
+        "trailing_stop_pct": round(stop_pct, 2),
+        "trailing_stop_price": round(state.price * (1.0 - stop_pct / 100.0), 8),
+    }
+    if cluster.rule == "orderbook_imbalance_vwap" and weekly_vwap > 0:
+        out_metrics["weekly_vwap"] = round(weekly_vwap, 8)
+        out_metrics["distance_to_vwap_pct"] = round(vwap_distance_pct, 2)
+
+    return Alert(
+        symbol=state.symbol,
+        cluster_id=cluster.id,
+        cluster_name=cluster.name,
+        rule=cluster.rule,
+        price=state.price,
+        title=f"Onda forte em andamento em {state.symbol}",
+        message=(
+            f"{state.symbol} esta surfando uma onda forte agora: variacao 24h alta, range aberto e volume suficiente. "
+            f"Entrada agressiva com stop movel de {stop_pct:.2f}% do topo monitorado."
+        ),
+        metrics=out_metrics,
+    )
 
 
 def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
@@ -497,6 +522,7 @@ def _evaluate_momentum_explosion(
     vwap_distance_pct: float,
 ) -> Alert | None:
     settings = cluster.settings
+    th = _radar_thresholds()
     if not bool(settings.get("momentum_explosion_enabled", False)):
         return None
     if not state.can_alert(confirmed_rule, float(settings.get("cooldown_minutes", 30))):
@@ -504,11 +530,15 @@ def _evaluate_momentum_explosion(
     if state.change_24h_pct is None or state.range_24h_pct is None or state.turnover_24h is None:
         return None
 
+    min_vwap = float(
+        settings.get("explosion_min_vwap_distance_pct", th.get("explosion_min_vwap_distance_pct", 0.0) or 0.0)
+    )
     if (
         state.change_24h_pct >= float(settings.get("explosion_min_change_24h_pct", 10.0))
         and state.range_24h_pct >= float(settings.get("explosion_min_range_24h_pct", 8.0))
         and state.turnover_24h >= float(settings.get("explosion_min_turnover_24h", 250_000.0))
         and bid_ask_ratio >= float(settings.get("explosion_min_bid_ask_ratio", 0.95))
+        and vwap_distance_pct >= min_vwap
         and vwap_distance_pct <= float(settings.get("explosion_max_vwap_distance_pct", 18.0))
     ):
         return Alert(
@@ -792,10 +822,12 @@ def _quality_gate_entry_alert(
     score, notes, regime = _entry_quality_score(state, cluster, alert, market_state)
     is_explosion = alert.metrics.get("explosion_signal") == "sim"
     is_wave_surf = alert.metrics.get("wave_surf_signal") == "sim"
+    wave_floor = max(25.0, float(th.get("wave_surf_min_quality_default", 78.0) or 78.0))
+    expl_floor = max(45.0, float(th.get("explosion_min_quality_default", 72.0) or 72.0))
     min_score = float(
         cluster.settings.get(
             "wave_surf_quality_min_score" if is_wave_surf else "explosion_quality_min_score" if is_explosion else "quality_min_score",
-            25.0 if is_wave_surf else 45.0 if is_explosion else _default_quality_min_score(cluster),
+            wave_floor if is_wave_surf else expl_floor if is_explosion else _default_quality_min_score(cluster),
         )
     )
     if cluster.rule == "cvd_rvol_compression":
@@ -813,6 +845,13 @@ def _quality_gate_entry_alert(
     if _is_stable_pair(state.symbol):
         state.deactivate_signal(cluster.rule)
         return None
+    if cluster.rule == "orderbook_imbalance_vwap":
+        dist = _metric_float(alert.metrics.get("distance_to_vwap_pct"))
+        if dist is not None:
+            need = float(th.get("entry_min_vwap_distance_pct", 0.0) or 0.0)
+            if dist < need:
+                state.deactivate_signal(cluster.rule)
+                return None
     if state.turnover_24h is not None and state.turnover_24h < min_turnover:
         state.deactivate_signal(cluster.rule)
         return None
