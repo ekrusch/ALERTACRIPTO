@@ -120,26 +120,45 @@ def _exit_alert(
 
 
 def _evaluate_trailing_stop_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
+    th = _radar_thresholds()
     active = state.active_signals[cluster.rule]
-    stop_pct = _metric_float(active.get("trailing_stop_pct"))
-    if stop_pct is None or stop_pct <= 0 or state.price is None or state.price <= 0:
+    base_stop = _metric_float(active.get("trailing_stop_pct"))
+    if base_stop is None or base_stop <= 0 or state.price is None or state.price <= 0:
         return None
 
     entry_price = float(active.get("price", state.price) or state.price)
     peak_price = max(float(active.get("peak_price", entry_price) or entry_price), state.price)
     active["peak_price"] = peak_price
+    mfe_from_entry_pct = 100.0 * (peak_price - entry_price) / entry_price if entry_price > 0 else 0.0
+    stop_pct = base_stop
+    trail_tighten = th.get("trailing_tighten_on_profit_enabled", True)
+    if trail_tighten and entry_price > 0:
+        need = float(th.get("trailing_tighten_min_gain_from_entry_pct", 1.0) or 1.0)
+        if mfe_from_entry_pct >= need:
+            tight = float(th.get("trailing_tightened_stop_pct", 0.5) or 0.5)
+            if tight > 0:
+                stop_pct = tight
+                active["trailing_tighten_active"] = "sim"
+        else:
+            active["trailing_tighten_active"] = "nao"
+    else:
+        active["trailing_tighten_active"] = "nao"
+    active["trailing_stop_pct"] = stop_pct
+    active["mfe_from_entry_pct"] = round(mfe_from_entry_pct, 2)
     trailing_stop_price = peak_price * (1.0 - stop_pct / 100.0)
     active["trailing_stop_price"] = trailing_stop_price
 
     if state.price <= trailing_stop_price:
         drawdown_pct = 100.0 * (peak_price - state.price) / peak_price if peak_price > 0 else 0.0
+        tight_note = " (regua apertada pos lucro)" if active.get("trailing_tighten_active") == "sim" else ""
         return _exit_alert(
             state,
             cluster,
-            f"Stop movel de {stop_pct:.2f}% acionado. O preco devolveu a partir do topo monitorado.",
+            f"Stop movel de {stop_pct:.2f}% acionado{tight_note}. O preco devolveu a partir do topo monitorado.",
             {
                 "entry_price": round(entry_price, 8),
                 "peak_price": round(peak_price, 8),
+                "mfe_from_entry_pct": round(mfe_from_entry_pct, 2),
                 "trailing_stop_pct": round(stop_pct, 2),
                 "trailing_stop_price": round(trailing_stop_price, 8),
                 "drawdown_from_peak_pct": round(drawdown_pct, 2),

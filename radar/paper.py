@@ -153,6 +153,12 @@ class PaperPortfolio:
     def mark_to_market(self, prices: dict[str, float | None]) -> dict[str, Any]:
         open_value = 0.0
         open_pnl = 0.0
+        try:
+            from radar.engine.rules import _radar_thresholds
+
+            thp = _radar_thresholds()
+        except (ImportError, OSError, ValueError, TypeError, json.JSONDecodeError):
+            thp = {}
         for symbol, position in self.positions.items():
             price = prices.get(symbol) or float(position["last_price"])
             qty = float(position["qty"])
@@ -168,6 +174,20 @@ class PaperPortfolio:
             if stop_pct is not None and stop_pct > 0:
                 peak_price = max(_as_float(position.get("peak_price")) or price, price)
                 position["peak_price"] = peak_price
+                if thp.get("trailing_tighten_on_profit_enabled", True):
+                    inv_avg = float(position.get("avg_price", 0) or 0)
+                    if inv_avg > 0 and peak_price > 0:
+                        mfe = 100.0 * (peak_price - inv_avg) / inv_avg
+                        if mfe >= float(thp.get("trailing_tighten_min_gain_from_entry_pct", 1.0) or 1.0):
+                            tstop = float(thp.get("trailing_tightened_stop_pct", 0.5) or 0.5)
+                            if tstop > 0:
+                                stop_pct = tstop
+                                position["trailing_stop_pct"] = stop_pct
+                                position["trailing_tighten_active"] = "sim"
+                        else:
+                            position["trailing_tighten_active"] = "nao"
+                else:
+                    position["trailing_tighten_active"] = "nao"
                 position["trailing_stop_price"] = peak_price * (1.0 - stop_pct / 100.0)
             open_value += value
             open_pnl += pnl_usd

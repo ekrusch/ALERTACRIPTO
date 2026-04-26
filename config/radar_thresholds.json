@@ -41,5 +41,8 @@
   "elite_require_close_above_sma_1h": true,
   "elite_cvd_require_above_sma20": false,
   "elite_sma20_tolerance_pct": 0.1,
+  "trailing_tighten_on_profit_enabled": true,
+  "trailing_tighten_min_gain_from_entry_pct": 1.0,
+  "trailing_tightened_stop_pct": 0.5,
   "symbol_blocklist": []
 }
