@@ -94,13 +94,15 @@ def _variation_sort_value(item: dict) -> float:
     return -999999.0
 
 
-def _top_opportunities_sort_key(item: dict) -> tuple[float, float]:
-    """Ordem melhor → pior: maior var 24h, depois maior range 24h. Sem dado vai pro fim."""
+def _top_opportunities_sort_key(item: dict) -> tuple[float, float, float]:
+    """Melhor → pior: opportunity_score, depois var 24h, depois range 24h. Sem dado no fim."""
+    sc = item.get("opportunity_score")
     ch = item.get("change_24h_pct")
     r = item.get("range_24h_pct")
+    s = float(sc) if isinstance(sc, (int, float)) else -1e12
     c = float(ch) if isinstance(ch, (int, float)) else -1e12
     g = float(r) if isinstance(r, (int, float)) else -1e12
-    return (-c, -g)
+    return (-s, -c, -g)
 
 
 def _exchange_from_cluster(cluster: str | None) -> str:
