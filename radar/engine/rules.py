@@ -811,6 +811,108 @@ def _try_complete_impulse_entry(
     )
 
 
+def _rsi_wilder(closes: list[float], period: int = 14) -> float | None:
+    if len(closes) < period + 1:
+        return None
+    changes = [closes[i] - closes[i - 1] for i in range(1, len(closes))]
+    if len(changes) < period:
+        return None
+    gains = [max(0.0, c) for c in changes]
+    losses = [max(0.0, -c) for c in changes]
+    avg_g = sum(gains[:period]) / period
+    avg_l = sum(losses[:period]) / period
+    for i in range(period, len(gains)):
+        avg_g = (avg_g * (period - 1) + gains[i]) / period
+        avg_l = (avg_l * (period - 1) + losses[i]) / period
+    if avg_l <= 0:
+        return 100.0
+    rs = avg_g / avg_l
+    return 100.0 - (100.0 / (1.0 + rs))
+
+
+def _elite_tape_ok(
+    state: SymbolState,
+    cluster: ClusterConfig,
+    market_state: MarketState | None,
+    th: dict[str, Any],
+) -> tuple[bool, dict[str, float | str]]:
+    out: dict[str, float | str] = {}
+    if not th.get("elite_strict_entry_enabled", True):
+        return True, out
+    allowed = th.get("elite_apply_rules")
+    if isinstance(allowed, (list, tuple)) and len(allowed) > 0:
+        if cluster.rule not in allowed:
+            return True, out
+    elif cluster.rule not in ("orderbook_imbalance_vwap", "cvd_rvol_compression"):
+        return True, out
+    if th.get("elite_block_entries_in_risk_off", True) and _market_regime(market_state) == "risk_off":
+        out["elite_fail"] = "btc_risk_off"
+        return False, out
+
+    candles_1h = _confirmed_candles(list(state.candles.get("60", [])))
+    rsi_len = int(th.get("elite_rsi_min_candles_1h", 24) or 24)
+    if len(candles_1h) < rsi_len:
+        out["elite_fail"] = "candles_1h_insuficiente"
+        return False, out
+    closes = [c.close for c in candles_1h]
+    period = int(th.get("elite_rsi_period", 14) or 14)
+    rsi = _rsi_wilder(closes, period)
+    if rsi is None:
+        out["elite_fail"] = "rsi_nulo"
+        return False, out
+    out["rsi_14_1h"] = round(rsi, 2)
+
+    if cluster.rule == "orderbook_imbalance_vwap":
+        rlo = float(th.get("elite_orderbook_rsi_min", 55.0) or 55.0)
+        rhi = float(th.get("elite_orderbook_rsi_max", 68.0) or 68.0)
+        if not (rlo <= rsi <= rhi):
+            out["elite_fail"] = f"rsi_fora_{rlo}_{rhi}"
+            return False, out
+    elif cluster.rule == "cvd_rvol_compression":
+        clo = float(th.get("elite_cvd_rsi_min", 40.0) or 40.0)
+        chi = float(th.get("elite_cvd_rsi_max", 58.0) or 58.0)
+        if not (clo <= rsi <= chi):
+            out["elite_fail"] = f"rsi_cvd_fora_{clo}_{chi}"
+            return False, out
+
+    cvd_15m = state.cvd_since(15 * 60 * 1000)
+    out["cvd_15m"] = round(cvd_15m, 4)
+    skip_tape_cvd = cluster.rule == "cvd_rvol_compression" and th.get("elite_cvd_skip_tape_cvd_15m", True)
+    if not skip_tape_cvd and th.get("elite_require_cvd_15m_positive", True) and cvd_15m <= float(th.get("elite_min_cvd_15m", 0.0) or 0.0):
+        out["elite_fail"] = "cvd_15m_nao_comprador"
+        return False, out
+
+    min_spread_n = int(th.get("elite_min_spread_samples", 6) or 6)
+    if len(state.spread_samples) >= min_spread_n:
+        mx = float(th.get("elite_max_avg_spread_pct", 0.22) or 0.22)
+        avg_sp = state.average_spread(exclude_latest=True)
+        out["avg_spread_pct"] = round(avg_sp, 4)
+        if avg_sp > mx:
+            out["elite_fail"] = f"spread_alto_{mx}"
+            return False, out
+
+    need_bull = bool(th.get("elite_require_bullish_last_1h", True))
+    if cluster.rule == "cvd_rvol_compression":
+        need_bull = bool(th.get("elite_cvd_require_bullish_last_1h", False))
+    if need_bull and candles_1h:
+        last = candles_1h[-1]
+        if last.close < last.open:
+            out["elite_fail"] = "ultimo_1h_baixista"
+            return False, out
+
+    need_sma = bool(th.get("elite_require_close_above_sma_1h", True))
+    if cluster.rule == "cvd_rvol_compression":
+        need_sma = bool(th.get("elite_cvd_require_above_sma20", False))
+    if need_sma and len(closes) >= 20 and state.price is not None:
+        sma = sum(closes[-20:]) / 20.0
+        out["sma20_1h"] = round(sma, 8)
+        if state.price < sma * (1.0 - float(th.get("elite_sma20_tolerance_pct", 0.12) or 0.0) / 100.0):
+            out["elite_fail"] = "abaixo_sma20_1h"
+            return False, out
+
+    return True, out
+
+
 def _quality_gate_entry_alert(
     state: SymbolState, cluster: ClusterConfig,
     alert: Alert,
@@ -818,6 +920,10 @@ def _quality_gate_entry_alert(
 ) -> Alert | None:
     th = _radar_thresholds()
     if state.symbol in set(th.get("symbol_blocklist") or []):
+        return None
+    ok_elite, elite_extra = _elite_tape_ok(state, cluster, market_state, th)
+    if not ok_elite:
+        state.deactivate_signal(cluster.rule)
         return None
     score, notes, regime = _entry_quality_score(state, cluster, alert, market_state)
     is_explosion = alert.metrics.get("explosion_signal") == "sim"
@@ -832,6 +938,9 @@ def _quality_gate_entry_alert(
     )
     if cluster.rule == "cvd_rvol_compression":
         min_score = max(0.0, min_score - float(th.get("cvd_quality_min_score_relief", 0.0)))
+    abs_floor = float(th.get("elite_absolute_quality_floor", 0) or 0)
+    if abs_floor > 0:
+        min_score = max(min_score, abs_floor)
     min_turnover_key = "wave_surf_min_turnover_24h" if is_wave_surf else "min_turnover_24h"
     min_turnover = float(cluster.settings.get(min_turnover_key, _default_min_turnover(cluster)))
     if cluster.exchange == "bybit_linear":
@@ -862,8 +971,10 @@ def _quality_gate_entry_alert(
         state.deactivate_signal(cluster.rule)
         return None
 
+    em_elite = {k: v for k, v in elite_extra.items() if k != "elite_fail" and not str(k).startswith("elite_fail")}
     enriched_metrics = {
         **alert.metrics,
+        **em_elite,
         "quality_score": round(score, 1),
         "market_regime": regime,
         "quality_notes": "; ".join(notes[:4]),
