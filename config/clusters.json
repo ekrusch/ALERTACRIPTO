@@ -652,6 +652,7 @@
         "60"
       ],
       "settings": {
+        "wave_surf_enabled": false,
         "book_band_pct": 2.0,
         "min_bid_ask_ratio": 1.9,
         "sell_wall_drop_pct": 55.0,
@@ -671,7 +672,7 @@
         "explosion_min_turnover_24h": 250000,
         "explosion_min_bid_ask_ratio": 0.95,
         "explosion_max_vwap_distance_pct": 18.0,
-        "explosion_quality_min_score": 45
+        "explosion_quality_min_score": 52
       }
     },
     {
@@ -720,6 +721,7 @@
         "60"
       ],
       "settings": {
+        "wave_surf_enabled": false,
         "book_band_pct": 2.0,
         "min_bid_ask_ratio": 1.9,
         "sell_wall_drop_pct": 55.0,
@@ -739,7 +741,7 @@
         "explosion_min_turnover_24h": 250000,
         "explosion_min_bid_ask_ratio": 0.95,
         "explosion_max_vwap_distance_pct": 18.0,
-        "explosion_quality_min_score": 45
+        "explosion_quality_min_score": 52
       }
     },
     {
@@ -788,6 +790,7 @@
         "60"
       ],
       "settings": {
+        "wave_surf_enabled": false,
         "book_band_pct": 2.0,
         "min_bid_ask_ratio": 1.9,
         "sell_wall_drop_pct": 55.0,
@@ -807,7 +810,7 @@
         "explosion_min_turnover_24h": 250000,
         "explosion_min_bid_ask_ratio": 0.95,
         "explosion_max_vwap_distance_pct": 18.0,
-        "explosion_quality_min_score": 45
+        "explosion_quality_min_score": 52
       }
     },
     {
@@ -856,6 +859,7 @@
         "60"
       ],
       "settings": {
+        "wave_surf_enabled": false,
         "book_band_pct": 2.0,
         "min_bid_ask_ratio": 1.9,
         "sell_wall_drop_pct": 55.0,
@@ -875,7 +879,7 @@
         "explosion_min_turnover_24h": 250000,
         "explosion_min_bid_ask_ratio": 0.95,
         "explosion_max_vwap_distance_pct": 18.0,
-        "explosion_quality_min_score": 45
+        "explosion_quality_min_score": 52
       }
     },
     {
@@ -924,6 +928,7 @@
         "60"
       ],
       "settings": {
+        "wave_surf_enabled": false,
         "book_band_pct": 2.0,
         "min_bid_ask_ratio": 1.9,
         "sell_wall_drop_pct": 55.0,
@@ -943,7 +948,7 @@
         "explosion_min_turnover_24h": 250000,
         "explosion_min_bid_ask_ratio": 0.95,
         "explosion_max_vwap_distance_pct": 18.0,
-        "explosion_quality_min_score": 45
+        "explosion_quality_min_score": 52
       }
     },
     {
@@ -992,6 +997,7 @@
         "60"
       ],
       "settings": {
+        "wave_surf_enabled": false,
         "book_band_pct": 2.0,
         "min_bid_ask_ratio": 1.9,
         "sell_wall_drop_pct": 55.0,
@@ -1011,7 +1017,7 @@
         "explosion_min_turnover_24h": 250000,
         "explosion_min_bid_ask_ratio": 0.95,
         "explosion_max_vwap_distance_pct": 18.0,
-        "explosion_quality_min_score": 45
+        "explosion_quality_min_score": 52
       }
     },
     {
@@ -1060,6 +1066,7 @@
         "60"
       ],
       "settings": {
+        "wave_surf_enabled": false,
         "book_band_pct": 2.0,
         "min_bid_ask_ratio": 1.9,
         "sell_wall_drop_pct": 55.0,
@@ -1079,7 +1086,7 @@
         "explosion_min_turnover_24h": 250000,
         "explosion_min_bid_ask_ratio": 0.95,
         "explosion_max_vwap_distance_pct": 18.0,
-        "explosion_quality_min_score": 45
+        "explosion_quality_min_score": 52
       }
     },
     {
@@ -1098,6 +1105,7 @@
         "60"
       ],
       "settings": {
+        "wave_surf_enabled": false,
         "book_band_pct": 2.0,
         "min_bid_ask_ratio": 1.9,
         "sell_wall_drop_pct": 55.0,
@@ -1117,7 +1125,7 @@
         "explosion_min_turnover_24h": 250000,
         "explosion_min_bid_ask_ratio": 0.95,
         "explosion_max_vwap_distance_pct": 18.0,
-        "explosion_quality_min_score": 45
+        "explosion_quality_min_score": 52
       }
     },
     {
