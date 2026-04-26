@@ -45,6 +45,17 @@ def evaluate_symbol(state: SymbolState, cluster: ClusterConfig, market_state: Ma
     if exit_alert is not None:
         return exit_alert
 
+    if state.entry_pending and state.entry_pending.get("rule_id") == cluster.rule:
+        impulse_out = _try_complete_impulse_entry(state, cluster, market_state)
+        if isinstance(impulse_out, Alert):
+            return impulse_out
+        if impulse_out == "aborted":
+            state.entry_pending = None
+        elif impulse_out == "wait":
+            return None
+        if state.entry_pending is not None:
+            return None
+
     alert = _evaluate_wave_surf_entry(state, cluster)
     if alert is not None:
         return _quality_gate_entry_alert(state, cluster, alert, market_state)
@@ -135,12 +146,6 @@ def _evaluate_trailing_stop_exit(state: SymbolState, cluster: ClusterConfig) -> 
             },
         )
     return None
-
-
-def _activate_entry(state: SymbolState, cluster: ClusterConfig, alert: Alert) -> Alert:
-    level = str(alert.metrics.get("alert_level", "CONFIRMADO"))
-    state.activate_signal(cluster.rule, alert.price, level, alert.metrics)
-    return alert
 
 
 def _evaluate_cvd_exit(state: SymbolState, cluster: ClusterConfig) -> Alert | None:
@@ -320,8 +325,7 @@ def _evaluate_cvd_rvol_compression(state: SymbolState, cluster: ClusterConfig) -
         and cvd_ratio >= float(settings.get("min_positive_cvd_ratio", 0.35))
         and state.can_alert(confirmed_rule, float(settings.get("cooldown_minutes", 30)))
     ):
-        state.mark_alert(confirmed_rule)
-        return _activate_entry(state, cluster, Alert(
+        return Alert(
             symbol=state.symbol,
             cluster_id=cluster.id,
             cluster_name=cluster.name,
@@ -339,7 +343,7 @@ def _evaluate_cvd_rvol_compression(state: SymbolState, cluster: ClusterConfig) -
                 "cvd_ratio": round(cvd_ratio, 2),
                 "range_24h_pct": round(compression, 2),
             },
-        ))
+        )
     return None
 
 
@@ -367,8 +371,7 @@ def _evaluate_wave_surf_entry(state: SymbolState, cluster: ClusterConfig) -> Ale
         and state.turnover_24h >= min_turnover
     ):
         stop_pct = _trailing_stop_pct(cluster)
-        state.mark_alert(cluster.rule)
-        return _activate_entry(state, cluster, Alert(
+        return Alert(
             symbol=state.symbol,
             cluster_id=cluster.id,
             cluster_name=cluster.name,
@@ -390,7 +393,7 @@ def _evaluate_wave_surf_entry(state: SymbolState, cluster: ClusterConfig) -> Ale
                 "trailing_stop_pct": round(stop_pct, 2),
                 "trailing_stop_price": round(state.price * (1.0 - stop_pct / 100.0), 8),
             },
-        ))
+        )
     return None
 
 
@@ -457,8 +460,7 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
         and market_stats_confirm
         and state.can_alert(confirmed_rule, float(settings.get("cooldown_minutes", 30)))
     ):
-        state.mark_alert(confirmed_rule)
-        return _activate_entry(state, cluster, Alert(
+        return Alert(
             symbol=state.symbol,
             cluster_id=cluster.id,
             cluster_name=cluster.name,
@@ -482,7 +484,7 @@ def _evaluate_orderbook_imbalance_vwap(state: SymbolState, cluster: ClusterConfi
                 "range_24h_pct": round(state.range_24h_pct or 0.0, 2),
                 "turnover_24h_usd": round(state.turnover_24h or 0.0, 2),
             },
-        ))
+        )
     return None
 
 
@@ -509,8 +511,7 @@ def _evaluate_momentum_explosion(
         and bid_ask_ratio >= float(settings.get("explosion_min_bid_ask_ratio", 0.95))
         and vwap_distance_pct <= float(settings.get("explosion_max_vwap_distance_pct", 18.0))
     ):
-        state.mark_alert(confirmed_rule)
-        return _activate_entry(state, cluster, Alert(
+        return Alert(
             symbol=state.symbol,
             cluster_id=cluster.id,
             cluster_name=cluster.name,
@@ -531,7 +532,7 @@ def _evaluate_momentum_explosion(
                 "weekly_vwap": round(weekly_vwap, 8),
                 "distance_to_vwap_pct": round(vwap_distance_pct, 2),
             },
-        ))
+        )
     return None
 
 
@@ -590,8 +591,7 @@ def _evaluate_support_absorption_reversal(state: SymbolState, cluster: ClusterCo
         and distance_from_support_pct <= float(settings.get("max_daily_distance_from_support_pct", 6.0))
         and state.can_alert(cluster.rule, float(settings.get("cooldown_minutes", 240)))
     ):
-        state.mark_alert(cluster.rule)
-        return _activate_entry(state, cluster, Alert(
+        return Alert(
             symbol=state.symbol,
             cluster_id=cluster.id,
             cluster_name=cluster.name,
@@ -610,7 +610,7 @@ def _evaluate_support_absorption_reversal(state: SymbolState, cluster: ClusterCo
                 "reversal_body_pct": round(reversal_body_pct, 2),
                 "daily_lower_band": round(lower_band, 8),
             },
-        ))
+        )
     return None
 
 
@@ -657,8 +657,7 @@ def _evaluate_microcap_spread_volume_anomaly(state: SymbolState, cluster: Cluste
         and positive_candle
         and state.can_alert(cluster.rule, float(settings.get("cooldown_minutes", 45)))
     ):
-        state.mark_alert(cluster.rule)
-        return _activate_entry(state, cluster, Alert(
+        return Alert(
             symbol=state.symbol,
             cluster_id=cluster.id,
             cluster_name=cluster.name,
@@ -677,13 +676,113 @@ def _evaluate_microcap_spread_volume_anomaly(state: SymbolState, cluster: Cluste
                 "cvd": round(cvd, 4),
                 "cvd_ratio": round(cvd_ratio, 2),
             },
-        ))
+        )
     return None
 
 
+def _should_skip_impulse_confirm(alert: Alert, th: dict[str, Any]) -> bool:
+    if not th.get("impulse_confirm_enabled", True):
+        return True
+    if alert.metrics.get("paper_trade") == "monitor_only":
+        return True
+    if alert.metrics.get("explosion_signal") == "sim" and th.get("impulse_confirm_skip_if_explosion", True):
+        return True
+    if alert.metrics.get("wave_surf_signal") == "sim" and th.get("impulse_confirm_skip_if_wave_surf", True):
+        return True
+    return False
+
+
+def _begin_impulse_pending(
+    state: SymbolState, cluster: ClusterConfig, alert: Alert, enriched_metrics: dict[str, float | str]
+) -> None:
+    state.entry_pending = {
+        "rule_id": cluster.rule,
+        "symbol": state.symbol,
+        "cluster_id": cluster.id,
+        "cluster_name": cluster.name,
+        "title": alert.title,
+        "message": alert.message,
+        "base_price": float(alert.price or 0.0),
+        "trigger_price": float(state.price or alert.price or 0.0),
+        "since": time.time(),
+        "enriched_metrics": dict(enriched_metrics),
+    }
+
+
+def _try_complete_impulse_entry(
+    state: SymbolState, cluster: ClusterConfig, market_state: MarketState | None
+) -> Alert | str:
+    th = _radar_thresholds()
+    p = state.entry_pending
+    if not p or p.get("rule_id") != cluster.rule:
+        return "aborted"
+    min_s = float(th.get("impulse_confirm_min_seconds", 20))
+    max_w = float(th.get("impulse_confirm_max_wait_seconds", 90))
+    adv = float(th.get("impulse_confirm_max_adverse_move_pct", 0.12))
+    now = time.time()
+    since = float(p.get("since", 0))
+    trigger = float(p.get("trigger_price", 0) or 0.0)
+    if now - since > max_w:
+        return "aborted"
+    if state.price is not None and trigger > 0 and state.price < trigger * (1.0 - adv / 100.0):
+        return "aborted"
+    if now - since < min_s:
+        return "wait"
+    if p.get("rule_id") == "cvd_rvol_compression":
+        mink = float(th.get("impulse_confirm_cvd_ratio_floor_factor", 0.55))
+        minr = float(cluster.settings.get("min_positive_cvd_ratio", 0.35))
+        candles_15m = _confirmed_candles(list(state.candles.get("15", [])))
+        ma_len = int(cluster.settings.get("volume_ma_length", 20))
+        if len(candles_15m) < ma_len + 1:
+            return "aborted"
+        volume_avg = _avg_volume(candles_15m[-ma_len - 1 : -1])
+        cvd_15m = state.cvd_since(15 * 60 * 1000)
+        cvd_ratio = cvd_15m / volume_avg if volume_avg > 0 else 0.0
+        if cvd_ratio < minr * mink:
+            return "aborted"
+    en = p.get("enriched_metrics")
+    if not isinstance(en, dict):
+        return "aborted"
+    m: dict[str, float | str] = {}
+    for k, v in en.items():
+        if isinstance(v, bool):
+            m[k] = "sim" if v else "nao"
+        elif isinstance(v, (int, float)) and not isinstance(v, bool):
+            m[k] = float(v)
+        elif isinstance(v, str):
+            m[k] = v
+    m["impulse_confirmed"] = "sim"
+    m["impulse_wait_seconds"] = str(round(now - since, 2))
+    m["impulse_min_seconds"] = str(min_s)
+    if state.change_24h_pct is not None:
+        m["change_24h_pct"] = round(state.change_24h_pct, 2)
+    if state.range_24h_pct is not None:
+        m["range_24h_pct"] = round(state.range_24h_pct, 2)
+    if state.turnover_24h is not None:
+        m["turnover_24h_usd"] = round(state.turnover_24h, 2)
+    confirm_price = float(state.price) if state.price is not None else float(p.get("base_price", 0))
+    tstop = _metric_float(m.get("trailing_stop_pct"))
+    if tstop is not None and tstop > 0 and state.price is not None:
+        peak = float(state.price)
+        m["peak_price"] = round(peak, 8)
+        m["trailing_stop_price"] = round(peak * (1.0 - tstop / 100.0), 8)
+    state.mark_alert(cluster.rule)
+    state.entry_pending = None
+    state.activate_signal(cluster.rule, confirm_price, "CONFIRMADO", m)
+    return Alert(
+        symbol=state.symbol,
+        cluster_id=cluster.id,
+        cluster_name=cluster.name,
+        rule=cluster.rule,
+        price=confirm_price,
+        title=str(p.get("title", "")),
+        message=str(p.get("message", "")),
+        metrics=m,
+    )
+
+
 def _quality_gate_entry_alert(
-    state: SymbolState,
-    cluster: ClusterConfig,
+    state: SymbolState, cluster: ClusterConfig,
     alert: Alert,
     market_state: MarketState | None,
 ) -> Alert | None:
@@ -743,17 +842,21 @@ def _quality_gate_entry_alert(
         enriched_metrics["trailing_stop_pct"] = round(stop_pct, 2)
         enriched_metrics["trailing_stop_price"] = round(peak_price * (1.0 - stop_pct / 100.0), 8)
 
-    state.activate_signal(cluster.rule, alert.price, "CONFIRMADO", enriched_metrics)
-    return Alert(
-        symbol=alert.symbol,
-        cluster_id=alert.cluster_id,
-        cluster_name=alert.cluster_name,
-        rule=alert.rule,
-        price=alert.price,
-        title=alert.title,
-        message=alert.message,
-        metrics=enriched_metrics,
-    )
+    if _should_skip_impulse_confirm(alert, th):
+        state.mark_alert(cluster.rule)
+        state.activate_signal(cluster.rule, alert.price, "CONFIRMADO", enriched_metrics)
+        return Alert(
+            symbol=alert.symbol,
+            cluster_id=alert.cluster_id,
+            cluster_name=alert.cluster_name,
+            rule=alert.rule,
+            price=alert.price,
+            title=alert.title,
+            message=alert.message,
+            metrics=enriched_metrics,
+        )
+    _begin_impulse_pending(state, cluster, alert, enriched_metrics)
+    return None
 
 
 def _entry_quality_score(

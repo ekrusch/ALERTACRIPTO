@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Deque
+from typing import Any, Deque
 
 
 @dataclass
@@ -49,6 +49,7 @@ class SymbolState:
     orderbook: OrderBookSnapshot = field(default_factory=OrderBookSnapshot)
     last_alert_at: dict[str, float] = field(default_factory=dict)
     active_signals: dict[str, dict[str, float | str]] = field(default_factory=dict)
+    entry_pending: dict[str, Any] | None = None
 
     def update_price(self, price: float) -> None:
         self.price = price
