@@ -11,6 +11,8 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
+from regime_data import fetch_regime_snapshot
+
 
 def _app_root() -> Path:
     return Path(__file__).resolve().parent
@@ -27,6 +29,11 @@ def status_file_path() -> Path:
 
 STATUS_FILE = status_file_path()
 DISPLAY_TZ = ZoneInfo("America/Sao_Paulo")
+
+
+@st.cache_data(ttl=300, show_spinner="Carregando indicadores de regime…")
+def _cached_regime_snapshot():
+    return fetch_regime_snapshot(_app_root())
 
 
 def _fmt_price(price: float | None) -> str:
@@ -446,6 +453,40 @@ def _render_performance_box(paper: dict, history: list[dict], now: float | None)
 st.set_page_config(page_title="Radar de Anomalias Cripto", layout="wide")
 st.title("Radar de Anomalias Cripto")
 st.caption("Acompanhamento atualiza a cada 10 segundos. Tabelas grandes ficam estaveis para evitar piscar.")
+
+
+@st.fragment(run_every="120s")
+def _render_regime_market_panel() -> None:
+    st.subheader("Regime de mercado (dados públicos)")
+    st.caption(
+        "Seis leituras para contexto macro/micro: fluxo em ETPs (CoinShares), OI CME (link oficial) + OI perp Bybit, "
+        "funding e base no perp, proxy de fluxo (Bybit), dominância BTC. Atualização do bloco a cada 2 min; cache 5 min."
+    )
+    try:
+        snap = _cached_regime_snapshot()
+    except (OSError, TimeoutError, ValueError, TypeError) as exc:
+        st.warning(f"Não foi possível carregar o painel de regime: {exc}")
+        return
+    ts = snap.fetched_at
+    st.caption(f"Snapshot: {datetime.fromtimestamp(ts, DISPLAY_TZ).strftime('%Y-%m-%d %H:%M:%S')}")
+    for note in snap.notes:
+        st.info(note)
+    left, right = st.columns(2)
+    for i, field in enumerate(snap.fields):
+        col = left if i % 2 == 0 else right
+        with col:
+            st.markdown(f"**{field.label}**")
+            if field.error:
+                st.caption(f"erro: {field.error}")
+            st.markdown(f"### {field.value}")
+            if field.detail:
+                st.caption(field.detail)
+            if field.source:
+                st.markdown(f"[fonte]({field.source})")
+
+
+_render_regime_market_panel()
+
 with st.sidebar:
     st.caption("Fonte do status")
     st.code(str(STATUS_FILE.resolve()), language="text")
