@@ -11,6 +11,7 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
+from htf_context import fetch_htf_context, tradingview_symbol_url
 from regime_data import fetch_regime_snapshot
 
 
@@ -34,6 +35,70 @@ DISPLAY_TZ = ZoneInfo("America/Sao_Paulo")
 @st.cache_data(ttl=300, show_spinner="Carregando indicadores de regime…")
 def _cached_regime_snapshot():
     return fetch_regime_snapshot(_app_root())
+
+
+@st.cache_data(ttl=600, show_spinner="Carregando contexto D1/H4…")
+def _cached_htf_rows(key: tuple[tuple[str | None, str | None], ...]) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for sym, cl in key:
+        if not sym:
+            continue
+        ctx = fetch_htf_context(sym, cl)
+        rows.append(
+            {
+                "moeda": sym,
+                "cluster": (cl or "")[:48],
+                "D1_viés": ctx.d1_bias,
+                "D1": ctx.d1_detail[:120] + ("…" if len(ctx.d1_detail) > 120 else ""),
+                "H4_zona": ctx.h4_zone,
+                "H4": ctx.h4_detail[:120] + ("…" if len(ctx.h4_detail) > 120 else ""),
+                "corretora": ctx.exchange,
+                "TradingView": tradingview_symbol_url(sym, cl),
+            }
+        )
+    return rows
+
+
+@st.fragment(run_every="300s")
+def _render_htf_checklist() -> None:
+    status = _load_status()
+    st.subheader("Referência D1 + H4 (checklist) — gatilho do radar em 1h/15m")
+    st.caption(
+        "D1: viés aproximado (fechamento diário vs SMA20). H4: posição no range das últimas ~30 velas de 4h. "
+        "O radar gera o **gatilho**; este painel ajuda a **não** operar contra o contexto. Cache 10 min; bloco 5 min."
+    )
+    with st.expander("Como encaixar 1h / 4h / D1 com o alerta", expanded=False):
+        st.markdown(
+            "**D1** — se “favor long”, compras têm contexto; “favor short” favorece shorts ou reduzir long. "
+            "**H4** — zona baixa = possível suporte; zona alta = possível resistência. "
+            "**1h/15m** — é a escala do motor (compressão, livro, CVD, VWAP). Use só quando D1/H4 **não** forem o oposto tóxico ao seu plano. "
+        )
+    opps = status.get("opportunities") or []
+    if not opps:
+        st.info("Ainda sem ranking de oportunidades no `status.json`; quando existir, a tabela D1/H4 aparece.")
+        return
+    ranked = sorted(opps, key=_top_opportunities_sort_key)[:18]
+    key = tuple((r.get("symbol"), r.get("cluster")) for r in ranked if r.get("symbol"))
+    if not key:
+        return
+    try:
+        rows = _cached_htf_rows(key)
+    except (OSError, TimeoutError, TypeError, ValueError) as exc:
+        st.warning(f"Falha ao buscar D1/H4: {exc}")
+        return
+    if not rows:
+        return
+    df = pd.DataFrame(rows)
+    try:
+        st.dataframe(
+            df,
+            width="stretch",
+            hide_index=True,
+            height=min(420, 36 * (len(rows) + 1)),
+            column_config={"TradingView": st.column_config.LinkColumn("TradingView", display_text="abrir gráfico")},
+        )
+    except (TypeError, AttributeError):
+        st.dataframe(df, width="stretch", hide_index=True, height=min(420, 36 * (len(rows) + 1)))
 
 
 def _fmt_price(price: float | None) -> str:
@@ -486,6 +551,7 @@ def _render_regime_market_panel() -> None:
 
 
 _render_regime_market_panel()
+_render_htf_checklist()
 
 with st.sidebar:
     st.caption("Fonte do status")
