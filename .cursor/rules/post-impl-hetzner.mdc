@@ -1,0 +1,29 @@
+---
+description: Pós-código, deploy e reinício no Hetzner; opção “do zero” com reset paper
+alwaysApply: true
+---
+
+# Pós-implementação (ALERTA / `explosao`)
+
+Alterações em `radar/`, `config/`, `scripts/` que afetem o que roda no servidor: **não finalizar a tarefa** só com commit local.
+
+## Obrigatório (sempre)
+
+1. Garantir **push** para `origin/main` quando houver diff relevante.
+2. No Hetzner **`root@178.104.166.222`**, repositório **`/opt/radar-cripto`**:
+   - `cd /opt/radar-cripto && git pull && systemctl restart radar`
+   - confirmar com `systemctl is-active radar` → `active`.
+
+Caminho do repo no servidor, se precisar confirmar: `test -d /opt/radar-cripto/.git`
+
+## “Do zero” / feedback paper limpo (quando o usuário pedir ou disser “teste do zero”)
+
+Com o processo parado, resetar o demonstrativo e o audit, depois subir de novo:
+
+1. `systemctl stop radar`
+2. `cd /opt/radar-cripto && git pull`
+3. Se existir `storage/trade_audit.jsonl`: copiar para `storage/trade_audit.jsonl.bak.$(date +%Y%m%d%H%M%S)` e esvaziar o arquivo
+4. Ativar venv, carregar `.env` se houver, rodar: `python3 scripts/reset_paper_state.py`
+5. `systemctl start radar`
+
+Não pular o `git pull` antes do reset, para o servidor estar alinhado com o último `main`.
