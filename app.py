@@ -94,6 +94,15 @@ def _variation_sort_value(item: dict) -> float:
     return -999999.0
 
 
+def _top_opportunities_sort_key(item: dict) -> tuple[float, float]:
+    """Ordem melhor → pior: maior var 24h, depois maior range 24h. Sem dado vai pro fim."""
+    ch = item.get("change_24h_pct")
+    r = item.get("range_24h_pct")
+    c = float(ch) if isinstance(ch, (int, float)) else -1e12
+    g = float(r) if isinstance(r, (int, float)) else -1e12
+    return (-c, -g)
+
+
 def _exchange_from_cluster(cluster: str | None) -> str:
     text = (cluster or "").lower()
     if text.startswith("bybit") or "bybit" in text:
@@ -527,7 +536,8 @@ def _render_reference_tables() -> None:
     st.subheader("Top Oportunidades Agora")
     opportunities = status.get("opportunities", [])
     if opportunities:
-        _render_symbols_table(opportunities[:30])
+        ranked = sorted(opportunities, key=_top_opportunities_sort_key)[:30]
+        _render_symbols_table(ranked)
     else:
         st.info("Aguardando dados 24h suficientes para montar o ranking.")
 
