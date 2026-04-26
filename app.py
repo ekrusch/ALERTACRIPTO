@@ -13,6 +13,7 @@ import streamlit.components.v1 as components
 
 from htf_context import fetch_htf_context, tradingview_symbol_url
 from regime_data import fetch_regime_snapshot
+from variance_scanner import TickerRow, run_scanner, tv_url
 
 
 def _app_root() -> Path:
@@ -99,6 +100,90 @@ def _render_htf_checklist() -> None:
         )
     except (TypeError, AttributeError):
         st.dataframe(df, width="stretch", hide_index=True, height=min(420, 36 * (len(rows) + 1)))
+
+
+@st.cache_data(ttl=120, show_spinner="Carregando scanner de variação 24h…")
+def _cached_variance_scan() -> dict:
+    return run_scanner(_app_root())
+
+
+def _variance_table(rows: list[TickerRow]) -> list[dict[str, str | float]]:
+    out: list[dict[str, str | float]] = []
+    for r in rows:
+        lp = r.last_price or 0.0
+        if lp < 1 and lp > 0:
+            last_s = round(lp, 8)
+        else:
+            last_s = round(lp, 4)
+        out.append(
+            {
+                "par": r.symbol,
+                "Δ 24h %": round(r.change_24h_pct, 2),
+                "volume 24h US$": float(round(r.turnover_24h_usd, 0)),
+                "último": last_s,
+                "TV": tv_url(r),
+            }
+        )
+    return out
+
+
+@st.fragment(run_every="180s")
+def _render_variance_scanner() -> None:
+    st.subheader("Scanner: maiores |variação| 24h (universo amplo)")
+    st.caption(
+        "Pares **USDT** com |Δ24h| acima do mínimo e volume acima do piso. "
+        "Independente do motor de anomalias — serve para achar *pump/dump* com liquidez. "
+        "Edite `config/variance_scanner.json` (%, volume, top N, ligar/desligar). Cache ~2 min."
+    )
+    try:
+        data = _cached_variance_scan()
+    except (OSError, TimeoutError, TypeError, ValueError) as exc:
+        st.warning(f"Falha no scanner: {exc}")
+        return
+    for err in data.get("errors") or []:
+        st.warning(err)
+    cfg = data.get("config") or {}
+    bb = (cfg.get("bybit_linear") or {}) if isinstance(cfg, dict) else {}
+    mx = (cfg.get("mexc_spot") or {}) if isinstance(cfg, dict) else {}
+    st.caption(
+        f"Bybit perp: |Δ| ≥ {bb.get('min_abs_change_pct', 10)}% e turnover ≥ {bb.get('min_turnover_24h_usd', 0):,.0f} US$ / "
+        f"MEXC spot: |Δ| ≥ {mx.get('min_abs_change_pct', 10)}% e volume ≥ {mx.get('min_quote_volume_24h_usd', 0):,.0f} US$"
+    )
+    b_rows = data.get("bybit") or []
+    m_rows = data.get("mexc") or []
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("**Bybit — linear USDT**")
+        if b_rows:
+            df = pd.DataFrame(_variance_table(b_rows))
+            try:
+                st.dataframe(
+                    df,
+                    width="stretch",
+                    hide_index=True,
+                    height=min(520, 32 * (len(b_rows) + 1)),
+                    column_config={"TV": st.column_config.LinkColumn("TV", display_text="abrir")},
+                )
+            except (TypeError, AttributeError):
+                st.dataframe(df, width="stretch", hide_index=True)
+        else:
+            st.info("Nenhum par passou no filtro (aumente top_n ou abaixe o %/volume), ou Bybit desligado no JSON.")
+    with c2:
+        st.markdown("**MEXC — spot USDT**")
+        if m_rows:
+            df2 = pd.DataFrame(_variance_table(m_rows))
+            try:
+                st.dataframe(
+                    df2,
+                    width="stretch",
+                    hide_index=True,
+                    height=min(520, 32 * (len(m_rows) + 1)),
+                    column_config={"TV": st.column_config.LinkColumn("TV", display_text="abrir")},
+                )
+            except (TypeError, AttributeError):
+                st.dataframe(df2, width="stretch", hide_index=True)
+        else:
+            st.info("Nenhum par passou no filtro ou MEXC desligado no JSON.")
 
 
 def _fmt_price(price: float | None) -> str:
@@ -552,6 +637,7 @@ def _render_regime_market_panel() -> None:
 
 _render_regime_market_panel()
 _render_htf_checklist()
+_render_variance_scanner()
 
 with st.sidebar:
     st.caption("Fonte do status")

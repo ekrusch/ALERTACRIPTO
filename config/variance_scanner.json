@@ -1,0 +1,16 @@
+{
+  "bybit_linear": {
+    "enabled": true,
+    "min_abs_change_pct": 10.0,
+    "min_turnover_24h_usd": 2000000,
+    "top_n": 50,
+    "usdt_perpet_only": true
+  },
+  "mexc_spot": {
+    "enabled": true,
+    "min_abs_change_pct": 10.0,
+    "min_quote_volume_24h_usd": 500000,
+    "top_n": 40,
+    "usdt_only": true
+  }
+}
